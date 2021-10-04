@@ -22,17 +22,19 @@ export default function Auth() {
     event.preventDefault();
     try {
       setLoading(true);
-      const { data, error } =
-        supabase.auth.api.resetPasswordForEmail("user@email.com");
+      console.log(email);
+      const { data, error } = await supabase.auth.api.resetPasswordForEmail(
+        email
+      );
 
       if (error) {
-        alert("Error with auth: " + error.message);
+        alert("Error : " + error.message);
       }
     } catch (error) {
-      alert(error.error_description || error.message);
+      alert(error.msg || error.msg);
     } finally {
       setLoading(false);
-      setEmail("");
+      //   setEmail("");
     }
   };
 
