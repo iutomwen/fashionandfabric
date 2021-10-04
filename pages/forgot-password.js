@@ -24,13 +24,9 @@ export default function Auth() {
     event.preventDefault();
     try {
       setLoading(true);
-      const data = new FormData(event.currentTarget);
+      const { data, error } =
+        supabase.auth.api.resetPasswordForEmail("user@email.com");
 
-      //   const { error } = await supabase.auth.signIn({ email });
-      const { user, session, error } = await supabase.auth.signIn({
-        email: data.get("email"),
-        password: data.get("email"),
-      });
       if (error) {
         alert("Error with auth: " + error.message);
       }
@@ -38,17 +34,8 @@ export default function Auth() {
       alert(error.error_description || error.message);
     } finally {
       setLoading(false);
+      setEmail("");
     }
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
   };
 
   return (
@@ -67,7 +54,7 @@ export default function Auth() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Reset Password
           </Typography>
           <Box
             component="form"
@@ -82,23 +69,12 @@ export default function Auth() {
               id="email"
               label="Email Address"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+
             <Button
               type="submit"
               fullWidth
@@ -106,12 +82,12 @@ export default function Auth() {
               disabled={loading}
               sx={{ mt: 3, mb: 2 }}
             >
-              <span>{loading ? "Loading" : "Sign In"}</span>
+              <span>{loading ? "Loading" : "Reset Password"}</span>
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/forgot-password" variant="body2">
-                  Forgot password?
+                <Link href="/login" variant="body2">
+                  Login?
                 </Link>
               </Grid>
               <Grid item>
