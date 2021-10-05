@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../libs/supabaseClient";
+import { useDispatch } from "react-redux";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,14 +13,16 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "../components/utils/Copyright";
+import { userLogin } from "../features/user/userSlice";
 
 const theme = createTheme();
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-
-  const handleLogin = async (event) => {
+  const dispatch = useDispatch();
+  const handleRest = async (event) => {
     event.preventDefault();
+    dispatch(userLogin(userData));
     try {
       setLoading(true);
       console.log(email);
@@ -34,7 +37,6 @@ export default function Auth() {
       alert(error.msg || error.msg);
     } finally {
       setLoading(false);
-      //   setEmail("");
     }
   };
 
@@ -56,12 +58,7 @@ export default function Auth() {
           <Typography component="h1" variant="h5">
             Reset Password
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleLogin}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" onSubmit={handleRest} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required

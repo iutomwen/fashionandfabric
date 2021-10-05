@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../libs/supabaseClient";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogin } from "../features/user/userSlice";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,41 +15,39 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "./utils/Copyright";
+import MessageBox from "./common/MessageBox";
 
 const theme = createTheme();
 export default function Auth() {
-  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState({});
   const [email, setEmail] = useState("");
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      setLoading(true);
-      const data = new FormData(event.currentTarget);
-
-      //   const { error } = await supabase.auth.signIn({ email });
-      const { user, session, error } = await supabase.auth.signIn({
-        email: data.get("email"),
-        password: data.get("email"),
+  const [password, setPassword] = useState("");
+  const { userInfo, pending, loginError } = useSelector((state) => state.user);
+  //   console.log("Details: ", userInfo?.error?.message);
+  console.log("loginErrror", loginError);
+  const dispatch = useDispatch();
+  function isValidEmailAddress(address) {
+    return !!address.match(/.+@.+/);
+  }
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // if (!email) return;
+    if (!password || !email) {
+      setFormError({
+        emailError: "Please Enter Email and Password to continue.",
+        passwordError: "",
       });
-      if (error) {
-        alert("Error with auth: " + error.message);
-      }
-    } catch (error) {
-      alert(error.error_description || error.message);
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    if (!isValidEmailAddress(email)) {
+      setFormError({
+        emailError: "Invalid Email Address",
+        passwordError: "",
+      });
+      return;
+    }
+    dispatch(userLogin({ email, password }));
+    setFormError({});
   };
 
   return (
@@ -82,6 +81,8 @@ export default function Auth() {
               id="email"
               label="Email Address"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               autoFocus
             />
@@ -92,6 +93,8 @@ export default function Auth() {
               name="password"
               label="Password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               id="password"
               autoComplete="current-password"
             />
@@ -103,11 +106,20 @@ export default function Auth() {
               type="submit"
               fullWidth
               variant="contained"
-              disabled={loading}
+              disabled={pending}
               sx={{ mt: 3, mb: 2 }}
             >
-              <span>{loading ? "Loading" : "Sign In"}</span>
+              <span>{pending ? "Loading" : "Sign In"}</span>
             </Button>
+            {userInfo?.error && (
+              <MessageBox types="error">
+                {" "}
+                {userInfo?.error?.message}{" "}
+              </MessageBox>
+            )}
+            {formError.emailError && (
+              <MessageBox types="warning">{formError.emailError}</MessageBox>
+            )}
             <Grid container>
               <Grid item xs>
                 <Link href="/forgot-password" variant="body2">
