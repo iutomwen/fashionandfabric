@@ -1,12 +1,12 @@
 import React from "react";
 import Image from "next/image";
-function ApplicationLogo() {
+function ApplicationLogo({ width, height }) {
   return (
     <Image
       src="/assets/images/fashionandfabric.png"
       alt=""
-      width={200}
-      height={180}
+      width={width ? width : 200}
+      height={height ? height : 180}
     />
   );
 }

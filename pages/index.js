@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../libs/supabaseClient";
 import Auth from "../components/Auth";
 import Account from "../components/Account";
+import AppLayout from "../components/layouts/AppLayout";
 
 export default function Home() {
   const [session, setSession] = useState(null);
@@ -18,14 +19,13 @@ export default function Home() {
   return (
     <div className="container" style={{ padding: "50px 0 100px 0" }}>
       <Head>
-        // <title>{APPNAME}</title>
-        // <link rel="icon" href="/favicon.ico" />
-        //{" "}
+        <title>{APPNAME}</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
       {!session ? (
-        <Auth />
+        <AppLayout />
       ) : (
-        <Account key={session.user.id} session={session} />
+        <AppLayout key={session.user.id} session={session} />
       )}
     </div>
   );
