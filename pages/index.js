@@ -17,6 +17,11 @@ export default function Home() {
   }, []);
   return (
     <div className="container" style={{ padding: "50px 0 100px 0" }}>
+      <Head>
+        // <title>{APPNAME}</title>
+        // <link rel="icon" href="/favicon.ico" />
+        //{" "}
+      </Head>
       {!session ? (
         <Auth />
       ) : (
@@ -25,13 +30,3 @@ export default function Home() {
     </div>
   );
 }
-// export default function Home() {
-//   return (
-//     <div className="">
-//       <Head>
-//         <title>{APPNAME}</title>
-//         <link rel="icon" href="/favicon.ico" />
-//       </Head>
-//     </div>
-//   );
-// }

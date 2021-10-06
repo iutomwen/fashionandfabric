@@ -9,11 +9,25 @@ export const userLogin = createAsyncThunk(
       email: email,
       password: password,
     });
+
     return { error, user, session };
+  }
+);
+
+export const userPasswordReset = createAsyncThunk(
+  "user/userPasswordReset",
+  async ({ email }) => {
+    // console.log(email);
+    const { data, error } = await supabase.auth.api.resetPasswordForEmail(
+      email
+    );
+    return { error, data };
   }
 );
 const initialState = {
   userInfo: {},
+  userPasswordResetError: {},
+  userPasswordResetDetails: {},
   pending: false,
   loginError: {},
 };
@@ -26,15 +40,36 @@ export const userSlice = createSlice({
     [userLogin.pending]: (state) => {
       state.pending = true;
       state.loginError = {};
+      state.userPasswordResetDetails = {};
+      state.userPasswordResetError = {};
     },
-    [userLogin.fulfilled]: (state, { payload }) => {
+    [userLogin.fulfilled]: (state, actions) => {
       state.pending = false;
-      state.userInfo = payload;
+      if (actions.payload.error.status == 400) {
+        state.loginError = actions.payload.error;
+      }
+      state.userInfo = actions.payload.user;
     },
     [userLogin.rejected]: (state, { payload }) => {
-      console.log("payload: ", state);
       state.pending = false;
-      state.loginError = error;
+      state.loginError = payload.error;
+    },
+    [userPasswordReset.pending]: (state) => {
+      state.pending = true;
+      state.loginError = {};
+      state.userPasswordResetDetails = {};
+      state.userPasswordResetError = {};
+    },
+    [userPasswordReset.fulfilled]: (state, actions) => {
+      state.pending = false;
+      if (actions.payload.error) {
+        state.userPasswordResetError = actions.payload.error;
+      }
+      state.userPasswordResetDetails = actions.payload.data;
+    },
+    [userPasswordReset.rejected]: (state, actions) => {
+      state.pending = false;
+      state.userPasswordResetError = actions.payload;
     },
   },
 });

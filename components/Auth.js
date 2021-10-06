@@ -16,6 +16,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "./utils/Copyright";
 import MessageBox from "./common/MessageBox";
+import ApplicationLogo from "./common/ApplicationLogo";
 
 const theme = createTheme();
 export default function Auth() {
@@ -23,15 +24,13 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { userInfo, pending, loginError } = useSelector((state) => state.user);
-  //   console.log("Details: ", userInfo?.error?.message);
-  console.log("loginErrror", loginError);
+  //   console.log(loginError);
   const dispatch = useDispatch();
   function isValidEmailAddress(address) {
     return !!address.match(/.+@.+/);
   }
   const handleLogin = (e) => {
     e.preventDefault();
-    // if (!email) return;
     if (!password || !email) {
       setFormError({
         emailError: "Please Enter Email and Password to continue.",
@@ -62,9 +61,7 @@ export default function Auth() {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          <ApplicationLogo />
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
@@ -105,17 +102,15 @@ export default function Auth() {
             <Button
               type="submit"
               fullWidth
+              className="bg-[#995d46]"
               variant="contained"
               disabled={pending}
               sx={{ mt: 3, mb: 2 }}
             >
               <span>{pending ? "Loading" : "Sign In"}</span>
             </Button>
-            {userInfo?.error && (
-              <MessageBox types="error">
-                {" "}
-                {userInfo?.error?.message}{" "}
-              </MessageBox>
+            {loginError?.status && (
+              <MessageBox types="error"> {loginError.message} </MessageBox>
             )}
             {formError.emailError && (
               <MessageBox types="warning">{formError.emailError}</MessageBox>

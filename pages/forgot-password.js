@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../libs/supabaseClient";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { userPasswordReset } from "../features/user/userSlice";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,31 +13,21 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "../components/utils/Copyright";
-import { userLogin } from "../features/user/userSlice";
+import MessageBox from "../components/common/MessageBox";
+import ApplicationLogo from "../components/common/ApplicationLogo";
 
 const theme = createTheme();
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const dispatch = useDispatch();
-  const handleRest = async (event) => {
-    event.preventDefault();
-    dispatch(userLogin(userData));
-    try {
-      setLoading(true);
-      console.log(email);
-      const { data, error } = await supabase.auth.api.resetPasswordForEmail(
-        email
-      );
+  const { userPasswordResetDetails, pending, userPasswordResetError } =
+    useSelector((state) => state.user);
 
-      if (error) {
-        alert("Error : " + error.message);
-      }
-    } catch (error) {
-      alert(error.msg || error.msg);
-    } finally {
-      setLoading(false);
-    }
+  //   console.log("error :", userPasswordResetDetails);
+  const dispatch = useDispatch();
+  const handleRest = async (e) => {
+    e.preventDefault();
+    dispatch(userPasswordReset({ email }));
   };
 
   return (
@@ -52,9 +42,10 @@ export default function Auth() {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          {/* <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
-          </Avatar>
+          </Avatar> */}
+          <ApplicationLogo />
           <Typography component="h1" variant="h5">
             Reset Password
           </Typography>
@@ -75,12 +66,18 @@ export default function Auth() {
             <Button
               type="submit"
               fullWidth
+              className="bg-[#995d46]"
               variant="contained"
-              disabled={loading}
+              disabled={pending}
               sx={{ mt: 3, mb: 2 }}
             >
-              <span>{loading ? "Loading" : "Reset Password"}</span>
+              <span>{pending ? "Please wait..." : "Reset Password"}</span>
             </Button>
+            {userPasswordResetError?.status && (
+              <MessageBox types="error">
+                {userPasswordResetError?.message}
+              </MessageBox>
+            )}
             <Grid container>
               <Grid item xs>
                 <Link href="/" variant="body2">
