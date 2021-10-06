@@ -13,6 +13,10 @@ import {
   LogOut as LogOutIcon,
   MessageCircle as MessagesIcon,
 } from "react-feather";
+import { supabase } from "./supabaseClient";
+const logout = async () => {
+  const { error } = await supabase.auth.signOut();
+};
 export const menuItems = [
   {
     href: "/app/dashboard",
@@ -33,13 +37,13 @@ export const menuItems = [
     href: "/app/products",
     icon: ShoppingBagIcon,
     title: "Products",
-    badge: 109,
+    badge: 2,
   },
   {
     href: "/app/subcriptions",
     icon: RssIcon,
     title: "Subcriptions",
-    badge: 22,
+    badge: null,
   },
 
   {

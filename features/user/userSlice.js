@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { supabase } from "../../libs/supabaseClient";
 
-// First, create the thunk
 export const userLogin = createAsyncThunk(
   "user/userLogin",
   async ({ email, password }) => {
@@ -14,10 +13,20 @@ export const userLogin = createAsyncThunk(
   }
 );
 
+export const userValidate = createAsyncThunk(
+  "user/userValidate",
+  async ({ id }) => {
+    let { data: users, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id);
+    return users;
+  }
+);
+
 export const userPasswordReset = createAsyncThunk(
   "user/userPasswordReset",
   async ({ email }) => {
-    // console.log(email);
     const { data, error } = await supabase.auth.api.resetPasswordForEmail(
       email
     );
@@ -26,6 +35,7 @@ export const userPasswordReset = createAsyncThunk(
 );
 const initialState = {
   userInfo: {},
+  userSession: {},
   userPasswordResetError: {},
   userPasswordResetDetails: {},
   pending: false,
@@ -35,8 +45,22 @@ const initialState = {
 export const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    saveSession: (state, action) => {
+      state.userSession = action.payload;
+    },
+  },
   extraReducers: {
+    [userValidate.pending]: (state) => {
+      state.pending = true;
+      state.loginError = {};
+      state.userPasswordResetDetails = {};
+      state.userPasswordResetError = {};
+    },
+    [userValidate.fulfilled]: (state, { payload }) => {
+      state.pending = false;
+      state.userInfo = payload.[0];
+    },
     [userLogin.pending]: (state) => {
       state.pending = true;
       state.loginError = {};
@@ -75,6 +99,6 @@ export const userSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-// export const { userLogin } = userSlice.actions;
+export const { saveSession } = userSlice.actions;
 
 export default userSlice.reducer;

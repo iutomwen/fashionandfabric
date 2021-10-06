@@ -13,15 +13,17 @@ import {
 } from "@material-ui/core";
 import NavItem from "./NavItem";
 import { menuItems } from "../../libs/menuItems";
-
-const user = {
-  avatar: "/assets/images/avatars/avatar_6.png",
-  jobTitle: "Senior Developer",
-  name: "Katarina Smith",
-};
+import { useSelector } from "react-redux";
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {
   //   const location = useLocation();
+  const { userInfo } = useSelector((state) => state.user);
+  // console.log("data", userInfo);
+  const user = {
+    avatar: "/assets/images/avatars/avatar_6.png",
+    jobTitle: userInfo.username,
+    name: `${userInfo.first_name} ${userInfo.last_name}`,
+  };
   const router = useRouter();
   useEffect(() => {
     if (openMobile && onMobileClose) {

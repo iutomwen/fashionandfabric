@@ -6,7 +6,6 @@ import Badge from "@mui/material/Badge";
 const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
   const router = useRouter();
   const active = router.pathname;
-  console.log("act: ", active);
   return (
     <ListItem
       disableGutters

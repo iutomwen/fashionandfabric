@@ -21,7 +21,7 @@ export default function Auth() {
   const { userPasswordResetDetails, pending, userPasswordResetError } =
     useSelector((state) => state.user);
 
-  //   console.log("error :", userPasswordResetDetails);
+  console.log("details :", userPasswordResetDetails);
   const dispatch = useDispatch();
   const handleRest = async (e) => {
     e.preventDefault();
@@ -75,6 +75,11 @@ export default function Auth() {
             {userPasswordResetError?.status && (
               <MessageBox types="error">
                 {userPasswordResetError?.message}
+              </MessageBox>
+            )}
+            {userPasswordResetDetails?.message && (
+              <MessageBox types="success">
+                {userPasswordResetDetails.message}
               </MessageBox>
             )}
             <Grid container>

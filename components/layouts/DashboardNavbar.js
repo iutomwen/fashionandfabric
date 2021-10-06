@@ -13,10 +13,13 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/NotificationsOutlined";
 import InputIcon from "@material-ui/icons/Input";
 import Logo from "../common/ApplicationLogo";
+import { supabase } from "../../libs/supabaseClient";
 
 const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   const [notifications] = useState([]);
-
+  const signOutUser = async () => {
+    const { error } = await supabase.auth.signOut();
+  };
   return (
     <AppBar elevation={3} {...rest}>
       <Toolbar className="flex justify-between bg-gray-300">
@@ -27,22 +30,20 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
           </a>
         </Link>
         <Box sx={{ flexGrow: 1 }} />
-        <Hidden xlDown>
-          <IconButton color="inherit" size="large">
-            <Badge
-              badgeContent={notifications.length}
-              color="primary"
-              variant="dot"
-            >
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit" size="large">
-            <InputIcon />
-          </IconButton>
+        <Hidden mdDown>
+          <div className="flex justify-evenly space-x-9">
+            <IconButton color="inherit" size="small">
+              <Badge badgeContent={4} color="error" variant="dot">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <IconButton color="inherit" size="small">
+              <InputIcon onClick={signOutUser} />
+            </IconButton>
+          </div>
         </Hidden>
         <Hidden lgUp>
-          <IconButton color="inherit" onClick={onMobileNavOpen} size="large">
+          <IconButton color="inherit" onClick={onMobileNavOpen} size="small">
             <MenuIcon />
           </IconButton>
         </Hidden>
