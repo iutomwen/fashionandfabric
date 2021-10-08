@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "../features/user/userSlice";
+import {
+  loadFromLocal,
+  logoutUser,
+  userLogin,
+} from "../features/user/userSlice";
+import { useRouter } from "next/router";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -15,18 +20,48 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "./utils/Copyright";
 import MessageBox from "./common/MessageBox";
 import ApplicationLogo from "./common/ApplicationLogo";
+import { supabase } from "../libs/supabaseClient";
 
 const theme = createTheme();
 export default function Auth() {
+  if (typeof window !== "undefined") {
+    console.log("Rendering on browser or client");
+  } else {
+    console.log("Rendering on server");
+  }
+  if (typeof window !== "undefined") {
+    const data = JSON.parse(localStorage.getItem("userInfo"));
+    localStorage.setItem("username", "Joe Smith");
+  }
+  const router = useRouter();
   const [formError, setFormError] = useState({});
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { userInfo, pending, loginError } = useSelector((state) => state.user);
-  //   console.log(loginError);
+  const { userInfo, userSession, pending, errorLog } = useSelector(
+    (state) => state.user
+  );
+  // console.log(userSession);
   const dispatch = useDispatch();
   function isValidEmailAddress(address) {
     return !!address.match(/.+@.+/);
   }
+
+  const session = supabase.auth.session();
+  useEffect(() => {
+    if (session) {
+      //fill redux with local storage
+      dispatch(loadFromLocal({ session }));
+    }
+    if (userInfo && userSession.user && session) {
+      router.push("/app/dashboard");
+      console.log("allowed to pass", userInfo);
+    }
+    if (!session) {
+      dispatch(logoutUser());
+      console.log("user signed out");
+    }
+  }, [session]);
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (!password || !email) {
@@ -44,6 +79,10 @@ export default function Auth() {
       return;
     }
     dispatch(userLogin({ email, password }));
+    if (userSession.user) {
+      router.push("/app/dashboard");
+    }
+
     setFormError({});
   };
 
@@ -111,8 +150,11 @@ export default function Auth() {
             >
               <span>{pending ? "Loading" : "Sign In"}</span>
             </Button>
-            {loginError?.status && (
-              <MessageBox types="error"> {loginError.message} </MessageBox>
+            {errorLog?.status && (
+              <MessageBox types="error">
+                {" "}
+                {errorLog.message || errorLog.error_description}{" "}
+              </MessageBox>
             )}
             {formError.emailError && (
               <MessageBox types="warning">{formError.emailError}</MessageBox>

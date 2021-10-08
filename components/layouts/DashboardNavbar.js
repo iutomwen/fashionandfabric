@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import {
   AppBar,
@@ -13,13 +14,17 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/NotificationsOutlined";
 import InputIcon from "@material-ui/icons/Input";
 import Logo from "../common/ApplicationLogo";
-import { supabase } from "../../libs/supabaseClient";
+import { logoutUser } from "../../features/user/userSlice";
+import { useRouter } from "next/router";
 
 const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
-  const [notifications] = useState([]);
-  const signOutUser = async () => {
-    const { error } = await supabase.auth.signOut();
-  };
+  const [notifications, setNotification] = useState([]);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  function signOutUser() {
+    dispatch(logoutUser());
+    router.push("/login");
+  }
   return (
     <AppBar elevation={3} {...rest}>
       <Toolbar className="flex justify-between bg-gray-300">
@@ -37,8 +42,8 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <IconButton color="inherit" size="small">
-              <InputIcon onClick={signOutUser} />
+            <IconButton onClick={signOutUser} color="inherit" size="small">
+              <InputIcon />
             </IconButton>
           </div>
         </Hidden>

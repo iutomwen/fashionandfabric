@@ -21,8 +21,8 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
   // console.log("data", userInfo);
   const user = {
     avatar: "/assets/images/avatars/avatar_6.png",
-    jobTitle: userInfo.username,
-    name: `${userInfo.first_name} ${userInfo.last_name}`,
+    jobTitle: userInfo?.username,
+    name: `${userInfo?.first_name} ${userInfo?.last_name}`,
   };
   const router = useRouter();
   useEffect(() => {

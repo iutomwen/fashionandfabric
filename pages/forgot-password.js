@@ -16,14 +16,12 @@ import ApplicationLogo from "../components/common/ApplicationLogo";
 
 const theme = createTheme();
 export default function Auth() {
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const { userPasswordResetDetails, pending, userPasswordResetError } =
-    useSelector((state) => state.user);
-
-  console.log("details :", userPasswordResetDetails);
+  const { userSession, pending, errorLog } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const handleRest = async (e) => {
+
+  console.log("details :", userSession);
+  const handleRestPassword = async (e) => {
     e.preventDefault();
     dispatch(userPasswordReset({ email }));
   };
@@ -48,7 +46,12 @@ export default function Auth() {
           <Typography component="h1" variant="h5">
             Reset Password
           </Typography>
-          <Box component="form" onSubmit={handleRest} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleRestPassword}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -72,19 +75,17 @@ export default function Auth() {
             >
               <span>{pending ? "Please wait..." : "Reset Password"}</span>
             </Button>
-            {userPasswordResetError?.status && (
+            {errorLog?.status && (
               <MessageBox types="error">
-                {userPasswordResetError?.message}
+                {errorLog?.message || errorLog?.error_description}
               </MessageBox>
             )}
-            {userPasswordResetDetails?.message && (
-              <MessageBox types="success">
-                {userPasswordResetDetails.message}
-              </MessageBox>
+            {userSession?.message && (
+              <MessageBox types="success">{userSession?.message}</MessageBox>
             )}
             <Grid container>
               <Grid item xs>
-                <Link href="/" variant="body2">
+                <Link href="/login" variant="body2">
                   <a>Login?</a>
                 </Link>
               </Grid>

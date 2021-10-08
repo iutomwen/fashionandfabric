@@ -1,25 +1,76 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { supabase } from "../../libs/supabaseClient";
+import { getAllPersonal } from "../personal/personalSlice";
 
+export const loadFromLocal = createAsyncThunk(
+  "user/loadFromLocal",
+  async (data, { dispatch, getState }) => {
+    const session = supabase.auth.session();
+
+    if (session) {
+      const { id } = session.user;
+      dispatch(userDetails({ id }));
+      // getState().user.userSession= session
+    }
+    return session;
+  }
+);
 export const userLogin = createAsyncThunk(
   "user/userLogin",
-  async ({ email, password }) => {
+  async ({ email, password }, { dispatch, getState }) => {
     const { user, session, error } = await supabase.auth.signIn({
       email: email,
       password: password,
     });
-
+    if (user) {
+      const { id } = user;
+      dispatch(userDetails({ id }));
+      dispatch(getAllPersonal());
+      //set localstorage to save data locally
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userSession", JSON.stringify(user));
+      }
+    }
     return { error, user, session };
   }
 );
 
-export const userValidate = createAsyncThunk(
-  "user/userValidate",
-  async ({ id }) => {
+export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
+  const { error } = await supabase.auth.signOut();
+  localStorage.clear();
+  return error;
+});
+
+export const userRegistration = createAsyncThunk(
+  "user/userRegistration",
+  async ({ email, password }) => {
+    const { user, session, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+    if (user) {
+      const { id } = user;
+      dispatch(userDetails({ id }));
+      //set localstorage to save data locally
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userSession", JSON.stringify(user));
+      }
+    }
+    return { error, user, session };
+  }
+);
+
+export const userDetails = createAsyncThunk(
+  "user/userDetails",
+  async ({ id }, { getState }) => {
     let { data: users, error } = await supabase
       .from("users")
       .select("*")
-      .eq("id", id);
+      .eq("id", id)
+      .single();
+    if (typeof window !== "undefined") {
+      localStorage.setItem("userInfo", JSON.stringify(users));
+    }
     return users;
   }
 );
@@ -33,72 +84,92 @@ export const userPasswordReset = createAsyncThunk(
     return { error, data };
   }
 );
+if (typeof window !== "undefined") {
+  const sessionLog = localStorage.getItem("userInfo")
+    ? localStorage.getItem("userInfo")
+    : null;
+
+  const userlog = localStorage.getItem("userSession")
+    ? localStorage.getItem("userSession")
+    : null;
+}
 const initialState = {
   userInfo: {},
   userSession: {},
-  userPasswordResetError: {},
-  userPasswordResetDetails: {},
+  errorLog: {},
   pending: false,
-  loginError: {},
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {
-    saveSession: (state, action) => {
-      state.userSession = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: {
-    [userValidate.pending]: (state) => {
+    [loadFromLocal.pending]: (state) => {
       state.pending = true;
-      state.loginError = {};
-      state.userPasswordResetDetails = {};
-      state.userPasswordResetError = {};
+      state.errorLog = {};
     },
-    [userValidate.fulfilled]: (state, { payload }) => {
+    [loadFromLocal.fulfilled]: (state, { payload }) => {
       state.pending = false;
-      state.userInfo = payload.[0];
+      state.userSession = payload;
+    },
+    [loadFromLocal.rejected]: (state, { payload }) => {
+      state.pending = false;
+      state.errorLog = payload;
+    },
+    [userRegistration.pending]: (state) => {
+      state.pending = true;
+      state.errorLog = {};
+    },
+    [userRegistration.fulfilled]: (state, { payload }) => {
+      state.pending = false;
+      state.userSession = payload;
+    },
+    [userRegistration.rejected]: (state, { payload }) => {
+      state.pending = false;
+      state.errorLog = payload;
+    },
+    [userDetails.pending]: (state) => {
+      state.pending = true;
+      state.errorLog = {};
+    },
+    [userDetails.fulfilled]: (state, { payload }) => {
+      state.pending = false;
+      state.userInfo = payload;
+      state.errorLog = {};
     },
     [userLogin.pending]: (state) => {
       state.pending = true;
-      state.loginError = {};
-      state.userPasswordResetDetails = {};
-      state.userPasswordResetError = {};
+      state.errorLog = {};
     },
     [userLogin.fulfilled]: (state, actions) => {
       state.pending = false;
-      if (actions.payload.error.status == 400) {
-        state.loginError = actions.payload.error;
-      }
-      state.userInfo = actions.payload.user;
+      state.userSession = actions.payload;
+      state.errorLog = actions.payload.error;
     },
     [userLogin.rejected]: (state, { payload }) => {
       state.pending = false;
-      state.loginError = payload.error;
+      state.errorLog = payload;
     },
     [userPasswordReset.pending]: (state) => {
       state.pending = true;
-      state.loginError = {};
-      state.userPasswordResetDetails = {};
-      state.userPasswordResetError = {};
+      state.errorLog = {};
     },
     [userPasswordReset.fulfilled]: (state, actions) => {
       state.pending = false;
       if (actions.payload.error) {
-        state.userPasswordResetError = actions.payload.error;
+        state.errorLog = actions.payload.error;
       }
-      state.userPasswordResetDetails = actions.payload.data;
+      state.userSession = actions.payload.data;
     },
     [userPasswordReset.rejected]: (state, actions) => {
       state.pending = false;
-      state.userPasswordResetError = actions.payload;
+      state.errorLog = actions.payload;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { saveSession } = userSlice.actions;
+// export const { saveSession } = userSlice.actions;
 
 export default userSlice.reducer;

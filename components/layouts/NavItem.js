@@ -1,11 +1,19 @@
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../../features/user/userSlice";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { Button, ListItem } from "@material-ui/core";
-import { useRouter } from "next/router";
 import Badge from "@mui/material/Badge";
 const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
   const router = useRouter();
   const active = router.pathname;
+  const dispatch = useDispatch();
+  function signOutUser() {
+    console.log("pressed");
+    dispatch(logoutUser());
+    router.push("/login");
+  }
   return (
     <ListItem
       disableGutters
@@ -15,7 +23,7 @@ const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
       }}
       {...rest}
     >
-      <Link href={href}>
+      <Link href={href == "/logout" ? "#" : href}>
         <a>
           <Button
             sx={{
@@ -34,7 +42,11 @@ const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
               },
             }}
           >
-            <div className=" flex items-center justify-center space-x-2">
+            <div
+              onClick={href === "/logout" ? signOutUser : null}
+              className=" flex items-center justify-center space-x-2"
+            >
+              {/* {console.log("signOutUser")} */}
               {Icon && <Icon size="20" />}
               <Badge badgeContent={badge} color="error">
                 <span
