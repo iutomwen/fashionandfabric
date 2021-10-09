@@ -29,14 +29,7 @@ export default function LatestOrders() {
     dispatch(getAllProducts());
     // setAllProducts(products);
     setLoading(false);
-    // return () => {
-    //   if (allProducts) {
-    //     dispatch(getAllProducts());
-    //     allProducts;
-    //     products;
-    //     console.log("object");
-    //   }
-    // };
+    return () => dispatch(getAllProducts());
   }, [products]);
   return (
     <div style={{ maxWidth: "100%" }}>
