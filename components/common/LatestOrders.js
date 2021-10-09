@@ -19,7 +19,7 @@ function createData(name, calories, fat, carbs, protein) {
 
 export default function LatestOrders() {
   const [loading, setLoading] = useState(true);
-  const [allProducts, setAllProducts] = useState({});
+  // const [allProducts, setAllProducts] = useState({});
   const dispatch = useDispatch();
   const { productError, productPending, products } = useSelector(
     (state) => state.products
@@ -27,7 +27,7 @@ export default function LatestOrders() {
   // console.log(products);
   useEffect(() => {
     dispatch(getAllProducts());
-    setAllProducts(products);
+    // setAllProducts(products);
     setLoading(false);
     // return () => {
     //   if (allProducts) {
@@ -61,47 +61,50 @@ export default function LatestOrders() {
             </TableHead>
 
             <TableBody>
-              {products.map((product) => (
-                <TableRow
-                  key={product.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row" align="center">
-                    {product.name}
-                  </TableCell>
-                  <TableCell align="center">{product.price}</TableCell>
-                  <TableCell align="center">{product.store?.name}</TableCell>
-                  <TableCell align="center">{product.category?.name}</TableCell>
-                  <TableCell align="center">{product.currency}</TableCell>
-                  <TableCell align="center">
-                    <div className="flex">
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        style={{ marginLeft: 16 }}
-                        onClick={() => {}}
-                      >
-                        <Link href={`/app/product/${product.id}/view`}>
-                          <a>View</a>
-                        </Link>
-                      </Button>
-                      <Button
-                        startIcon={<DeleteForeverOutlined size={10} />}
-                        variant="outlined"
-                        color="secondary"
-                        size="small"
-                        style={{ marginLeft: 16 }}
-                        onClick={() => {}}
-                      >
-                        <Link href={`/app/product/${product.id}/delete`}>
-                          <a>Remove</a>
-                        </Link>
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {products &&
+                products?.map((product) => (
+                  <TableRow
+                    key={product.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row" align="center">
+                      {product.name}
+                    </TableCell>
+                    <TableCell align="center">{product.price}</TableCell>
+                    <TableCell align="center">{product.store?.name}</TableCell>
+                    <TableCell align="center">
+                      {product.category?.name}
+                    </TableCell>
+                    <TableCell align="center">{product.currency}</TableCell>
+                    <TableCell align="center">
+                      <div className="flex">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          style={{ marginLeft: 16 }}
+                          onClick={() => {}}
+                        >
+                          <Link href={`/app/product/${product.id}/view`}>
+                            <a>View</a>
+                          </Link>
+                        </Button>
+                        <Button
+                          startIcon={<DeleteForeverOutlined size={10} />}
+                          variant="outlined"
+                          color="secondary"
+                          size="small"
+                          style={{ marginLeft: 16 }}
+                          onClick={() => {}}
+                        >
+                          <Link href={`/app/product/${product.id}/delete`}>
+                            <a>Remove</a>
+                          </Link>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         )}

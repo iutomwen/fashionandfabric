@@ -32,11 +32,11 @@ export default function AppLayout({ children }) {
     }
 
     setLoading(false);
-    return () => {
-      dispatch(loadFromLocal({ session }));
-      session;
-      console.log("clean up app..");
-    };
+    // return () => {
+    //   dispatch(loadFromLocal({ session }));
+    //   session;
+    //   console.log("clean up app..");
+    // };
   }, [session]);
 
   return (
