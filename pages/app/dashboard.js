@@ -34,19 +34,19 @@ export default function Dashboard() {
                 <SubcriptionTab sx={{ height: "100%" }} />
               </Grid>
               <Grid item lg={6} md={6} sm={12} xl={6} xs={12}>
-                <TotalBusinessCustomers sx={{ height: "100%" }} />
+                {/* <TotalBusinessCustomers sx={{ height: "100%" }} /> */}
               </Grid>
               <Grid item lg={6} md={6} sm={12} xl={6} xs={12}>
-                <TotalPersonalCustomers sx={{ height: "100%" }} />
+                {/* <TotalPersonalCustomers sx={{ height: "100%" }} /> */}
               </Grid>
               <Grid item lg={6} md={6} sm={12} xl={6} xs={12}>
                 <TotalValidProducts sx={{ height: "100%" }} />
               </Grid>
               <Grid item lg={12} md={12} xl={12} xs={12}>
-                <LatestOrders />
+                {/* <LatestOrders /> */}
               </Grid>
               <Grid item lg={12} md={12} xl={12} xs={12}>
-                <LatestUsers />
+                {/* <LatestUsers /> */}
               </Grid>
             </Grid>
           </Container>
