@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { APPNAME } from "../libs/constant";
+import Head from "next/head";
 import { supabase } from "../libs/supabaseClient";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -95,95 +97,101 @@ export default function Auth() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      {loading && <LoadingBox />}
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Link href="/">
-            <a>
-              <ApplicationLogo />
-            </a>
-          </Link>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+    <>
+      <Head>
+        <title>{APPNAME} - Login</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
+      <ThemeProvider theme={theme}>
+        {loading && <LoadingBox />}
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
           <Box
-            component="form"
-            onSubmit={handleLogin}
-            noValidate
-            sx={{ mt: 1 }}
+            sx={{
+              marginTop: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              className="bg-[#995d46]"
-              variant="contained"
-              disabled={pending || loading}
-              sx={{ mt: 3, mb: 2 }}
+            <Link href="/">
+              <a>
+                <ApplicationLogo />
+              </a>
+            </Link>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <Box
+              component="form"
+              onSubmit={handleLogin}
+              noValidate
+              sx={{ mt: 1 }}
             >
-              <span>{pending || loading ? "Loading" : "Sign In"}</span>
-            </Button>
-            {errorLog?.status && (
-              <MessageBox types="error">
-                {" "}
-                {errorLog.message || errorLog.error_description}{" "}
-              </MessageBox>
-            )}
-            {formError.emailError && (
-              <MessageBox types="warning">{formError.emailError}</MessageBox>
-            )}
-            <Grid container>
-              <Grid item xs>
-                <Link href="/forgot-password" variant="body2">
-                  <a>Forgot password? </a>
-                </Link>
-              </Grid>
-              <Grid item>
-                {/* <Link href="#" variant="body2">
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                id="password"
+                autoComplete="current-password"
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                className="bg-[#995d46]"
+                variant="contained"
+                disabled={pending || loading}
+                sx={{ mt: 3, mb: 2 }}
+              >
+                <span>{pending || loading ? "Loading" : "Sign In"}</span>
+              </Button>
+              {errorLog?.status && (
+                <MessageBox types="error">
+                  {" "}
+                  {errorLog.message || errorLog.error_description}{" "}
+                </MessageBox>
+              )}
+              {formError.emailError && (
+                <MessageBox types="warning">{formError.emailError}</MessageBox>
+              )}
+              <Grid container>
+                <Grid item xs>
+                  <Link href="/forgot-password" variant="body2">
+                    <a>Forgot password? </a>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  {/* <Link href="#" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link> */}
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
-        <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
-      </Container>
-    </ThemeProvider>
+          <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
+        </Container>
+      </ThemeProvider>
+    </>
   );
 }

@@ -1,3 +1,5 @@
+import Head from "next/head";
+import { APPNAME } from "../libs/constant";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userPasswordReset } from "../features/user/userSlice";
@@ -27,74 +29,80 @@ export default function Auth() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Link href="/">
-            <a>
-              <ApplicationLogo />
-            </a>
-          </Link>
-          <Typography component="h1" variant="h5">
-            Reset Password
-          </Typography>
+    <>
+      <Head>
+        <title>{APPNAME} - Password Reset</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
           <Box
-            component="form"
-            onSubmit={handleRestPassword}
-            noValidate
-            sx={{ mt: 1 }}
+            sx={{
+              marginTop: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              autoFocus
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              className="bg-[#995d46]"
-              variant="contained"
-              disabled={pending}
-              sx={{ mt: 3, mb: 2 }}
+            <Link href="/">
+              <a>
+                <ApplicationLogo />
+              </a>
+            </Link>
+            <Typography component="h1" variant="h5">
+              Reset Password
+            </Typography>
+            <Box
+              component="form"
+              onSubmit={handleRestPassword}
+              noValidate
+              sx={{ mt: 1 }}
             >
-              <span>{pending ? "Please wait..." : "Reset Password"}</span>
-            </Button>
-            {errorLog?.status && (
-              <MessageBox types="error">
-                {errorLog?.message || errorLog?.error_description}
-              </MessageBox>
-            )}
-            {userSession?.message && (
-              <MessageBox types="success">{userSession?.message}</MessageBox>
-            )}
-            <Grid container>
-              <Grid item xs>
-                <Link href="/login" variant="body2">
-                  <a>Login?</a>
-                </Link>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoFocus
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                className="bg-[#995d46]"
+                variant="contained"
+                disabled={pending}
+                sx={{ mt: 3, mb: 2 }}
+              >
+                <span>{pending ? "Please wait..." : "Reset Password"}</span>
+              </Button>
+              {errorLog?.status && (
+                <MessageBox types="error">
+                  {errorLog?.message || errorLog?.error_description}
+                </MessageBox>
+              )}
+              {userSession?.message && (
+                <MessageBox types="success">{userSession?.message}</MessageBox>
+              )}
+              <Grid container>
+                <Grid item xs>
+                  <Link href="/login" variant="body2">
+                    <a>Login?</a>
+                  </Link>
+                </Grid>
+                <Grid item>{""}</Grid>
               </Grid>
-              <Grid item>{""}</Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
-        <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
-      </Container>
-    </ThemeProvider>
+          <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
+        </Container>
+      </ThemeProvider>
+    </>
   );
 }

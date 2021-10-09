@@ -9,10 +9,15 @@ import TotalPersonalCustomers from "../../components/common/TotalPersonalCustome
 import TotalValidProducts from "../../components/common/TotalValidProducts";
 import LatestOrders from "../../components/common/LatestOrders";
 import LatestUsers from "../../components/common/LatestUsers";
-
+import Head from "next/head";
+import { APPNAME } from "../../libs/constant";
 export default function Dashboard() {
   return (
     <>
+      <Head>
+        <title>{APPNAME} - Application Dashboard</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
       <AppLayout>
         <Box
           // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}

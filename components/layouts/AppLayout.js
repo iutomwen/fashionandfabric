@@ -17,7 +17,6 @@ export default function AppLayout({ children }) {
   const session = supabase.auth.session();
 
   useEffect(() => {
-    setLoading(true);
     if (!session) {
       setLoading(true);
       dispatch(logoutUser());
@@ -33,6 +32,11 @@ export default function AppLayout({ children }) {
     }
 
     setLoading(false);
+    return () => {
+      dispatch(loadFromLocal({ session }));
+      session;
+      console.log("clean up app..");
+    };
   }, [session]);
 
   return (

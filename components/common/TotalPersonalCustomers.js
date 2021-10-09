@@ -14,7 +14,7 @@ import { countPersonalUsers } from "../../features/general/generalSlice";
 import LoadingBox from "./LoadingBox";
 import NumberFormat from "react-number-format";
 export default function TotalPersonalCustomers(props) {
-  const [loading, setLoading] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const { appError, appPending, totalPersonalUsers } = useSelector(
@@ -24,6 +24,7 @@ export default function TotalPersonalCustomers(props) {
     setLoading(true);
     dispatch(countPersonalUsers());
     setLoading(false);
+    return () => dispatch(countPersonalUsers());
   }, []);
   return (
     <Card {...props}>
@@ -40,7 +41,7 @@ export default function TotalPersonalCustomers(props) {
             </Typography>
             <Typography color="textPrimary" variant="h3">
               {loading ? (
-                <LoadingBox />
+                <span>loading...</span>
               ) : (
                 <NumberFormat
                   value={totalPersonalUsers}

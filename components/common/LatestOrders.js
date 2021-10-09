@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingBox from "./LoadingBox";
-import { getAllPersonal } from "../../features/personal/personalSlice";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,35 +11,45 @@ import Paper from "@mui/material/Paper";
 import Link from "next/link";
 import { Button, CardHeader, Divider } from "@material-ui/core";
 import { DeleteForeverOutlined } from "@material-ui/icons";
+import { getAllProducts } from "../../features/shops/productSlice";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
 
 export default function LatestOrders() {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [allProducts, setAllProducts] = useState({});
   const dispatch = useDispatch();
-  const { personError, personPending, personalAccounts } = useSelector(
-    (state) => state.personal
+  const { productError, productPending, products } = useSelector(
+    (state) => state.products
   );
+  // console.log(products);
   useEffect(() => {
-    setLoading(true);
-    dispatch(getAllPersonal());
+    dispatch(getAllProducts());
+    setAllProducts(products);
     setLoading(false);
-  }, [dispatch, rows]);
+    return () => {
+      dispatch(getAllProducts());
+      allProducts;
+      products;
+      console.log("object");
+    };
+  }, [allProducts]);
   return (
-    <div style={{ height: 400, maxWidth: "100%" }}>
+    <div style={{ maxWidth: "100%" }}>
       <CardHeader title="Latest Products" />
       <Divider className="mb-4" />
       <TableContainer component={Paper}>
-        {Object.keys(personPending).length > 0 && personPending ? (
+        {loading ? (
           <LoadingBox />
         ) : (
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
+                <TableCell align="center" sortDirection="asc">
+                  Name
+                </TableCell>
                 <TableCell align="center">Price</TableCell>
                 <TableCell align="center">Store</TableCell>
                 <TableCell align="center">Category</TableCell>
@@ -50,21 +59,21 @@ export default function LatestOrders() {
             </TableHead>
 
             <TableBody>
-              {Object.keys(personalAccounts).length > 0 &&
-                personalAccounts?.map((row) => (
+              {allProducts &&
+                allProducts?.map((product) => (
                   <TableRow
-                    key={row?.users?.id}
+                    key={product.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row">
-                      {row?.users?.first_name}
+                    <TableCell component="th" scope="row" align="center">
+                      {product.name}
                     </TableCell>
+                    <TableCell align="center">{product.price}</TableCell>
+                    <TableCell align="center">{product.store?.name}</TableCell>
                     <TableCell align="center">
-                      {row?.users?.last_name}
+                      {product.category?.name}
                     </TableCell>
-                    <TableCell align="center">{row?.users?.username}</TableCell>
-                    <TableCell align="center">{row?.users?.phone}</TableCell>
-                    <TableCell align="center">{row?.users?.phone}</TableCell>
+                    <TableCell align="center">{product.currency}</TableCell>
                     <TableCell align="center">
                       <div className="flex">
                         <Button
@@ -74,7 +83,7 @@ export default function LatestOrders() {
                           style={{ marginLeft: 16 }}
                           onClick={() => {}}
                         >
-                          <Link href={`/app/product/${row.users.id}/view`}>
+                          <Link href={`/app/product/${product.id}/view`}>
                             <a>View</a>
                           </Link>
                         </Button>
@@ -86,7 +95,7 @@ export default function LatestOrders() {
                           style={{ marginLeft: 16 }}
                           onClick={() => {}}
                         >
-                          <Link href={`/app/product/${row.users.id}/delete`}>
+                          <Link href={`/app/product/${product.id}/delete`}>
                             <a>Remove</a>
                           </Link>
                         </Button>

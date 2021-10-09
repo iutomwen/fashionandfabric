@@ -10,36 +10,39 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button, CardHeader, Divider } from "@material-ui/core";
+import { Badge } from "@mui/material";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
 
 export default function LatestUsers() {
-  // const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState([]);
+  const [rows, setRows] = useState({});
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { personError, personPending, personalAccounts } = useSelector(
     (state) => state.personal
   );
   useEffect(() => {
     setLoading(true);
-    getData();
+    dispatch(getAllPersonal());
+    setRows(personalAccounts);
     setLoading(false);
-  }, []);
-  async function getData() {
-    const data = await dispatch(getAllPersonal());
-    // console.log(data);
-    return data;
-  }
+    return () => {
+      dispatch(getAllPersonal());
+      personalAccounts;
+      rows;
+      console.log("clean up user..");
+    };
+  }, [rows]);
 
   return (
-    <div className="mt-10" style={{ height: 400, maxWidth: "100%" }}>
+    <div style={{ maxWidth: "100%" }}>
       <CardHeader title="Latest Users" />
       <Divider className="mb-4" />
       {personError && <p>There was an error loading this component</p>}
       <TableContainer component={Paper}>
-        {loading || (personPending && loading) || (personPending && loading) ? (
+        {loading && loading ? (
           <LoadingBox />
         ) : (
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -49,13 +52,14 @@ export default function LatestUsers() {
                 <TableCell align="center">Last Name</TableCell>
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Phone</TableCell>
+                <TableCell align="center">Verification(email)</TableCell>
                 <TableCell align="center">Options</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {Object.keys(personalAccounts).length > 0 &&
-                personalAccounts?.map((row) => (
+              {rows &&
+                rows?.map((row) => (
                   <TableRow
                     key={row?.users?.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -69,6 +73,9 @@ export default function LatestUsers() {
                     <TableCell align="center">{row?.users?.username}</TableCell>
                     <TableCell align="center">{row?.users?.phone}</TableCell>
                     <TableCell align="center">
+                      <Badge badgeContent={`verified`} color="success" />
+                    </TableCell>
+                    <TableCell align="center">
                       <Button
                         variant="contained"
                         color="primary"
@@ -76,7 +83,7 @@ export default function LatestUsers() {
                         style={{ marginLeft: 16 }}
                         onClick={() => {}}
                       >
-                        More Info
+                        View
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -15,7 +15,7 @@ import LoadingBox from "./LoadingBox";
 import NumberFormat from "react-number-format";
 
 export default function TotalBusinessCustomers(props) {
-  const [loading, setLoading] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const { appError, appPending, totalBusinessUsers } = useSelector(
@@ -25,6 +25,7 @@ export default function TotalBusinessCustomers(props) {
     setLoading(true);
     dispatch(countBusinessUsers());
     setLoading(false);
+    return () => dispatch(countBusinessUsers());
   }, []);
   return (
     <Card {...props}>
@@ -40,8 +41,8 @@ export default function TotalBusinessCustomers(props) {
               TOTAL BUSINESS CUSTOMERS
             </Typography>
             <Typography color="textPrimary" variant="h3">
-              {appPending ? (
-                <LoadingBox />
+              {loading ? (
+                <span>loading...</span>
               ) : (
                 <NumberFormat
                   value={totalBusinessUsers}
