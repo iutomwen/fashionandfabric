@@ -13,9 +13,7 @@ import LoadingBox from "../common/LoadingBox";
 export default function AppLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-
   const router = useRouter();
-  // const { userSession, userInfo } = useSelector((state) => state.user);
   const session = supabase.auth.session();
 
   useEffect(() => {
@@ -29,7 +27,6 @@ export default function AppLayout({ children }) {
     }
     if (session) {
       setLoading(true);
-      // dispatch(logoutUser());
       //fill redux with local storage
       dispatch(loadFromLocal({ session }));
       setLoading(false);

@@ -19,7 +19,6 @@ export default function Home() {
   const router = useRouter();
 
   const session = supabase.auth.session();
-  console.log("lol", session);
   useEffect(() => {
     setLoading(true);
     if (!session) {

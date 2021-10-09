@@ -22,7 +22,6 @@ export default function LatestUsers() {
   const { personError, personPending, personalAccounts } = useSelector(
     (state) => state.personal
   );
-
   useEffect(() => {
     setLoading(true);
     getData();
@@ -30,7 +29,7 @@ export default function LatestUsers() {
   }, []);
   async function getData() {
     const data = await dispatch(getAllPersonal());
-    console.log(data);
+    // console.log(data);
     return data;
   }
 

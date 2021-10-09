@@ -64,7 +64,7 @@ export default function Auth() {
         router.push("/app/dashboard");
         setLoading(false);
 
-        console.log("allowed to pass", userInfo);
+        console.log("Allowed to pass");
       }
     }
     setLoading(false);
