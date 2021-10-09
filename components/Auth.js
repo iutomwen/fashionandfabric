@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../libs/supabaseClient";
 import { useDispatch, useSelector } from "react-redux";
 import {
   loadFromLocal,
@@ -20,7 +21,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "./utils/Copyright";
 import MessageBox from "./common/MessageBox";
 import ApplicationLogo from "./common/ApplicationLogo";
-import { supabase } from "../libs/supabaseClient";
+import LoadingBox from "./common/LoadingBox";
 
 const theme = createTheme();
 export default function Auth() {
@@ -35,6 +36,8 @@ export default function Auth() {
   }
   const router = useRouter();
   const [formError, setFormError] = useState({});
+  const [loading, setLoading] = useState(true);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { userInfo, userSession, pending, errorLog } = useSelector(
@@ -45,22 +48,27 @@ export default function Auth() {
   function isValidEmailAddress(address) {
     return !!address.match(/.+@.+/);
   }
-
   const session = supabase.auth.session();
   useEffect(() => {
-    if (session) {
-      //fill redux with local storage
-      dispatch(loadFromLocal({ session }));
-    }
-    if (userInfo && userSession.user && session) {
-      router.push("/app/dashboard");
-      console.log("allowed to pass", userInfo);
-    }
+    setLoading(true);
     if (!session) {
       dispatch(logoutUser());
       console.log("user signed out");
+      setLoading(false);
     }
-  }, [session]);
+    if (session) {
+      //fill redux with local storage
+      dispatch(loadFromLocal({ session }));
+
+      if (userSession && session) {
+        router.push("/app/dashboard");
+        setLoading(false);
+
+        console.log("allowed to pass", userInfo);
+      }
+    }
+    setLoading(false);
+  }, [session, userSession]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -79,15 +87,16 @@ export default function Auth() {
       return;
     }
     dispatch(userLogin({ email, password }));
-    if (userSession.user) {
+    if (userSession) {
       router.push("/app/dashboard");
     }
 
-    setFormError({});
+    // setFormError({});
   };
 
   return (
     <ThemeProvider theme={theme}>
+      {loading && <LoadingBox />}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -145,10 +154,10 @@ export default function Auth() {
               fullWidth
               className="bg-[#995d46]"
               variant="contained"
-              disabled={pending}
+              disabled={pending || loading}
               sx={{ mt: 3, mb: 2 }}
             >
-              <span>{pending ? "Loading" : "Sign In"}</span>
+              <span>{pending || loading ? "Loading" : "Sign In"}</span>
             </Button>
             {errorLog?.status && (
               <MessageBox types="error">

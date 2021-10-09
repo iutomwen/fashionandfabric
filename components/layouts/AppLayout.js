@@ -7,11 +7,7 @@ import GlobalStyles from "../common/GlobalStyles";
 import theme from "./theme";
 import DashboardLayout from "./DashboardLayout";
 import { useRouter } from "next/router";
-import {
-  loadFromLocal,
-  logoutUser,
-  userDetails,
-} from "../../features/user/userSlice";
+import { loadFromLocal, logoutUser } from "../../features/user/userSlice";
 import LoadingBox from "../common/LoadingBox";
 
 export default function AppLayout({ children }) {
@@ -19,27 +15,11 @@ export default function AppLayout({ children }) {
   const dispatch = useDispatch();
 
   const router = useRouter();
-  const { userSession, userInfo } = useSelector((state) => state.user);
+  // const { userSession, userInfo } = useSelector((state) => state.user);
   const session = supabase.auth.session();
-  //   console.log("session: ", session);
-  async function checkUser() {
-    const user = await supabase.auth.user();
-    // console.log("user", user);
-    if (!user) {
-      dispatch(logoutUser());
-    }
-  }
+
   useEffect(() => {
     setLoading(true);
-    if (session) {
-      setLoading(true);
-
-      // dispatch(logoutUser());
-      //fill redux with local storage
-      checkUser();
-      dispatch(loadFromLocal({ session }));
-      setLoading(false);
-    }
     if (!session) {
       setLoading(true);
       dispatch(logoutUser());
@@ -47,6 +27,14 @@ export default function AppLayout({ children }) {
       setLoading(false);
       console.log("user logged out");
     }
+    if (session) {
+      setLoading(true);
+      // dispatch(logoutUser());
+      //fill redux with local storage
+      dispatch(loadFromLocal({ session }));
+      setLoading(false);
+    }
+
     setLoading(false);
   }, [session]);
 

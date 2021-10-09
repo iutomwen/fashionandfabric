@@ -11,7 +11,8 @@ export const getAllPersonal = createAsyncThunk(
         users:user_id (id, first_name,username, last_name,phone) `
       )
       .eq("role", "personal")
-      .range(0, 9);
+      .neq("role", "admin");
+    // .range(0, 9);
     if (typeof window !== "undefined") {
       localStorage.setItem("personalAccounts", JSON.stringify(user_roles));
     }
@@ -20,7 +21,7 @@ export const getAllPersonal = createAsyncThunk(
 );
 const initialState = {
   personalAccounts: {},
-  personError: {},
+  personError: null,
   personPending: false,
 };
 
