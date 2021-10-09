@@ -61,7 +61,7 @@ export default function LatestOrders() {
             </TableHead>
 
             <TableBody>
-              {allProducts.map((product) => (
+              {products.map((product) => (
                 <TableRow
                   key={product.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
