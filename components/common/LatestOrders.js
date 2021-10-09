@@ -24,10 +24,8 @@ export default function LatestOrders() {
   const { productError, productPending, products } = useSelector(
     (state) => state.products
   );
-  // console.log(products);
   useEffect(() => {
     dispatch(getAllProducts());
-    // setAllProducts(products);
     setLoading(false);
     return () => dispatch(getAllProducts());
   }, []);

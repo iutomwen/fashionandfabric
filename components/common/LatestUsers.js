@@ -26,15 +26,10 @@ export default function LatestUsers() {
   useEffect(() => {
     setLoading(true);
     dispatch(getAllPersonal());
-    setRows(personalAccounts);
+    // setRows(personalAccounts);
     setLoading(false);
-    return () => {
-      dispatch(getAllPersonal());
-      personalAccounts;
-      rows;
-      console.log("clean up user..");
-    };
-  }, [rows]);
+    return () => dispatch(getAllPersonal());
+  }, []);
 
   return (
     <div style={{ maxWidth: "100%" }}>
@@ -58,8 +53,8 @@ export default function LatestUsers() {
             </TableHead>
 
             <TableBody>
-              {rows &&
-                rows?.map((row) => (
+              {personalAccounts &&
+                personalAccounts?.map((row) => (
                   <TableRow
                     key={row?.users?.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
