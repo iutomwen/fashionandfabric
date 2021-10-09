@@ -37,7 +37,7 @@ export default function LatestOrders() {
     //     console.log("object");
     //   }
     // };
-  }, []);
+  }, [products]);
   return (
     <div style={{ maxWidth: "100%" }}>
       <CardHeader title="Latest Products" />
