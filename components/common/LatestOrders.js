@@ -30,10 +30,12 @@ export default function LatestOrders() {
     setAllProducts(products);
     setLoading(false);
     return () => {
-      // dispatch(getAllProducts());
-      allProducts;
-      products;
-      console.log("object");
+      if (allProducts) {
+        dispatch(getAllProducts());
+        allProducts;
+        products;
+        console.log("object");
+      }
     };
   }, []);
   return (
