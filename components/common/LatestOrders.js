@@ -30,7 +30,7 @@ export default function LatestOrders() {
     // setAllProducts(products);
     setLoading(false);
     return () => dispatch(getAllProducts());
-  }, [products]);
+  }, []);
   return (
     <div style={{ maxWidth: "100%" }}>
       <CardHeader title="Latest Products" />
