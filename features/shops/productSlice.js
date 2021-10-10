@@ -20,9 +20,9 @@ export const getAllProducts = createAsyncThunk(
 );
 
 const initialState = {
-  products: {},
+  allProducts: {},
   productError: null,
-  productPending: false,
+  productPending: true,
 };
 
 export const productSlice = createSlice({
@@ -35,7 +35,7 @@ export const productSlice = createSlice({
     },
     [getAllProducts.fulfilled]: (state, { payload }) => {
       state.productPending = false;
-      state.products = payload;
+      state.allProducts = payload;
     },
     [getAllProducts.rejected]: (state, { payload }) => {
       state.productPending = false;

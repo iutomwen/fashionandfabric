@@ -19,20 +19,13 @@ export default function LatestUsers() {
     (state) => state.personal
   );
   useEffect(() => {
-    // setLoading(true);
     dispatch(getAllPersonal());
-    // if (!personPending) {
-    //   setRows(personalAccounts);
-    //   setLoading(false);
-    // }
-
-    // return () => dispatch(getAllPersonal());
+    return () => dispatch(getAllPersonal());
   }, []);
-  console.log("redux", personalAccounts);
-  console.log("pending", personPending);
+
   return (
     <div style={{ maxWidth: "100%" }}>
-      {personPending && "loaii"}
+      {personPending && <LoadingBox />}
       <CardHeader title="Latest Users" />
       <Divider className="mb-4" />
 
