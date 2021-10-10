@@ -35,7 +35,8 @@ export default function LatestUsers() {
       {personPending && "loaii"}
       <CardHeader title="Latest Users" />
       <Divider className="mb-4" />
-      {personPending}
+      {!personPending &&
+        personalAccounts.map((data, i) => <p key={i}>{data.users.id}</p>)}
     </div>
   );
 }
