@@ -35,8 +35,54 @@ export default function LatestUsers() {
       {personPending && "loaii"}
       <CardHeader title="Latest Users" />
       <Divider className="mb-4" />
-      {!personPending &&
-        personalAccounts.map((data, i) => <p key={i}>{data.users.id}</p>)}
+
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>First Name</TableCell>
+              <TableCell align="center">Last Name</TableCell>
+              <TableCell align="center">Email</TableCell>
+              <TableCell align="center">Phone</TableCell>
+              <TableCell align="center">Verification(email)</TableCell>
+              <TableCell align="center">Options</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {!personPending &&
+              personalAccounts.map((data, i) => (
+                <TableRow
+                  key={i}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    {data.users?.first_name}
+                  </TableCell>
+                  <TableCell align="center">{data.users?.last_name}</TableCell>
+                  <TableCell align="center">{data.users?.username}</TableCell>
+                  <TableCell align="center">{data.users?.phone}</TableCell>
+                  <TableCell align="center">
+                    <Badge badgeContent={`verified`} color="success" />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      style={{ marginLeft: 16 }}
+                      onClick={() => {}}
+                    >
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
