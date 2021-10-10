@@ -7,7 +7,7 @@ import productReducer from "./shops/productSlice";
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    personal: personalReducer,
+    users: personalReducer,
     general: generalReducer,
     products: productReducer,
   },

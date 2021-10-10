@@ -30,8 +30,6 @@ export default function AppLayout({ children }) {
       setLoading(true);
       //fill redux with local storage
       dispatch(loadFromLocal({ session }));
-      // dispatch(getAllPersonal());
-      // dispatch(getAllProducts());
       setLoading(false);
     }
 

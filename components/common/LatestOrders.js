@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProducts } from "../../features/shops/productSlice";
+import { setProducts } from "../../features/shops/productSlice";
 import LoadingBox from "./LoadingBox";
 import Link from "next/link";
 import Table from "@mui/material/Table";
@@ -16,7 +16,9 @@ import { supabase } from "../../libs/supabaseClient";
 
 export default function LatestOrders() {
   const [loading, setLoading] = useState(true);
-  const [allProducts, setAllProducts] = useState([]);
+  const dispatch = useDispatch();
+  const { products } = useSelector((state) => state.products);
+
   useEffect(() => {
     async function getProducts() {
       try {
@@ -28,10 +30,11 @@ export default function LatestOrders() {
     sub_category:subCategory_id(name)
     `);
         if (error) throw error;
-        setAllProducts(product);
-        return product;
+        if (product) {
+          dispatch(setProducts(product));
+        }
       } catch (error) {
-        console.log(err);
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -62,7 +65,7 @@ export default function LatestOrders() {
 
           <TableBody>
             {!loading &&
-              allProducts?.map((product, i) => (
+              products?.map((product, i) => (
                 <TableRow
                   key={i}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

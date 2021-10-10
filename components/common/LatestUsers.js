@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingBox from "./LoadingBox";
-import { getAllPersonal } from "../../features/personal/personalSlice";
+import { setUsers } from "../../features/personal/personalSlice";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -10,8 +10,37 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Badge, Button, CardHeader, Divider } from "@mui/material";
+import { supabase } from "../../libs/supabaseClient";
 
-export default function LatestUsers({ loading, users }) {
+export default function LatestUsers() {
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { users } = useSelector((state) => state.users);
+  useEffect(() => {
+    async function getUsers() {
+      try {
+        setLoading(true);
+        let { data: user_roles, error } = await supabase
+          .from("user_roles")
+          .select(
+            ` 
+        users:user_id (id, first_name, username, last_name, phone) `
+          )
+          .eq("role", "personal")
+          .neq("role", "admin");
+        if (error) throw error;
+        if (user_roles) {
+          dispatch(setUsers(user_roles));
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getUsers();
+    return () => getUsers();
+  }, []);
   return (
     <div style={{ maxWidth: "100%" }}>
       {loading && <LoadingBox />}

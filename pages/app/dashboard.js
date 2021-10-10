@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "../../libs/supabaseClient";
+import React from "react";
+
 import AppLayout from "../../components/layouts/AppLayout";
 
 import { Box, Container, Grid } from "@material-ui/core";
@@ -11,23 +11,8 @@ import LatestOrders from "../../components/common/LatestOrders";
 import LatestUsers from "../../components/common/LatestUsers";
 import Head from "next/head";
 import { APPNAME } from "../../libs/constant";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllPersonal } from "../../features/personal/personalSlice";
-import { getAllProducts } from "../../features/shops/productSlice";
-export default function Dashboard() {
-  // const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
 
-  const { error, loading, personal } = useSelector((state) => state.personal);
-  // const { productError, productPending, allProducts } = products;
-  // useEffect(() => {
-  //   dispatch(getAllPersonal());
-  //   dispatch(getAllProducts());
-  //   return () => {
-  //     dispatch(getAllPersonal());
-  //     dispatch(getAllProducts());
-  //   };
-  // }, [personal]);
+export default function Dashboard() {
   return (
     <>
       <Head>
@@ -62,7 +47,7 @@ export default function Dashboard() {
                 <LatestOrders />
               </Grid>
               <Grid item lg={12} md={12} xl={12} xs={12}>
-                <LatestUsers users={personal} loading={loading} />
+                <LatestUsers />
               </Grid>
             </Grid>
           </Container>
