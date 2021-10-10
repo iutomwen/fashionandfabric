@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { supabase } from "../../libs/supabaseClient";
 import { getAllPersonal } from "../personal/personalSlice";
+import { getAllProducts } from "../shops/productSlice";
 
 export const loadFromLocal = createAsyncThunk(
   "user/loadFromLocal",
@@ -10,6 +11,10 @@ export const loadFromLocal = createAsyncThunk(
     if (session) {
       const { id } = session.user;
       dispatch(userDetails({ id }));
+      dispatch(getAllPersonal());
+      // dispatch(getAllProducts());
+      // if (getState().personal.allProducts) {
+      // }
       // getState().user.userSession= session
     }
     return session;
@@ -26,6 +31,7 @@ export const userLogin = createAsyncThunk(
       const { id } = user;
       dispatch(userDetails({ id }));
       dispatch(getAllPersonal());
+      // dispatch(getAllProducts());
       //set localstorage to save data locally
       if (typeof window !== "undefined") {
         localStorage.setItem("userSession", JSON.stringify(user));

@@ -9,6 +9,8 @@ import DashboardLayout from "./DashboardLayout";
 import { useRouter } from "next/router";
 import { loadFromLocal, logoutUser } from "../../features/user/userSlice";
 import LoadingBox from "../common/LoadingBox";
+import { getAllPersonal } from "../../features/personal/personalSlice";
+import { getAllProducts } from "../../features/shops/productSlice";
 
 export default function AppLayout({ children }) {
   const [loading, setLoading] = useState(true);
@@ -28,6 +30,8 @@ export default function AppLayout({ children }) {
       setLoading(true);
       //fill redux with local storage
       dispatch(loadFromLocal({ session }));
+      // dispatch(getAllPersonal());
+      // dispatch(getAllProducts());
       setLoading(false);
     }
 

@@ -16,30 +16,30 @@ export const getAllPersonal = createAsyncThunk(
     // if (typeof window !== "undefined") {
     //   localStorage.setItem("personalAccounts", JSON.stringify(user_roles));
     // }
+    // dispatch(getAllProducts());
     return user_roles;
   }
 );
 const initialState = {
-  personalAccounts: {},
-  personError: null,
-  personPending: true,
+  personal: [],
+  error: null,
+  loading: true,
 };
 
 export const personalSlice = createSlice({
   name: "personal",
   initialState,
-  reducers: {},
   extraReducers: {
     [getAllPersonal.pending]: (state) => {
-      state.personPending = true;
+      state.loading = true;
     },
     [getAllPersonal.fulfilled]: (state, { payload }) => {
-      state.personPending = false;
-      state.personalAccounts = payload;
+      state.loading = false;
+      state.personal = payload;
     },
     [getAllPersonal.rejected]: (state, { payload }) => {
-      state.personPending = false;
-      state.personError = payload;
+      state.loading = false;
+      state.error = payload;
     },
   },
 });

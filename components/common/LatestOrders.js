@@ -12,26 +12,37 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button, CardHeader, Divider } from "@material-ui/core";
 import { DeleteForeverOutlined } from "@material-ui/icons";
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+import { supabase } from "../../libs/supabaseClient";
 
 export default function LatestOrders() {
   const [loading, setLoading] = useState(true);
-  // const [allProducts, setAllProducts] = useState({});
-  const dispatch = useDispatch();
-  const { productError, productPending, allProducts } = useSelector(
-    (state) => state.products
-  );
+  const [allProducts, setAllProducts] = useState([]);
   useEffect(() => {
-    dispatch(getAllProducts());
-    // setLoading(false);
-    return () => dispatch(getAllProducts());
+    async function getProducts() {
+      try {
+        setLoading(true);
+        let { data: product, error } = await supabase.from("product").select(`
+    approved, currency, name, price,id,
+    store:store_id(name),
+    category:category_id(name),
+    sub_category:subCategory_id(name)
+    `);
+        if (error) throw error;
+        setAllProducts(product);
+        return product;
+      } catch (error) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getProducts();
+    return () => getProducts();
   }, []);
+
   return (
     <div style={{ maxWidth: "100%" }}>
-      {productPending && <LoadingBox />}
+      {loading && <LoadingBox />}
       <CardHeader title="Latest Products" />
       <Divider className="mb-4" />
       <TableContainer component={Paper}>
@@ -50,8 +61,8 @@ export default function LatestOrders() {
           </TableHead>
 
           <TableBody>
-            {!productPending &&
-              allProducts.map((product, i) => (
+            {!loading &&
+              allProducts?.map((product, i) => (
                 <TableRow
                   key={i}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

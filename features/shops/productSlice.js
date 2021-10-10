@@ -20,26 +20,25 @@ export const getAllProducts = createAsyncThunk(
 );
 
 const initialState = {
-  allProducts: {},
-  productError: null,
-  productPending: true,
+  products: [],
+  error: null,
+  loading: true,
 };
 
 export const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
   extraReducers: {
     [getAllProducts.pending]: (state) => {
-      state.productPending = true;
+      state.loading = true;
     },
     [getAllProducts.fulfilled]: (state, { payload }) => {
-      state.productPending = false;
-      state.allProducts = payload;
+      state.loading = false;
+      state.products = payload;
     },
     [getAllProducts.rejected]: (state, { payload }) => {
-      state.productPending = false;
-      state.productError = payload;
+      state.loading = false;
+      state.error = payload;
     },
   },
 });

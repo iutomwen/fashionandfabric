@@ -11,21 +11,10 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Badge, Button, CardHeader, Divider } from "@mui/material";
 
-export default function LatestUsers() {
-  const [rows, setRows] = useState({});
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  const { personError, personPending, personalAccounts } = useSelector(
-    (state) => state.personal
-  );
-  useEffect(() => {
-    dispatch(getAllPersonal());
-    return () => dispatch(getAllPersonal());
-  }, []);
-
+export default function LatestUsers({ loading, users }) {
   return (
     <div style={{ maxWidth: "100%" }}>
-      {personPending && <LoadingBox />}
+      {loading && <LoadingBox />}
       <CardHeader title="Latest Users" />
       <Divider className="mb-4" />
 
@@ -43,8 +32,8 @@ export default function LatestUsers() {
           </TableHead>
 
           <TableBody>
-            {!personPending &&
-              personalAccounts.map((data, i) => (
+            {!loading &&
+              users.map((data, i) => (
                 <TableRow
                   key={i}
                   sx={{
