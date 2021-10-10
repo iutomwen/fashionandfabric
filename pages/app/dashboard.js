@@ -44,10 +44,10 @@ export default function Dashboard() {
               </Grid>
               {/* <Grid item lg={12} md={12} xl={12} xs={12}>
                 <LatestOrders />
-              </Grid>
+              </Grid>*/}
               <Grid item lg={12} md={12} xl={12} xs={12}>
                 <LatestUsers />
-              </Grid> */}
+              </Grid>
             </Grid>
           </Container>
         </Box>

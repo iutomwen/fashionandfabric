@@ -3,26 +3,26 @@ import { supabase } from "../../libs/supabaseClient";
 
 export const getAllPersonal = createAsyncThunk(
   "user/getAllPersonal",
-  async (data, { dispatch, getState }) => {
+  async () => {
     let { data: user_roles, error } = await supabase
       .from("user_roles")
       .select(
         ` 
-        users:user_id (id, first_name,username, last_name,phone) `
+        users:user_id (id, first_name, username, last_name, phone) `
       )
       .eq("role", "personal")
       .neq("role", "admin");
-    // .range(0, 9);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("personalAccounts", JSON.stringify(user_roles));
-    }
+    if (error) throw error;
+    // if (typeof window !== "undefined") {
+    //   localStorage.setItem("personalAccounts", JSON.stringify(user_roles));
+    // }
     return user_roles;
   }
 );
 const initialState = {
   personalAccounts: {},
   personError: null,
-  personPending: false,
+  personPending: true,
 };
 
 export const personalSlice = createSlice({
