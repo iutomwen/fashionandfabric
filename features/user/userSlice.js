@@ -25,6 +25,18 @@ export const userLogin = createAsyncThunk(
     });
     if (user) {
       const { id } = user;
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", id)
+        .single();
+      const { role } = data;
+      console.log("log: ", role);
+      if (role === "personal" || role === "business") {
+        const { error } = await supabase.auth.signOut();
+        localStorage.clear();
+      }
+
       dispatch(userDetails({ id }));
       //set localstorage to save data locally
       if (typeof window !== "undefined") {
@@ -43,18 +55,48 @@ export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
 
 export const userRegistration = createAsyncThunk(
   "user/userRegistration",
-  async ({ email, password }) => {
-    const { user, session, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-    if (user) {
-      const { id } = user;
-      dispatch(userDetails({ id }));
-      //set localstorage to save data locally
-      if (typeof window !== "undefined") {
-        localStorage.setItem("userSession", JSON.stringify(user));
+  async ({ email, password, firstName, lastName, role }) => {
+    const { user, session, error } = await supabase.auth.signUp(
+      {
+        email: email,
+        password: password,
+      },
+      {
+        data: {
+          firstName,
+          lastName,
+          role,
+        },
       }
+    );
+
+    console.log(error);
+    if (error) throw error;
+    if (!error && user) {
+      // console.log("userlog: ", user.id);
+      const { data, error } = await supabase
+        .from("user_roles")
+        .update({ role: role })
+        .eq("user_id", user.id);
+      if (data) {
+        //check if user.role is staff
+        if (role == "staff") {
+          const { id } = user;
+          dispatch(userDetails({ id }));
+          // if (typeof window !== "undefined") {
+          //   localStorage.setItem("userSession", JSON.stringify(user));
+          // }
+        }
+        if (role === "personal" || role === "business") {
+          supabase.auth.signOut();
+          return {
+            message: "Account Created",
+            status: 201,
+          };
+        }
+      }
+
+      //set localstorage to save data locally
     }
     return { error, user, session };
   }

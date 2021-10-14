@@ -30,6 +30,7 @@ export default function LatestOrders() {
     sub_category:subCategory_id(name)
     `);
         if (error) throw error;
+        //console.log(product);
         if (product) {
           dispatch(setProducts(product));
         }
@@ -75,8 +76,10 @@ export default function LatestOrders() {
                   </TableCell>
                   <TableCell align="center">{product.price}</TableCell>
                   <TableCell align="center">{product.store?.name}</TableCell>
-                  <TableCell align="center">{product.category?.name}</TableCell>
-                  <TableCell align="center">{product.currency}</TableCell>
+                  <TableCell align="center">{product.category.name}</TableCell>
+                  <TableCell align="center">
+                    {product.approved ? "Approved" : "Not Approved"}
+                  </TableCell>
                   <TableCell align="center">
                     <div className="flex">
                       <Button

@@ -1,6 +1,6 @@
-import { Box, Container, Grid } from "@material-ui/core";
 import React from "react";
-import LatestOrders from "../../../components/common/LatestOrders";
+import { supabase } from "../../../libs/supabaseClient";
+import { Box, Container, Grid } from "@material-ui/core";
 import LatestUsers from "../../../components/common/LatestUsers";
 import AppLayout from "../../../components/layouts/AppLayout";
 
@@ -19,8 +19,7 @@ function Index() {
         <Container maxWidth={false}>
           <Grid className="h-screen" container spacing={3}>
             <Grid item lg={12} md={12} xl={12} xs={12}>
-              {/* <LatestUsers /> */}
-              <LatestOrders />
+              <LatestUsers userType="personal" />
             </Grid>
           </Grid>
         </Container>

@@ -9,10 +9,13 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Badge, Button, CardHeader, Divider } from "@mui/material";
+import { Button, CardHeader, Divider } from "@material-ui/core";
+import Link from "next/link";
+
+import { Badge } from "@mui/material";
 import { supabase } from "../../libs/supabaseClient";
 
-export default function LatestUsers() {
+export default function LatestUsers({ userType }) {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.users);
@@ -26,8 +29,7 @@ export default function LatestUsers() {
             ` 
         users:user_id (id, first_name, username, last_name, phone) `
           )
-          .eq("role", "personal")
-          .neq("role", "admin");
+          .eq("role", userType);
         if (error) throw error;
         if (user_roles) {
           dispatch(setUsers(user_roles));
@@ -40,18 +42,19 @@ export default function LatestUsers() {
     }
     getUsers();
     return () => getUsers();
-  }, []);
+  }, [userType]);
+
   return (
     <div style={{ maxWidth: "100%" }}>
       {loading && <LoadingBox />}
-      <CardHeader title="Latest Users" />
+      <CardHeader title={`Latest ${userType}`} />
       <Divider className="mb-4" />
 
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>First Name</TableCell>
+              <TableCell align="left">First Name</TableCell>
               <TableCell align="center">Last Name</TableCell>
               <TableCell align="center">Email</TableCell>
               <TableCell align="center">Phone</TableCell>
@@ -74,7 +77,7 @@ export default function LatestUsers() {
                   </TableCell>
                   <TableCell align="center">{data.users?.last_name}</TableCell>
                   <TableCell align="center">{data.users?.username}</TableCell>
-                  <TableCell align="center">{data.users?.phone}</TableCell>
+                  <TableCell align="center">{data.users?.id}</TableCell>
                   <TableCell align="center">
                     <Badge badgeContent={`verified`} color="success" />
                   </TableCell>
@@ -83,10 +86,15 @@ export default function LatestUsers() {
                       variant="contained"
                       color="primary"
                       size="small"
-                      style={{ marginLeft: 16 }}
-                      onClick={() => {}}
+                      style={{
+                        marginLeft: 16,
+                      }}
                     >
-                      View
+                      <Link href={`/app/${userType}/${data.users.id}/view`}>
+                        <a>
+                          <span className="text-xs"> View Profile</span>
+                        </a>
+                      </Link>
                     </Button>
                   </TableCell>
                 </TableRow>

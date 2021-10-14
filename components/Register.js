@@ -22,12 +22,19 @@ import MessageBox from "./common/MessageBox";
 import ApplicationLogo from "./common/ApplicationLogo";
 import { supabase } from "../libs/supabaseClient";
 import LoadingBox from "../components/common/LoadingBox";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
 
 const theme = createTheme();
 export default function Register() {
   const [formError, setFormError] = useState({});
+  const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const dispatch = useDispatch();
@@ -37,9 +44,9 @@ export default function Register() {
   const { userInfo, userSession, pending, errorLog } = useSelector(
     (state) => state.user
   );
-  console.log("info :", userInfo);
+  // console.log("info :", userInfo);
   console.log("session :", userSession);
-  console.log("error :", errorLog);
+  // console.log("error :", errorLog);
   function isValidEmailAddress(address) {
     return !!address.match(/.+@.+/);
   }
@@ -59,11 +66,15 @@ export default function Register() {
       });
       return;
     }
-    dispatch(userRegistration({ email, password }));
+    dispatch(userRegistration({ email, password, role, firstName, lastName }));
     setFormError({});
-    dispatch(userLogin({ email, password }));
-    if (userSession.user) {
-      router.push("/app/dashboard");
+    if (role == "staff") {
+      dispatch(userLogin({ email, password }));
+      if (userSession.user) {
+        router.push("/app/dashboard");
+      }
+    } else {
+      setMsg("Account Created");
     }
   };
   useEffect(() => {
@@ -118,6 +129,30 @@ export default function Register() {
                   margin="normal"
                   required
                   fullWidth
+                  id="firstName"
+                  label="First Name"
+                  name="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  autoComplete="firstName"
+                  autoFocus
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="lastName"
+                  label="Last Name"
+                  name="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  autoComplete="lastName"
+                  autoFocus
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
                   id="email"
                   label="Email Address"
                   name="email"
@@ -138,10 +173,20 @@ export default function Register() {
                   id="password"
                   autoComplete="current-password"
                 />
-                {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
+                <InputLabel id="role-select-input">Role</InputLabel>
+                <Select
+                  required
+                  fullWidth
+                  labelId="role"
+                  id="role-select"
+                  value={role}
+                  label="Role"
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <MenuItem value={`personal`}>Personal</MenuItem>
+                  <MenuItem value={`business`}>Business</MenuItem>
+                  <MenuItem value={`staff`}>Staff</MenuItem>
+                </Select>
                 <Button
                   type="submit"
                   fullWidth
@@ -165,6 +210,7 @@ export default function Register() {
                     {`Thanks for registering, now check your email to complete the process.`}
                   </MessageBox>
                 )}
+                {msg && <MessageBox types="success">{msg}</MessageBox>}
                 <Grid container>
                   <Grid item xs>
                     <Link href="/login" variant="body2">
