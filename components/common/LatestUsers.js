@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import LoadingBox from "./LoadingBox";
-import { setUsers } from "../../features/personal/personalSlice";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -17,8 +15,8 @@ import { supabase } from "../../libs/supabaseClient";
 
 export default function LatestUsers({ userType }) {
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  const { users } = useSelector((state) => state.users);
+  const [users, setUsers] = useState(null);
+
   useEffect(() => {
     async function getUsers() {
       try {
@@ -32,7 +30,7 @@ export default function LatestUsers({ userType }) {
           .eq("role", userType);
         if (error) throw error;
         if (user_roles) {
-          dispatch(setUsers(user_roles));
+          setUsers(user_roles);
         }
       } catch (error) {
         console.log(error);
@@ -41,8 +39,10 @@ export default function LatestUsers({ userType }) {
       }
     }
     getUsers();
-    return () => getUsers();
-  }, [userType]);
+    // return () => {
+    //   user_roles.unsubscribe();
+    // };
+  }, []);
 
   return (
     <div style={{ maxWidth: "100%" }}>

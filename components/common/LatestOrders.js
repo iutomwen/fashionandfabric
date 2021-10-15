@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setProducts } from "../../features/shops/productSlice";
 import LoadingBox from "./LoadingBox";
 import Link from "next/link";
 import Table from "@mui/material/Table";
@@ -16,9 +14,7 @@ import { supabase } from "../../libs/supabaseClient";
 
 export default function LatestOrders() {
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.products);
-
+  const [products, setProducts] = useState(null);
   useEffect(() => {
     async function getProducts() {
       try {
@@ -30,9 +26,8 @@ export default function LatestOrders() {
     sub_category:subCategory_id(name)
     `);
         if (error) throw error;
-        //console.log(product);
         if (product) {
-          dispatch(setProducts(product));
+          setProducts(product);
         }
       } catch (error) {
         console.log(error);
@@ -41,7 +36,9 @@ export default function LatestOrders() {
       }
     }
     getProducts();
-    return () => getProducts();
+    // return () => {
+    //   product.unsubscribe();
+    // };
   }, []);
 
   return (

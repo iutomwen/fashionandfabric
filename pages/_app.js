@@ -1,11 +1,10 @@
 import "tailwindcss/tailwind.css";
-import { store } from "../features/store";
-import { Provider } from "react-redux";
+import { StoreProvider } from "../utils/Store";
 function MyApp({ Component, pageProps }) {
   return (
-    <Provider store={store}>
+    <StoreProvider>
       <Component {...pageProps} />
-    </Provider>
+    </StoreProvider>
   );
 }
 

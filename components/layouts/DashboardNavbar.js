@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import {
   AppBar,
@@ -14,23 +13,30 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/NotificationsOutlined";
 import InputIcon from "@material-ui/icons/Input";
 import Logo from "../common/ApplicationLogo";
-import { logoutUser } from "../../features/user/userSlice";
 import { useRouter } from "next/router";
+import { supabase } from "../../libs/supabaseClient";
+import Cookies from "js-cookie";
+import { Store } from "../../utils/Store";
 
 const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   const [notifications, setNotification] = useState([]);
-  const dispatch = useDispatch();
+  const { dispatch } = useContext(Store);
+
   const router = useRouter();
-  function signOutUser() {
-    dispatch(logoutUser());
+  async function signOutUser() {
+    const { error } = await supabase.auth.signOut();
+    Cookies.remove("accountDetails");
+    Cookies.remove("accountSession");
+    dispatch({ type: "USER_LOGOUT" });
+    localStorage.clear();
     router.push("/login");
+    return;
   }
   return (
     <AppBar elevation={3} {...rest}>
       <Toolbar className="flex justify-between bg-gray-300">
         <Link href="/">
           <a>
-            {" "}
             <Logo width={70} height={70} />
           </a>
         </Link>

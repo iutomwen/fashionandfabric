@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import { APPNAME } from "../libs/constant";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  loadFromLocal,
-  userLogin,
-  userRegistration,
-} from "../features/user/userSlice";
+
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -25,11 +20,16 @@ import LoadingBox from "../components/common/LoadingBox";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
+import { Store } from "../utils/Store";
 
 const theme = createTheme();
 export default function Register() {
+  const { state, dispatch } = useContext(Store);
+  const { accountDetails, accountSession } = state;
+  const [pending, setPending] = useState(false);
+
   const [formError, setFormError] = useState({});
-  const [msg, setMsg] = useState(null);
+  const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -37,20 +37,11 @@ export default function Register() {
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const dispatch = useDispatch();
 
-  const session = supabase.auth.session();
-
-  const { userInfo, userSession, pending, errorLog } = useSelector(
-    (state) => state.user
-  );
-  // console.log("info :", userInfo);
-  console.log("session :", userSession);
-  // console.log("error :", errorLog);
   function isValidEmailAddress(address) {
     return !!address.match(/.+@.+/);
   }
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!password || !email) {
       setFormError({
@@ -66,30 +57,75 @@ export default function Register() {
       });
       return;
     }
-    dispatch(userRegistration({ email, password, role, firstName, lastName }));
-    setFormError({});
-    if (role == "staff") {
-      dispatch(userLogin({ email, password }));
-      if (userSession.user) {
-        router.push("/app/dashboard");
+    dispatch({ type: "USER_REGISTER" });
+    try {
+      const { user, session, error } = await supabase.auth.signUp(
+        {
+          email: email,
+          password: password,
+        },
+        {
+          data: {
+            firstName,
+            lastName,
+            role,
+          },
+        }
+      );
+
+      if (error) throw error;
+      const { app: data, errors } = await supabase
+        .from("user_roles")
+        .update({ role: role })
+        .eq("user_id", user.id);
+      if (role === "personal" || role === "business") {
+        supabase.auth.signOut();
+        console.log("block login");
+        dispatch({ type: "USER_LOGOUT" });
+        localStorage.clear();
+        setMessage({
+          message: "Account Created",
+          status: 201,
+          type: "success",
+        });
+        return;
       }
-    } else {
-      setMsg("Account Created");
+
+      if (role == "staff") {
+        let { data: users } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", id)
+          .single();
+        setMessage(null);
+        dispatch({ type: "ACCOUNTSESSION", payload: session });
+        dispatch({ type: "ACCOUNTDETAILS", payload: users });
+        console.log("admin pass");
+        // router.push("/app/dashboard");
+      }
+    } catch (error) {
+      setMessage({
+        message: error.message || error.error_description,
+        status: 400,
+        type: "warning",
+      });
+    } finally {
+      setFormError({});
     }
   };
   useEffect(() => {
     setLoading(true);
-    if (session) {
-      //fill redux with local storage
-      dispatch(loadFromLocal({ session }));
-    }
-    if (userInfo && userSession.user && session) {
-      router.push("/app/dashboard");
-      console.log("allowed to pass");
-      setLoading(false);
+
+    if (accountDetails && accountSession) {
+      console.log("allow");
+      //router.push("/app/dashboard");
     }
     setLoading(false);
-  }, [session, userInfo]);
+    return () => {
+      !accountDetails;
+      !accountSession;
+    };
+  }, [accountDetails, accountSession]);
 
   return (
     <>
@@ -197,31 +233,24 @@ export default function Register() {
                 >
                   <span>{pending ? "Loading" : "Sign Up"}</span>
                 </Button>
-                {errorLog?.status && (
-                  <MessageBox types="error"> {errorLog.message} </MessageBox>
+                {message?.status && (
+                  <MessageBox types={message.type}>
+                    {" "}
+                    {message.message}{" "}
+                  </MessageBox>
                 )}
                 {formError.emailError && (
                   <MessageBox types="warning">
                     {formError.emailError}
                   </MessageBox>
                 )}
-                {!errorLog && (
-                  <MessageBox types="success">
-                    {`Thanks for registering, now check your email to complete the process.`}
-                  </MessageBox>
-                )}
-                {msg && <MessageBox types="success">{msg}</MessageBox>}
                 <Grid container>
                   <Grid item xs>
                     <Link href="/login" variant="body2">
                       <a>Already have an account? </a>
                     </Link>
                   </Grid>
-                  <Grid item>
-                    {/* <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link> */}
-                  </Grid>
+                  <Grid item></Grid>
                 </Grid>
               </Box>
             </Box>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import {
@@ -13,16 +13,16 @@ import {
 } from "@material-ui/core";
 import NavItem from "./NavItem";
 import { menuItems } from "../../libs/menuItems";
-import { useSelector } from "react-redux";
+import { Store } from "../../utils/Store";
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {
   //   const location = useLocation();
-  const { userInfo } = useSelector((state) => state.user);
-  // console.log("data", userInfo);
+  const { state } = useContext(Store);
+  const { accountDetails } = state;
   const user = {
     avatar: "/assets/images/avatars/avatar_6.png",
-    jobTitle: userInfo?.username,
-    name: `${userInfo?.first_name} ${userInfo?.last_name}`,
+    jobTitle: accountDetails?.username,
+    name: `${accountDetails?.first_name} ${accountDetails?.last_name}`,
   };
   const router = useRouter();
   useEffect(() => {

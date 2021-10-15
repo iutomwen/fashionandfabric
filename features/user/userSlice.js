@@ -10,6 +10,22 @@ export const loadFromLocal = createAsyncThunk(
 
     if (session) {
       const { id } = session.user;
+
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", id)
+        .single();
+      const { role } = data;
+      // console.log("log: ", role);
+      if (role === "personal" || role === "business") {
+        const { error } = await supabase.auth.signOut();
+        localStorage.clear();
+        return {
+          message: "This user does not have the right access",
+          status: 401,
+        };
+      }
       dispatch(userDetails({ id }));
       // getState().user.userSession= session
     }
@@ -31,10 +47,14 @@ export const userLogin = createAsyncThunk(
         .eq("user_id", id)
         .single();
       const { role } = data;
-      console.log("log: ", role);
+      // console.log("log: ", role);
       if (role === "personal" || role === "business") {
         const { error } = await supabase.auth.signOut();
         localStorage.clear();
+        return {
+          message: "This user does not have the right access",
+          status: 401,
+        };
       }
 
       dispatch(userDetails({ id }));

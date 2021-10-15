@@ -9,22 +9,39 @@ import {
 import { green } from "@material-ui/core/colors";
 import PeopleIcon from "@material-ui/icons/PeopleOutlined";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { countPersonalUsers } from "../../features/general/generalSlice";
-import LoadingBox from "./LoadingBox";
 import NumberFormat from "react-number-format";
+import { supabase } from "../../libs/supabaseClient";
 export default function TotalPersonalCustomers(props) {
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-
-  const { appError, appPending, totalPersonalUsers } = useSelector(
-    (state) => state.general
-  );
+  const [totalCount, setTotalCount] = useState(0);
   useEffect(() => {
     setLoading(true);
-    dispatch(countPersonalUsers());
-    setLoading(false);
-    return () => dispatch(countPersonalUsers());
+    async function countItem() {
+      try {
+        const {
+          data: user_roles,
+          error,
+          count,
+        } = await supabase
+          .from("user_roles")
+          .select(
+            ` *,
+    users:user_id (id) `,
+            { count: "exact", head: true }
+          )
+          .eq("role", "personal");
+        if (error) throw error;
+        setTotalCount(count);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    countItem();
+    // return () => {
+    //   !count;
+    // };
   }, []);
   return (
     <Card {...props}>
@@ -36,15 +53,15 @@ export default function TotalPersonalCustomers(props) {
           sx={{ justifyContent: "space-between" }}
         >
           <Grid item>
-            <Typography color="textSecondary" gutterBottom variant="h6">
+            <Typography color="textSecondary" gutterBottom variant="h5">
               TOTAL PERSONAL CUSTOMERS
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h6">
               {loading ? (
                 <span>loading...</span>
               ) : (
                 <NumberFormat
-                  value={totalPersonalUsers}
+                  value={totalCount}
                   displayType={"text"}
                   thousandSeparator={true}
                 />

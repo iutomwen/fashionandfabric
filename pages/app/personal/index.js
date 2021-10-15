@@ -3,6 +3,7 @@ import { supabase } from "../../../libs/supabaseClient";
 import { Box, Container, Grid } from "@material-ui/core";
 import LatestUsers from "../../../components/common/LatestUsers";
 import AppLayout from "../../../components/layouts/AppLayout";
+import { Button } from "@mui/material";
 
 function Index() {
   return (
@@ -17,6 +18,13 @@ function Index() {
         }}
       >
         <Container maxWidth={false}>
+          <div className="flex w-full items-end ">
+            <div className=" ">
+              <Button variant="outlined" fullWidth>
+                Create New
+              </Button>
+            </div>
+          </div>
           <Grid className="h-screen" container spacing={3}>
             <Grid item lg={12} md={12} xl={12} xs={12}>
               <LatestUsers userType="personal" />

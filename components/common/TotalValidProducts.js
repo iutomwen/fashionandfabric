@@ -22,10 +22,10 @@ function TotalValidProducts(props) {
           sx={{ justifyContent: "space-between" }}
         >
           <Grid item>
-            <Typography color="textSecondary" gutterBottom variant="h6">
+            <Typography color="textSecondary" gutterBottom variant="h5">
               TOTAL PRODUCTS
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h6">
               1,600
             </Typography>
           </Grid>

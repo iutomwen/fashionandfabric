@@ -9,23 +9,40 @@ import {
 import { green } from "@material-ui/core/colors";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { countBusinessUsers } from "../../features/general/generalSlice";
-import LoadingBox from "./LoadingBox";
+
 import NumberFormat from "react-number-format";
+import { supabase } from "../../libs/supabaseClient";
 
 export default function TotalBusinessCustomers(props) {
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
+  const [totalCount, setTotalCount] = useState(0);
 
-  const { appError, appPending, totalBusinessUsers } = useSelector(
-    (state) => state.general
-  );
   useEffect(() => {
     setLoading(true);
-    dispatch(countBusinessUsers());
-    setLoading(false);
-    return () => dispatch(countBusinessUsers());
+    async function countItem() {
+      try {
+        const { data: error, count } = await supabase
+          .from("user_roles")
+          .select(
+            ` *,
+    users:user_id (id) `,
+            { count: "exact", head: true }
+          )
+          .eq("role", "business");
+        if (error) throw error;
+        if (count) {
+          setTotalCount(count);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    countItem();
+    // return () => {
+    //   !count;
+    // };
   }, []);
   return (
     <Card {...props}>
@@ -37,15 +54,15 @@ export default function TotalBusinessCustomers(props) {
           sx={{ justifyContent: "space-between" }}
         >
           <Grid item>
-            <Typography color="textSecondary" gutterBottom variant="h6">
+            <Typography color="textSecondary" gutterBottom variant="h5">
               TOTAL BUSINESS CUSTOMERS
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h6">
               {loading ? (
                 <span>loading...</span>
               ) : (
                 <NumberFormat
-                  value={totalBusinessUsers}
+                  value={totalCount}
                   displayType={"text"}
                   thousandSeparator={true}
                 />

@@ -1,18 +1,25 @@
-import { useDispatch } from "react-redux";
-import { logoutUser } from "../../features/user/userSlice";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { Button, ListItem } from "@material-ui/core";
 import Badge from "@mui/material/Badge";
+import { supabase } from "../../libs/supabaseClient";
+import Cookies from "js-cookie";
+import { useContext } from "react";
+import { Store } from "../../utils/Store";
 const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
+  const { dispatch } = useContext(Store);
+
   const router = useRouter();
   const active = router.pathname;
-  const dispatch = useDispatch();
-  function signOutUser() {
-    console.log("pressed");
-    dispatch(logoutUser());
+  async function signOutUser() {
+    const { error } = await supabase.auth.signOut();
+    Cookies.remove("accountDetails");
+    Cookies.remove("accountSession");
+    dispatch({ type: "USER_LOGOUT" });
+    localStorage.clear();
     router.push("/login");
+    return;
   }
   return (
     <ListItem
