@@ -34,7 +34,7 @@ export const menuItems = [
     title: "Business Accounts",
   },
   {
-    href: "/app/products",
+    href: "/app/product",
     icon: ShoppingBagIcon,
     title: "Products",
     badge: 2,

@@ -11,7 +11,6 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "./utils/Copyright";
 import MessageBox from "./common/MessageBox";
 import ApplicationLogo from "./common/ApplicationLogo";
@@ -22,7 +21,6 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import { Store } from "../utils/Store";
 
-const theme = createTheme();
 export default function Register() {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
@@ -133,131 +131,128 @@ export default function Register() {
         <title>{APPNAME} - Login</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-      <ThemeProvider theme={theme}>
-        {loading ? (
-          <LoadingBox />
-        ) : (
-          <Container component="main" maxWidth="xs">
-            <CssBaseline />
+
+      {loading ? (
+        <LoadingBox />
+      ) : (
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              marginTop: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Link href="/">
+              <a>
+                <ApplicationLogo />
+              </a>
+            </Link>
+            <Typography component="h1" variant="h5">
+              Register Here
+            </Typography>
             <Box
-              sx={{
-                marginTop: 3,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
+              component="form"
+              onSubmit={handleLogin}
+              noValidate
+              sx={{ mt: 1 }}
             >
-              <Link href="/">
-                <a>
-                  <ApplicationLogo />
-                </a>
-              </Link>
-              <Typography component="h1" variant="h5">
-                Register Here
-              </Typography>
-              <Box
-                component="form"
-                onSubmit={handleLogin}
-                noValidate
-                sx={{ mt: 1 }}
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                name="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                autoComplete="firstName"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                autoComplete="lastName"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                id="password"
+                autoComplete="current-password"
+              />
+              <InputLabel id="role-select-input">Role</InputLabel>
+              <Select
+                required
+                fullWidth
+                labelId="role"
+                id="role-select"
+                value={role}
+                label="Role"
+                onChange={(e) => setRole(e.target.value)}
               >
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  name="firstName"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  autoComplete="firstName"
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  autoComplete="lastName"
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  id="password"
-                  autoComplete="current-password"
-                />
-                <InputLabel id="role-select-input">Role</InputLabel>
-                <Select
-                  required
-                  fullWidth
-                  labelId="role"
-                  id="role-select"
-                  value={role}
-                  label="Role"
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <MenuItem value={`personal`}>Personal</MenuItem>
-                  <MenuItem value={`business`}>Business</MenuItem>
-                  <MenuItem value={`staff`}>Staff</MenuItem>
-                </Select>
-                <Button
-                  type="submit"
-                  fullWidth
-                  className="bg-[#995d46]"
-                  variant="contained"
-                  disabled={pending}
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  <span>{pending ? "Loading" : "Sign Up"}</span>
-                </Button>
-                {message?.status && (
-                  <MessageBox types={message.type}>
-                    {" "}
-                    {message.message}{" "}
-                  </MessageBox>
-                )}
-                {formError.emailError && (
-                  <MessageBox types="warning">
-                    {formError.emailError}
-                  </MessageBox>
-                )}
-                <Grid container>
-                  <Grid item xs>
-                    <Link href="/login" variant="body2">
-                      <a>Already have an account? </a>
-                    </Link>
-                  </Grid>
-                  <Grid item></Grid>
+                <MenuItem value={`personal`}>Personal</MenuItem>
+                <MenuItem value={`business`}>Business</MenuItem>
+                <MenuItem value={`staff`}>Staff</MenuItem>
+              </Select>
+              <Button
+                type="submit"
+                fullWidth
+                className="bg-[#995d46]"
+                variant="contained"
+                disabled={pending}
+                sx={{ mt: 3, mb: 2 }}
+              >
+                <span>{pending ? "Loading" : "Sign Up"}</span>
+              </Button>
+              {message?.status && (
+                <MessageBox types={message.type}>
+                  {" "}
+                  {message.message}{" "}
+                </MessageBox>
+              )}
+              {formError.emailError && (
+                <MessageBox types="warning">{formError.emailError}</MessageBox>
+              )}
+              <Grid container>
+                <Grid item xs>
+                  <Link href="/login" variant="body2">
+                    <a>Already have an account? </a>
+                  </Link>
                 </Grid>
-              </Box>
+                <Grid item></Grid>
+              </Grid>
             </Box>
-            <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
-          </Container>
-        )}
-      </ThemeProvider>
+          </Box>
+          <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
+        </Container>
+      )}
     </>
   );
 }

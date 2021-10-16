@@ -78,7 +78,7 @@ export default function LatestOrders() {
                     {product.approved ? "Approved" : "Not Approved"}
                   </TableCell>
                   <TableCell align="center">
-                    <div className="flex">
+                    <div className="flex items-center justify-center">
                       <Button
                         variant="contained"
                         color="primary"

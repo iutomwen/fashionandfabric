@@ -1,8 +1,9 @@
+import { Button, Container, Grid } from "@mui/material";
+import { Box } from "@mui/system";
 import React from "react";
-import { Box, Container, Grid } from "@material-ui/core";
-import LatestUsers from "../../../components/common/LatestUsers";
+import Link from "next/link";
+import LatestOrders from "../../../components/common/LatestOrders";
 import AppLayout from "../../../components/layouts/AppLayout";
-import { Button } from "@mui/material";
 
 function Index() {
   return (
@@ -17,16 +18,22 @@ function Index() {
         }}
       >
         <Container maxWidth={false}>
-          <div className="flex w-full items-end ">
-            <div className=" ">
-              <Button variant="outlined" fullWidth>
-                Create New
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              p: 2,
+            }}
+          >
+            <Link href="/app/product/create">
+              <Button variant="outlined">
+                <a>Create New</a>
               </Button>
-            </div>
-          </div>
+            </Link>
+          </Box>
           <Grid className="h-screen" container spacing={3}>
             <Grid item lg={12} md={12} xl={12} xs={12}>
-              <LatestUsers userType="personal" />
+              <LatestOrders />
             </Grid>
           </Grid>
         </Container>

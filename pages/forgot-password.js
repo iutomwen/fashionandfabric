@@ -9,7 +9,6 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Copyright from "../components/utils/Copyright";
 import MessageBox from "../components/common/MessageBox";
 import ApplicationLogo from "../components/common/ApplicationLogo";
@@ -18,7 +17,6 @@ import { Store } from "../utils/Store";
 import LoadingBox from "../components/common/LoadingBox";
 import { useRouter } from "next/router";
 
-const theme = createTheme();
 export default function Auth() {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
@@ -73,77 +71,73 @@ export default function Auth() {
         <title>{APPNAME} - Password Reset</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-      <ThemeProvider theme={theme}>
-        {loading ? (
-          <LoadingBox />
-        ) : (
-          <Container component="main" maxWidth="xs">
-            <CssBaseline />
+      {loading ? (
+        <LoadingBox />
+      ) : (
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              marginTop: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Link href="/">
+              <a>
+                <ApplicationLogo />
+              </a>
+            </Link>
+            <Typography component="h1" variant="h5">
+              Reset Password
+            </Typography>
             <Box
-              sx={{
-                marginTop: 3,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
+              component="form"
+              onSubmit={handleRestPassword}
+              noValidate
+              sx={{ mt: 1 }}
             >
-              <Link href="/">
-                <a>
-                  <ApplicationLogo />
-                </a>
-              </Link>
-              <Typography component="h1" variant="h5">
-                Reset Password
-              </Typography>
-              <Box
-                component="form"
-                onSubmit={handleRestPassword}
-                noValidate
-                sx={{ mt: 1 }}
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoFocus
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                className="bg-[#995d46]"
+                variant="contained"
+                disabled={pending}
+                sx={{ mt: 3, mb: 2 }}
               >
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  autoFocus
-                />
+                <span>{pending ? "Please wait..." : "Reset Password"}</span>
+              </Button>
+              {message?.status && (
+                <MessageBox types={message.type}>{message?.message}</MessageBox>
+              )}
 
-                <Button
-                  type="submit"
-                  fullWidth
-                  className="bg-[#995d46]"
-                  variant="contained"
-                  disabled={pending}
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  <span>{pending ? "Please wait..." : "Reset Password"}</span>
-                </Button>
-                {message?.status && (
-                  <MessageBox types={message.type}>
-                    {message?.message}
-                  </MessageBox>
-                )}
-
-                <Grid container>
-                  <Grid item xs>
-                    <Link href="/login" variant="body2">
-                      <a>Login?</a>
-                    </Link>
-                  </Grid>
-                  <Grid item>{""}</Grid>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="/login" variant="body2">
+                    <a>Login?</a>
+                  </Link>
                 </Grid>
-              </Box>
+                <Grid item>{""}</Grid>
+              </Grid>
             </Box>
-            <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
-          </Container>
-        )}
-      </ThemeProvider>
+          </Box>
+          <Copyright sx={{ mt: 8, mb: 4, bottom: 0 }} />
+        </Container>
+      )}
     </>
   );
 }

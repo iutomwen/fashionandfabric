@@ -16,6 +16,7 @@ import { supabase } from "../../libs/supabaseClient";
 export default function LatestUsers({ userType }) {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
+  const [errors, setErrors] = useState(null);
 
   useEffect(() => {
     async function getUsers() {
@@ -33,6 +34,7 @@ export default function LatestUsers({ userType }) {
           setUsers(user_roles);
         }
       } catch (error) {
+        setErrors(error);
         console.log(error);
       } finally {
         setLoading(false);
@@ -46,7 +48,6 @@ export default function LatestUsers({ userType }) {
 
   return (
     <div style={{ maxWidth: "100%" }}>
-      {loading && <LoadingBox />}
       <CardHeader title={`Latest ${userType}`} />
       <Divider className="mb-4" />
 
@@ -64,41 +65,45 @@ export default function LatestUsers({ userType }) {
           </TableHead>
 
           <TableBody>
-            {!loading &&
-              users.map((data, i) => (
-                <TableRow
-                  key={i}
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                  }}
-                >
-                  <TableCell component="th" scope="row">
-                    {data.users?.first_name}
-                  </TableCell>
-                  <TableCell align="center">{data.users?.last_name}</TableCell>
-                  <TableCell align="center">{data.users?.username}</TableCell>
-                  <TableCell align="center">{data.users?.id}</TableCell>
-                  <TableCell align="center">
-                    <Badge badgeContent={`verified`} color="success" />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      style={{
-                        marginLeft: 16,
-                      }}
-                    >
-                      <Link href={`/app/${userType}/${data.users.id}/view`}>
-                        <a>
-                          <span className="text-xs"> View Profile</span>
-                        </a>
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {errors
+              ? errors.message
+              : !loading &&
+                users.map((data, i) => (
+                  <TableRow
+                    key={i}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {data.users?.first_name}
+                    </TableCell>
+                    <TableCell align="center">
+                      {data.users?.last_name}
+                    </TableCell>
+                    <TableCell align="center">{data.users?.username}</TableCell>
+                    <TableCell align="center">{data.users?.id}</TableCell>
+                    <TableCell align="center">
+                      <Badge badgeContent={`verified`} color="success" />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        style={{
+                          marginLeft: 16,
+                        }}
+                      >
+                        <Link href={`/app/${userType}/${data.users.id}/view`}>
+                          <a>
+                            <span className="text-xs"> View Profile</span>
+                          </a>
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>
