@@ -20,7 +20,7 @@ const SubcriptionTab = (props) => (
         sx={{ justifyContent: "space-between" }}
       >
         <Grid item>
-          <Typography color="textSecondary" gutterBottom variant="h5">
+          <Typography color="textSecondary" gutterBottom variant="h6">
             SUBCRIPTIONS
           </Typography>
           <Typography color="textPrimary" variant="h6">

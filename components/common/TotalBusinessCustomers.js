@@ -54,8 +54,8 @@ export default function TotalBusinessCustomers(props) {
           sx={{ justifyContent: "space-between" }}
         >
           <Grid item>
-            <Typography color="textSecondary" gutterBottom variant="h5">
-              TOTAL BUSINESS CUSTOMERS
+            <Typography color="textSecondary" gutterBottom variant="h6">
+              BUSINESS USERS
             </Typography>
             <Typography color="textPrimary" variant="h6">
               {loading ? (

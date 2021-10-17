@@ -98,7 +98,9 @@ export default function Auth() {
           .single();
         setError(null);
         dispatch({ type: "ACCOUNTSESSION", payload: session });
+        Cookies.set("accountSession", JSON.stringify(session));
         dispatch({ type: "ACCOUNTDETAILS", payload: users });
+        Cookies.set("accountDetails", JSON.stringify(users));
       }
       return { error, user, session };
     } catch (error) {

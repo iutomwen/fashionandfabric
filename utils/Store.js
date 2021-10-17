@@ -18,9 +18,14 @@ const initialState = {
   businessUsers: null,
   personalUsers: null,
   appSettings: null,
-  appSubcriptions: null,
+  appSubcriptions: Cookies.get("appSubcriptions")
+    ? JSON.parse(Cookies.get("appSubcriptions"))
+    : null,
   products: null,
-  shops: null,
+  shops: Cookies.get("shops") ? JSON.parse(Cookies.get("shops")) : null,
+  categories: Cookies.get("categories")
+    ? JSON.parse(Cookies.get("categories"))
+    : null,
 };
 
 function reducer(state, action) {
@@ -31,7 +36,11 @@ function reducer(state, action) {
     case "USER_LOGOUT":
       Cookies.remove("accountDetails");
       Cookies.remove("accountSession");
-      Cookies.remove();
+      Cookies.remove("isLogin");
+      Cookies.remove("isRegister");
+      Cookies.remove("categories");
+      Cookies.remove("appSubcriptions");
+      Cookies.remove("shops");
       localStorage.clear();
       return {
         ...state,
@@ -48,17 +57,22 @@ function reducer(state, action) {
         appSubcriptions: null,
         products: null,
         shops: null,
+        categories: null,
       };
     case "USER_REGISTER":
       Cookies.set("isLogin", true);
       Cookies.set("isRegister", true);
       return { ...state, isLogin: true, isRegister: true };
     case "ACCOUNTDETAILS":
-      Cookies.set("accountDetails", JSON.stringify(action.payload));
       return { ...state, accountDetails: action.payload };
     case "ACCOUNTSESSION":
-      Cookies.set("accountSession", JSON.stringify(action.payload));
       return { ...state, accountSession: action.payload };
+    case "LOAD_ALL_CATEGORY":
+      return { ...state, categories: action.payload };
+    case "LOAD_ALL_SUBCRIPTION":
+      return { ...state, appSubcriptions: action.payload };
+    case "LOAD_ALL_SHOPS":
+      return { ...state, shops: action.payload };
 
     default:
       return state;
