@@ -20,41 +20,54 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import { Store } from "../utils/Store";
+import { Controller, useForm } from "react-hook-form";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import { Alert } from "@mui/material";
 
 export default function Register() {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+  const [openState, setOpenState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
   const [pending, setPending] = useState(false);
-
-  const [formError, setFormError] = useState({});
+  const { vertical, horizontal, open } = openState;
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState("");
-  const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [formError, setFormError] = useState({});
+  // const [firstName, setFirstName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  // const [role, setRole] = useState("");
+  // const [password, setPassword] = useState("");
   const router = useRouter();
+  const handleClick = (newState) => {
+    setOpenState({ open: true, ...newState });
+  };
 
-  function isValidEmailAddress(address) {
-    return !!address.match(/.+@.+/);
-  }
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!password || !email) {
-      setFormError({
-        emailError: "Please Enter Email and Password to continue.",
-        passwordError: "",
-      });
+  const handleClose = (event, reason, newState) => {
+    if (reason === "clickaway") {
       return;
     }
-    if (!isValidEmailAddress(email)) {
-      setFormError({
-        emailError: "Invalid Email Address",
-        passwordError: "",
-      });
-      return;
-    }
+
+    setOpenState({ open: false, ...newState });
+  };
+  const handleLogin = async ({
+    email,
+    firstName,
+    lastName,
+    role,
+    password,
+  }) => {
     dispatch({ type: "USER_REGISTER" });
     try {
       const { user, session, error } = await supabase.auth.signUp(
@@ -81,6 +94,7 @@ export default function Register() {
         console.log("block login");
         dispatch({ type: "USER_LOGOUT" });
         localStorage.clear();
+        handleClick({ vertical: "bottom", horizontal: "center" });
         setMessage({
           message: "Account Created",
           status: 201,
@@ -102,13 +116,13 @@ export default function Register() {
         // router.push("/app/dashboard");
       }
     } catch (error) {
+      handleClick({ vertical: "bottom", horizontal: "center" });
       setMessage({
         message: error.message || error.error_description,
         status: 400,
         type: "warning",
       });
     } finally {
-      setFormError({});
     }
   };
   useEffect(() => {
@@ -124,14 +138,42 @@ export default function Register() {
       !accountSession;
     };
   }, [accountDetails, accountSession]);
-
+  const action = (
+    <>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
   return (
     <>
       <Head>
         <title>{APPNAME} - Login</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        action={action}
+        key={vertical + horizontal}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={message?.type}
+          sx={{ width: "100%" }}
+        >
+          {message?.message}
+        </Alert>
+      </Snackbar>
       {loading ? (
         <LoadingBox />
       ) : (
@@ -155,98 +197,179 @@ export default function Register() {
             </Typography>
             <Box
               component="form"
-              onSubmit={handleLogin}
+              onSubmit={handleSubmit(handleLogin)}
               noValidate
               sx={{ mt: 1 }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                name="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                autoComplete="firstName"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                autoComplete="lastName"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                id="password"
-                autoComplete="current-password"
-              />
-              <InputLabel id="role-select-input">Role</InputLabel>
-              <Select
-                required
-                fullWidth
-                labelId="role"
-                id="role-select"
-                value={role}
-                label="Role"
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <MenuItem value={`personal`}>Personal</MenuItem>
-                <MenuItem value={`business`}>Business</MenuItem>
-                <MenuItem value={`staff`}>Staff</MenuItem>
-              </Select>
-              <Button
-                type="submit"
-                fullWidth
-                className="bg-[#995d46]"
-                variant="contained"
-                disabled={pending}
-                sx={{ mt: 3, mb: 2 }}
-              >
-                <span>{pending ? "Loading" : "Sign Up"}</span>
-              </Button>
-              {message?.status && (
-                <MessageBox types={message.type}>
-                  {" "}
-                  {message.message}{" "}
-                </MessageBox>
-              )}
-              {formError.emailError && (
-                <MessageBox types="warning">{formError.emailError}</MessageBox>
-              )}
-              <Grid container>
-                <Grid item xs>
-                  <Link href="/login" variant="body2">
-                    <a>Already have an account? </a>
-                  </Link>
+              <Grid container spacing={3}>
+                <Grid item md={12} xs={12}>
+                  <Controller
+                    name="firstName"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      minLength: 3,
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        id="firstName"
+                        label="First Name"
+                        autoFocus
+                        error={Boolean(errors.firstName)}
+                        helperText={
+                          errors.firstName
+                            ? errors.firstName.type === "pattern"
+                              ? "Min chars is 3"
+                              : "First name is required"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    )}
+                  ></Controller>
                 </Grid>
-                <Grid item></Grid>
+                <Grid item md={12} xs={12}>
+                  <Controller
+                    name="lastName"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      minLength: 3,
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        id="lastName"
+                        label="Last Name"
+                        autoFocus
+                        error={Boolean(errors.lastName)}
+                        helperText={
+                          errors.lastName
+                            ? errors.lastName.type === "pattern"
+                              ? "Min chars is 3"
+                              : "Last name is required"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    )}
+                  ></Controller>
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <Controller
+                    name="email"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        inputProps={{ type: "email" }}
+                        error={Boolean(errors.email)}
+                        helperText={
+                          errors.email
+                            ? errors.email.type === "pattern"
+                              ? "Invalid email address"
+                              : "Email address is required"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    )}
+                  ></Controller>
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <Controller
+                    name="password"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      minLength: 6,
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        id="password"
+                        label="Password"
+                        inputProps={{ type: "password" }}
+                        error={Boolean(errors.password)}
+                        helperText={
+                          errors.password
+                            ? errors.password.type === "minLength"
+                              ? "Password lenght is too short"
+                              : "Password is required"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    )}
+                  ></Controller>
+                </Grid>
+
+                <Grid item md={12} xs={12}>
+                  {/* <InputLabel id="role-select-input">Role</InputLabel> */}
+                  <Controller
+                    name="role"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      minLength: 1,
+                    }}
+                    render={({ field }) => (
+                      <Select
+                        fullWidth
+                        labelId="role"
+                        id="role"
+                        label="Role"
+                        SelectProps={{ native: true }}
+                        error={Boolean(errors.role)}
+                        helperText={
+                          errors.role
+                            ? errors.role.type === "minLength"
+                              ? "Please select a Role"
+                              : "Role is required"
+                            : ""
+                        }
+                        {...field}
+                      >
+                        <MenuItem value={`personal`}>Personal</MenuItem>
+                        <MenuItem value={`business`}>Business</MenuItem>
+                        <MenuItem value={`staff`}>Staff</MenuItem>
+                      </Select>
+                    )}
+                  ></Controller>
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    disabled={pending}
+                    sx={{ mt: 0, mb: 2 }}
+                  >
+                    <span>{pending ? "Loading" : "Sign Up"}</span>
+                  </Button>
+                </Grid>
+
+                <Grid container>
+                  <Grid item xs>
+                    <Link href="/login" variant="body2">
+                      <a>Already have an account? </a>
+                    </Link>
+                  </Grid>
+                  <Grid item></Grid>
+                </Grid>
               </Grid>
             </Box>
           </Box>

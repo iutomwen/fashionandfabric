@@ -14,30 +14,47 @@ function AppLayout(props, { user }) {
   const router = useRouter();
   const { accountDetails, accountSession } = state;
   const logoutUser = async () => {
-    const { error } = await supabase.auth.signOut();
-    console.log("am here");
-    Cookies.remove("accountDetails");
-    Cookies.remove("accountSession");
-    dispatch({ type: "USER_LOGOUT" });
-    localStorage.clear();
-    router.push("/login");
-    return;
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      console.log("am here");
+      Cookies.remove("accountDetails");
+      Cookies.remove("accountSession");
+      dispatch({ type: "USER_LOGOUT" });
+      localStorage.clear();
+      router.push("/login");
+      return;
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const checkUserRole = async () => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", session.user.id)
-      .single();
-    const { role } = data;
-    if (role === "personal" || role === "business") {
+  const checkUserRole = async (id) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", id)
+        .single();
+      if (error) throw error;
+      const { role } = data;
+      if (role === "personal" || role === "business") {
+        logoutUser();
+        return;
+      }
+      return role;
+    } catch (error) {
+      console.log(error);
       logoutUser();
       return;
+    } finally {
+      setLoading(false);
     }
-    return role;
   };
 
   async function getCategory() {
+    setLoading(true);
+
     try {
       let { data: category, error } = await supabase
         .from("category")
@@ -90,7 +107,7 @@ function AppLayout(props, { user }) {
   const userRoles = supabase
     .from("*")
     .on("*", (payload) => {
-      console.log("Change received!", payload);
+      // console.log("Change received!", payload);
       setGetPayoad(payload);
     })
     .subscribe();
@@ -115,9 +132,9 @@ function AppLayout(props, { user }) {
     }
     //check if its the right user
     if (session) {
-      checkUserRole();
+      const { id } = session.user;
+      checkUserRole(id);
       //load the componenet needed for this app to render
-      //get all category
       getCategory();
       getSubcriptions();
       getStores();

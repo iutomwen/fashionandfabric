@@ -16,15 +16,43 @@ import { supabase } from "../libs/supabaseClient";
 import { Store } from "../utils/Store";
 import LoadingBox from "../components/common/LoadingBox";
 import { useRouter } from "next/router";
-
+import { Controller, useForm } from "react-hook-form";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import { Alert } from "@mui/material";
 export default function Auth() {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+  const [openState, setOpenState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+
+  // const [error, setError] = useState(null);
+  // const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [email, setEmail] = useState("");
   const [message, setMessage] = useState(null);
   const [pending, setPending] = useState(false);
+  const { vertical, horizontal, open } = openState;
+  const handleClick = (newState) => {
+    setOpenState({ open: true, ...newState });
+  };
+
+  const handleClose = (event, reason, newState) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenState({ open: false, ...newState });
+  };
   useEffect(() => {
     setLoading(true);
     if (accountDetails && accountSession) {
@@ -37,8 +65,7 @@ export default function Auth() {
       !accountSession;
     };
   }, []);
-  const handleRestPassword = async (e) => {
-    e.preventDefault();
+  const handleRestPassword = async ({ email }) => {
     setPending(true);
     try {
       const { data, error } = await supabase.auth.api.resetPasswordForEmail(
@@ -46,6 +73,7 @@ export default function Auth() {
       );
       if (error) throw error;
       if (data) {
+        handleClick({ vertical: "bottom", horizontal: "center" });
         setMessage({
           message: "A reset mail has been sent",
           status: 200,
@@ -54,23 +82,52 @@ export default function Auth() {
         console.log(data);
       }
     } catch (error) {
+      handleClick({ vertical: "bottom", horizontal: "center" });
       setMessage({
         message: error.message || error.error_description,
         status: 404,
         type: "warning",
       });
     } finally {
-      setEmail("");
       setPending(false);
     }
   };
-
+  const action = (
+    <>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
   return (
     <>
       <Head>
         <title>{APPNAME} - Password Reset</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        action={action}
+        key={vertical + horizontal}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={message?.type}
+          sx={{ width: "100%" }}
+        >
+          {message?.message}
+        </Alert>
+      </Snackbar>
       {loading ? (
         <LoadingBox />
       ) : (
@@ -94,36 +151,47 @@ export default function Auth() {
             </Typography>
             <Box
               component="form"
-              onSubmit={handleRestPassword}
+              onSubmit={handleSubmit(handleRestPassword)}
               noValidate
               sx={{ mt: 1 }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
+              <Controller
                 name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                autoFocus
-              />
-
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: true,
+                  pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                }}
+                render={({ field }) => (
+                  <TextField
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    autoComplete="email"
+                    autoFocus
+                    inputProps={{ type: "email" }}
+                    error={Boolean(errors.email)}
+                    helperText={
+                      errors.email
+                        ? errors.email.type === "pattern"
+                          ? "Invalid email address"
+                          : "Email address is required"
+                        : ""
+                    }
+                    {...field}
+                  />
+                )}
+              ></Controller>
               <Button
                 type="submit"
                 fullWidth
-                className="bg-[#995d46]"
                 variant="contained"
                 disabled={pending}
                 sx={{ mt: 3, mb: 2 }}
               >
                 <span>{pending ? "Please wait..." : "Reset Password"}</span>
               </Button>
-              {message?.status && (
-                <MessageBox types={message.type}>{message?.message}</MessageBox>
-              )}
 
               <Grid container>
                 <Grid item xs>

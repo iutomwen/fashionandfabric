@@ -21,10 +21,15 @@ function Index() {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               p: 2,
             }}
           >
+            <Link href="/app/product/create">
+              <Button variant="outlined">
+                <a>Create</a>
+              </Button>
+            </Link>
             <Link href="/app/product/create">
               <Button variant="outlined">
                 <a>Create New</a>

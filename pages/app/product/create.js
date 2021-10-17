@@ -19,8 +19,10 @@ import { Store } from "../../../utils/Store";
 import { supabase } from "../../../libs/supabaseClient";
 import LoadingBox from "../../../components/common/LoadingBox";
 import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 function CreateProduct() {
   const { state, dispatch } = useContext(Store);
+  const router = useRouter();
   const {
     handleSubmit,
     control,
@@ -64,6 +66,7 @@ function CreateProduct() {
       getSub(cat);
       setShow(true);
     }
+    return () => !cat;
   }, [cat]);
 
   const SubmitHandler = async ({
@@ -74,8 +77,34 @@ function CreateProduct() {
     category,
     subcategory,
   }) => {
-    // e.preventDefault();
-    // setPageLoading(true);
+    setPageLoading(true);
+    try {
+      const { data, error } = await supabase.from("product").insert(
+        [
+          {
+            name,
+            description,
+            price,
+            store_id: store,
+            subCategory_id: subcategory,
+            category_id: category,
+            approved: false,
+            created_at: new Date(),
+            currency: "USD",
+          },
+        ],
+        { upsert: true, returning: "minimal" }
+      );
+
+      if (error) throw error;
+      if (data) {
+        router.push("/app/product");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPageLoading(false);
+    }
   };
 
   return (
@@ -318,6 +347,15 @@ function CreateProduct() {
                               ></Controller>
                             )}
                           </div>
+                        </Grid>
+                        <Grid item md={6} xs={12}>
+                          <TextField
+                            inputProps={{ type: "file" }}
+                            required
+                            fullWidth
+                            id="files"
+                            label="File Upload"
+                          />
                         </Grid>
                       </Grid>
                     </CardContent>

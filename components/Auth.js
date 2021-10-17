@@ -19,22 +19,41 @@ import ApplicationLogo from "./common/ApplicationLogo";
 import LoadingBox from "./common/LoadingBox";
 import { Store } from "../utils/Store";
 import Cookies from "js-cookie";
-
+import { Controller, useForm } from "react-hook-form";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import { Alert } from "@mui/material";
 export default function Auth() {
   const { state, dispatch } = useContext(Store);
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
   const { accountDetails, accountSession } = state;
+  const [openState, setOpenState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+
   const [error, setError] = useState(null);
   const router = useRouter();
-  const [formError, setFormError] = useState({});
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
+  const { vertical, horizontal, open } = openState;
+  const handleClick = (newState) => {
+    setOpenState({ open: true, ...newState });
+  };
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const handleClose = (event, reason, newState) => {
+    if (reason === "clickaway") {
+      return;
+    }
 
-  function isValidEmailAddress(address) {
-    return !!address.match(/.+@.+/);
-  }
+    setOpenState({ open: false, ...newState });
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -49,27 +68,12 @@ export default function Auth() {
     };
   }, [accountDetails, accountSession]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async ({ email, password }) => {
     setPending(true);
-    if (!password || !email) {
-      setFormError({
-        emailError: "Please Enter Email and Password to continue.",
-        passwordError: "",
-      });
-      return;
-    }
-    if (!isValidEmailAddress(email)) {
-      setFormError({
-        emailError: "Invalid Email Address",
-        passwordError: "",
-      });
-      return;
-    }
     try {
       const { user, session, error } = await supabase.auth.signIn({
-        email: email,
-        password: password,
+        email,
+        password,
       });
       if (error) throw error;
       if (user) {
@@ -88,7 +92,12 @@ export default function Auth() {
           dispatch({ type: "USER_LOGOUT" });
           localStorage.clear();
           setPending(false);
-          setError({ message: "No access allowed.", status: 401 });
+          handleClick({ vertical: "bottom", horizontal: "center" });
+          setError({
+            message: "No access allowed.",
+            status: 401,
+            type: "warning",
+          });
           return;
         }
         let { data: users } = await supabase
@@ -104,16 +113,32 @@ export default function Auth() {
       }
       return { error, user, session };
     } catch (error) {
+      handleClick({ vertical: "bottom", horizontal: "center" });
       setError({
         message: error.message || error.error_description,
         status: 400,
+        type: "error",
       });
       return;
     } finally {
       setPending(false);
-      setFormError({});
     }
   };
+  const action = (
+    <>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
 
   return (
     <>
@@ -121,7 +146,21 @@ export default function Auth() {
         <title>{APPNAME} - Login</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        action={action}
+        key={vertical + horizontal}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={error?.type}
+          sx={{ width: "100%" }}
+        >
+          {error?.message}
+        </Alert>
+      </Snackbar>
       {loading ? (
         <LoadingBox />
       ) : (
@@ -145,34 +184,71 @@ export default function Auth() {
             </Typography>
             <Box
               component="form"
-              onSubmit={handleLogin}
+              onSubmit={handleSubmit(handleLogin)}
               noValidate
               sx={{ mt: 1 }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                id="password"
-                autoComplete="current-password"
-              />
+              <Grid container spacing={3}>
+                <Grid item md={12} xs={12}>
+                  <Controller
+                    name="email"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        autoFocus
+                        inputProps={{ type: "email" }}
+                        error={Boolean(errors.email)}
+                        helperText={
+                          errors.email
+                            ? errors.email.type === "pattern"
+                              ? "Invalid email address"
+                              : "Email address is required"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    )}
+                  ></Controller>
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <Controller
+                    name="password"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: true,
+                      minLength: 6,
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        required
+                        fullWidth
+                        id="password"
+                        label="Password"
+                        inputProps={{ type: "password" }}
+                        autoComplete="current-password"
+                        error={Boolean(errors.password)}
+                        helperText={
+                          errors.password
+                            ? errors.password.type === "minLength"
+                              ? "Password lenght is too short"
+                              : "Password is required"
+                            : ""
+                        }
+                        {...field}
+                      />
+                    )}
+                  ></Controller>
+                </Grid>
+              </Grid>
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
@@ -187,12 +263,10 @@ export default function Auth() {
               >
                 <span>{pending ? "Loading" : "Sign In"}</span>
               </Button>
-              {error?.status && (
+              {/* {error?.status && (
                 <MessageBox types="error"> {error.message}</MessageBox>
-              )}
-              {formError.emailError && (
-                <MessageBox types="warning">{formError.emailError}</MessageBox>
-              )}
+              )} */}
+
               <Grid container>
                 <Grid item xs>
                   <Link href="/forgot-password" variant="body2">
