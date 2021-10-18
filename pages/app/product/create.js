@@ -131,7 +131,7 @@ function CreateProduct() {
                   Products
                 </Link>
               </NextLink>
-              <Typography color="text.primary">Breadcrumbs</Typography>
+              <Typography color="text.primary">Create</Typography>
             </Breadcrumbs>
             <Grid container spacing={3}>
               <Box

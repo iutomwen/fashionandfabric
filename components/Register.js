@@ -317,7 +317,7 @@ export default function Register() {
                 </Grid>
 
                 <Grid item md={12} xs={12}>
-                  {/* <InputLabel id="role-select-input">Role</InputLabel> */}
+                  <InputLabel id="role">Role</InputLabel>
                   <Controller
                     name="role"
                     control={control}
