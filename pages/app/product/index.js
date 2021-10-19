@@ -1,4 +1,4 @@
-import { Button, Container, Grid } from "@mui/material";
+import { Button, Container, Grid, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import Link from "next/link";
@@ -25,11 +25,9 @@ function Index() {
               p: 2,
             }}
           >
-            <Link href="/app/product/create">
-              <Button variant="outlined">
-                <a>Create</a>
-              </Button>
-            </Link>
+            <div className="">
+              <TextField fullWidth label="Search Product" id="product" />
+            </div>
             <Link href="/app/product/create">
               <Button variant="outlined">
                 <a>Create New</a>
