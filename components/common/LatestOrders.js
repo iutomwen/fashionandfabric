@@ -19,12 +19,17 @@ export default function LatestOrders() {
     async function getProducts() {
       try {
         setLoading(true);
-        let { data: product, error } = await supabase.from("product").select(`
+        let { data: product, error } = await supabase
+          .from("product")
+          .select(
+            `
     approved, currency, name, price,id,
     store:store_id(name),
     category:category_id(name),
     sub_category:subCategory_id(name)
-    `);
+    `
+          )
+          .order("id", { ascending: false });
         if (error) throw error;
         if (product) {
           setProducts(product);

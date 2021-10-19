@@ -28,7 +28,8 @@ export default function LatestUsers({ userType }) {
             ` 
         users:user_id (id, first_name, username, last_name, phone) `
           )
-          .eq("role", userType);
+          .eq("role", userType)
+          .order("id", { ascending: false });
         if (error) throw error;
         if (user_roles) {
           setUsers(user_roles);
