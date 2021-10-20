@@ -79,26 +79,24 @@ function CreateProduct() {
   }) => {
     setPageLoading(true);
     try {
-      const { data, error } = await supabase.from("product").insert(
-        [
-          {
-            name,
-            description,
-            price,
-            store_id: store,
-            subCategory_id: subcategory,
-            category_id: category,
-            approved: false,
-            created_at: new Date(),
-            currency: "USD",
-          },
-        ],
-        { upsert: true, returning: "minimal" }
-      );
+      const { data, error } = await supabase.from("product").insert([
+        {
+          name,
+          description,
+          price,
+          store_id: store,
+          subCategory_id: subcategory,
+          category_id: category,
+          approved: false,
+          created_at: new Date(),
+          currency: "USD",
+        },
+      ]);
 
       if (error) throw error;
       if (data) {
         router.push("/app/product");
+        // 22a65848
       }
     } catch (error) {
       console.log(error);
