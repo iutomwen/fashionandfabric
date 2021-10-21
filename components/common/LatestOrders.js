@@ -20,13 +20,13 @@ export default function LatestOrders() {
       try {
         setLoading(true);
         let { data: product, error } = await supabase
-          .from("product")
+          .from("products")
           .select(
             `
-    approved, currency, name, price,id,
-    store:store_id(name),
-    category:category_id(name),
-    sub_category:subCategory_id(name)
+            published, name, price,id,
+    store(name),
+    category(name),
+    sub_category(name)
     `
           )
           .order("id", { ascending: false });

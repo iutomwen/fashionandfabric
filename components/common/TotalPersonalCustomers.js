@@ -25,11 +25,12 @@ export default function TotalPersonalCustomers(props) {
         } = await supabase
           .from("user_roles")
           .select(
-            ` *,
-    users:user_id (id) `,
+            ` id,
+    users(id) `,
             { count: "exact", head: true }
           )
           .eq("role", "personal");
+        console.log("object", user_roles);
         if (error) throw error;
         setTotalCount(count);
       } catch (error) {

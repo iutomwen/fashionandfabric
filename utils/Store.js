@@ -15,8 +15,12 @@ const initialState = {
     : null,
   vendorMessages: null,
   contactMessages: null,
-  businessUsers: null,
-  personalUsers: null,
+  businessUsers: Cookies.get("businessUsers")
+    ? JSON.parse(Cookies.get("businessUsers"))
+    : null,
+  personalUsers: Cookies.get("personalUsers")
+    ? JSON.parse(Cookies.get("personalUsers"))
+    : null,
   appSettings: null,
   appSubcriptions: Cookies.get("appSubcriptions")
     ? JSON.parse(Cookies.get("appSubcriptions"))
@@ -40,6 +44,8 @@ function reducer(state, action) {
       Cookies.remove("isRegister");
       Cookies.remove("categories");
       Cookies.remove("appSubcriptions");
+      Cookies.remove("businessUsers");
+      Cookies.remove("personalUsers");
       Cookies.remove("shops");
       localStorage.clear();
       return {
@@ -73,6 +79,10 @@ function reducer(state, action) {
       return { ...state, appSubcriptions: action.payload };
     case "LOAD_ALL_SHOPS":
       return { ...state, shops: action.payload };
+    case "LOAD_ALL_PERSONAL":
+      return { ...state, personalUsers: action.payload };
+    case "LOAD_ALL_BUSINESS":
+      return { ...state, businessUsers: action.payload };
 
     default:
       return state;

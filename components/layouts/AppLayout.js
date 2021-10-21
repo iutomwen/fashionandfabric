@@ -11,13 +11,13 @@ import { useRouter } from "next/router";
 
 function AppLayout(props, { user }) {
   const { state, dispatch } = useContext(Store);
-  const router = useRouter();
   const { accountDetails, accountSession } = state;
+  const router = useRouter();
   const logoutUser = async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      console.log("am here");
+      console.log("logout am here");
       Cookies.remove("accountDetails");
       Cookies.remove("accountSession");
       dispatch({ type: "USER_LOGOUT" });
@@ -81,11 +81,33 @@ function AppLayout(props, { user }) {
       console.log(error);
     }
   }
-
+  async function getUsers(userType) {
+    try {
+      let { data: user_roles, error } = await supabase
+        .from("user_roles")
+        .select(
+          ` 
+  users(id, first_name, username, last_name, phone) `
+        )
+        .eq("role", userType)
+        .order("id", { ascending: false });
+      if (error) throw error;
+      if (user_roles) {
+        if (userType === "personal") {
+          dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
+          Cookies.set("personalUsers", JSON.stringify(user_roles));
+        }
+        if (userType === "business") {
+          dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
+          Cookies.set("businessUsers", JSON.stringify(user_roles));
+        }
+      }
+    } catch (error) {}
+  }
   async function getStores() {
     try {
       let { data: store, error } = await supabase.from("store").select(`
-      id,address, businessReg, city, country, created_at, description, name, postcode, state,
+      id,address, businessreg, city, country, created_at, description, name, postcode, state,isactive,
       users (
         id,username
       ),
@@ -138,8 +160,12 @@ function AppLayout(props, { user }) {
       getCategory();
       getSubcriptions();
       getStores();
+      getUsers("personal");
+      getUsers("business");
     }
     setLoading(false);
+    console.log("object");
+    return () => {};
   }, [getPayload]);
 
   return (

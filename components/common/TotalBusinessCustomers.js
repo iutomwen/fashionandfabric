@@ -25,7 +25,7 @@ export default function TotalBusinessCustomers(props) {
           .from("user_roles")
           .select(
             ` *,
-    users:user_id (id) `,
+    users (id) `,
             { count: "exact", head: true }
           )
           .eq("role", "business");

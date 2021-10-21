@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LoadingBox from "./LoadingBox";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,39 +12,48 @@ import Link from "next/link";
 
 import { Badge } from "@mui/material";
 import { supabase } from "../../libs/supabaseClient";
+import { Store } from "../../utils/Store";
 
 export default function LatestUsers({ userType }) {
+  const { state, dispatch } = useContext(Store);
+  const { businessUsers, personalUsers } = state;
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
   const [errors, setErrors] = useState(null);
 
   useEffect(() => {
-    async function getUsers() {
-      try {
-        setLoading(true);
-        let { data: user_roles, error } = await supabase
-          .from("user_roles")
-          .select(
-            ` 
-        users:user_id (id, first_name, username, last_name, phone) `
-          )
-          .eq("role", userType)
-          .order("id", { ascending: false });
-        if (error) throw error;
-        if (user_roles) {
-          setUsers(user_roles);
-        }
-      } catch (error) {
-        setErrors(error);
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
+    // async function getUsers() {
+    //   try {
+    //     setLoading(true);
+    //     let { data: user_roles, error } = await supabase
+    //       .from("user_roles")
+    //       .select(
+    //         `
+    //     users(id, first_name, username, last_name, phone) `
+    //       )
+    //       .eq("role", userType)
+    //       .order("id", { ascending: false });
+    //     if (error) throw error;
+    //     if (user_roles) {
+    //       setUsers(user_roles);
+    //     }
+    //   } catch (error) {
+    //     setErrors(error);
+    //     console.log(error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // }
+    // getUsers();
+
+    if (userType === "personal") {
+      setUsers(personalUsers);
+      setLoading(false);
     }
-    getUsers();
-    // return () => {
-    //   user_roles.unsubscribe();
-    // };
+    if (userType === "business") {
+      setUsers(businessUsers);
+      setLoading(false);
+    }
   }, []);
 
   return (
@@ -69,7 +78,7 @@ export default function LatestUsers({ userType }) {
             {errors
               ? errors.message
               : !loading &&
-                users.map((data, i) => (
+                users?.map((data, i) => (
                   <TableRow
                     key={i}
                     sx={{

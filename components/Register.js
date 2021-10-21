@@ -32,6 +32,7 @@ export default function Register() {
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm();
   const [openState, setOpenState] = useState({
@@ -72,8 +73,8 @@ export default function Register() {
     try {
       const { user, session, error } = await supabase.auth.signUp(
         {
-          email: email,
-          password: password,
+          email,
+          password,
         },
         {
           data: {
@@ -83,13 +84,19 @@ export default function Register() {
           },
         }
       );
+      const gett = { email, firstName, lastName, role, password };
 
       if (error) throw error;
       const { app: data, errors } = await supabase
         .from("user_roles")
-        .update({ role: role })
+        .update({ role })
         .eq("user_id", user.id);
       if (role === "personal" || role === "business") {
+        if (role === "business") {
+          const { data, error } = await supabase
+            .from("store")
+            .insert([{ user_id: user.id }]);
+        }
         supabase.auth.signOut();
         console.log("block login");
         dispatch({ type: "USER_LOGOUT" });
@@ -100,6 +107,7 @@ export default function Register() {
           status: 201,
           type: "success",
         });
+        reset();
         return;
       }
 
@@ -113,7 +121,7 @@ export default function Register() {
         dispatch({ type: "ACCOUNTSESSION", payload: session });
         dispatch({ type: "ACCOUNTDETAILS", payload: users });
         console.log("admin pass");
-        // router.push("/app/dashboard");
+        router.push("/app/dashboard");
       }
     } catch (error) {
       handleClick({ vertical: "bottom", horizontal: "center" });
@@ -317,7 +325,6 @@ export default function Register() {
                 </Grid>
 
                 <Grid item md={12} xs={12}>
-                  <InputLabel id="role">Role</InputLabel>
                   <Controller
                     name="role"
                     control={control}
@@ -327,11 +334,11 @@ export default function Register() {
                       minLength: 1,
                     }}
                     render={({ field }) => (
-                      <Select
+                      <TextField
                         fullWidth
-                        labelId="role"
                         id="role"
                         label="Role"
+                        select
                         SelectProps={{ native: true }}
                         error={Boolean(errors.role)}
                         helperText={
@@ -343,10 +350,11 @@ export default function Register() {
                         }
                         {...field}
                       >
-                        <MenuItem value={`personal`}>Personal</MenuItem>
-                        <MenuItem value={`business`}>Business</MenuItem>
-                        <MenuItem value={`staff`}>Staff</MenuItem>
-                      </Select>
+                        <option value={null}></option>
+                        <option value={`personal`}>Personal</option>
+                        <option value={`business`}>Business</option>
+                        <option value={`staff`}>Staff</option>
+                      </TextField>
                     )}
                   ></Controller>
                 </Grid>
