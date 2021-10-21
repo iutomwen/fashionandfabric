@@ -15,10 +15,10 @@ import { supabase } from "../../libs/supabaseClient";
 import { Store } from "../../utils/Store";
 
 export default function LatestUsers({ userType }) {
-  const { state, dispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { businessUsers, personalUsers } = state;
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState(null);
 
   useEffect(() => {
@@ -45,16 +45,18 @@ export default function LatestUsers({ userType }) {
     //   }
     // }
     // getUsers();
-
+    console.log(userType);
     if (userType === "personal") {
       setUsers(personalUsers);
+      console.log("u", personalUsers);
+      console.log("su", users);
       setLoading(false);
-    }
-    if (userType === "business") {
+    } else if (userType === "business") {
       setUsers(businessUsers);
+      console.log("p", businessUsers);
       setLoading(false);
     }
-  }, []);
+  }, [users]);
 
   return (
     <div style={{ maxWidth: "100%" }}>
@@ -78,7 +80,8 @@ export default function LatestUsers({ userType }) {
             {errors
               ? errors.message
               : !loading &&
-                users?.map((data, i) => (
+                users &&
+                users.map((data, i) => (
                   <TableRow
                     key={i}
                     sx={{
@@ -86,7 +89,7 @@ export default function LatestUsers({ userType }) {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      {data.users?.first_name}
+                      {data.users.first_name}
                     </TableCell>
                     <TableCell align="center">
                       {data.users?.last_name}
