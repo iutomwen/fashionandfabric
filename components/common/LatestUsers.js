@@ -113,7 +113,7 @@ export default function LatestUsers({ userType }) {
               ? errors.message
               : !loading &&
                 users &&
-                users.map((data, i) => (
+                users?.map((data, i) => (
                   <TableRow
                     key={i}
                     sx={{
@@ -121,7 +121,7 @@ export default function LatestUsers({ userType }) {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      {data.users.first_name}
+                      {data.users?.first_name}
                     </TableCell>
                     <TableCell align="center">
                       {data.users?.last_name}
@@ -140,7 +140,7 @@ export default function LatestUsers({ userType }) {
                           marginLeft: 16,
                         }}
                       >
-                        <Link href={`/app/${userType}/${data.users.id}/view`}>
+                        <Link href={`/app/${userType}/${data.users?.id}/view`}>
                           <a>
                             <span className="text-xs"> View Profile</span>
                           </a>
