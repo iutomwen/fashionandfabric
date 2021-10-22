@@ -26,14 +26,22 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Alert } from "@mui/material";
 
+const defaultValues = {
+  email: "",
+  firstName: "",
+  lastName: "",
+  role: { value: "", label: "Role" },
+  password: "",
+};
+
 export default function Register() {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
   const {
     handleSubmit,
     control,
-    reset,
     formState: { errors },
+    reset,
   } = useForm();
   const [openState, setOpenState] = useState({
     open: false,
@@ -44,12 +52,11 @@ export default function Register() {
   const { vertical, horizontal, open } = openState;
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  // const [email, setEmail] = useState("");
-  // const [formError, setFormError] = useState({});
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
-  // const [role, setRole] = useState("");
-  // const [password, setPassword] = useState("");
+
+  const doReset = () => {
+    reset(defaultValues);
+  };
+
   const router = useRouter();
   const handleClick = (newState) => {
     setOpenState({ open: true, ...newState });
@@ -96,6 +103,8 @@ export default function Register() {
           const { data, error } = await supabase
             .from("store")
             .insert([{ user_id: user.id }]);
+          // console.log("b", data);
+          // return;
         }
         supabase.auth.signOut();
         console.log("block login");
@@ -107,8 +116,8 @@ export default function Register() {
           status: 201,
           type: "success",
         });
-        reset();
-        return;
+
+        // return;
       }
 
       if (role == "staff") {
@@ -131,6 +140,7 @@ export default function Register() {
         type: "warning",
       });
     } finally {
+      reset(defaultValues);
     }
   };
   useEffect(() => {
@@ -138,7 +148,7 @@ export default function Register() {
 
     if (accountDetails && accountSession) {
       console.log("allow");
-      //router.push("/app/dashboard");
+      router.push("/app/dashboard");
     }
     setLoading(false);
     return () => {
@@ -375,6 +385,9 @@ export default function Register() {
                     <Link href="/login" variant="body2">
                       <a>Already have an account? </a>
                     </Link>
+                    <div className=" cursor-pointer" onClick={() => doReset()}>
+                      Reset Form
+                    </div>
                   </Grid>
                   <Grid item></Grid>
                 </Grid>

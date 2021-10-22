@@ -13,9 +13,10 @@ import Link from "next/link";
 import { Badge } from "@mui/material";
 import { supabase } from "../../libs/supabaseClient";
 import { Store } from "../../utils/Store";
+import Cookies from "js-cookie";
 
 export default function LatestUsers({ userType }) {
-  const { state } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const { businessUsers, personalUsers } = state;
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -45,18 +46,49 @@ export default function LatestUsers({ userType }) {
     //   }
     // }
     // getUsers();
-    console.log(userType);
-    if (userType === "personal") {
+    async function getUsers() {
+      try {
+        setLoading(true);
+        let { data: user_roles, error } = await supabase
+          .from("user_roles")
+          .select(
+            ` 
+  users(id, first_name, username, last_name, phone) `
+          )
+          .eq("role", userType)
+          .order("id", { ascending: false });
+        if (error) throw error;
+        if (user_roles) {
+          if (userType == "personal") {
+            dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
+            Cookies.set("personalUsers", JSON.stringify(user_roles));
+          }
+          if (userType == "business") {
+            dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
+            Cookies.set("businessUsers", JSON.stringify(user_roles));
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (!personalUsers || !businessUsers) {
+      getUsers();
+    }
+    // console.log(userType);
+    if (userType == "personal") {
       setUsers(personalUsers);
-      console.log("u", personalUsers);
-      console.log("su", users);
+      // console.log("u", personalUsers);
+      // console.log("su", users);
       setLoading(false);
-    } else if (userType === "business") {
+    } else if (userType == "business") {
       setUsers(businessUsers);
-      console.log("p", businessUsers);
+      // console.log("p", businessUsers);
       setLoading(false);
     }
-  }, [users]);
+  }, [personalUsers]);
 
   return (
     <div style={{ maxWidth: "100%" }}>

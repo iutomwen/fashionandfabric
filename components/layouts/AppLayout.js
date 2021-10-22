@@ -93,16 +93,18 @@ function AppLayout(props, { user }) {
         .order("id", { ascending: false });
       if (error) throw error;
       if (user_roles) {
-        if (userType === "personal") {
+        if (userType == "personal") {
           dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
           Cookies.set("personalUsers", JSON.stringify(user_roles));
         }
-        if (userType === "business") {
+        if (userType == "business") {
           dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
           Cookies.set("businessUsers", JSON.stringify(user_roles));
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
   async function getStores() {
     try {
@@ -160,11 +162,11 @@ function AppLayout(props, { user }) {
       getCategory();
       getSubcriptions();
       getStores();
-      getUsers("personal");
-      getUsers("business");
+      if (getUsers("personal")) {
+        getUsers("business");
+      }
     }
     setLoading(false);
-    console.log("object");
     return () => {};
   }, [getPayload]);
 

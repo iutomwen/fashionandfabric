@@ -20,6 +20,16 @@ import { supabase } from "../../../libs/supabaseClient";
 import LoadingBox from "../../../components/common/LoadingBox";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+
+const defaultValues = {
+  name: "",
+  description: "",
+  price: "",
+  store: "",
+  category: { value: "category", label: "Category" },
+  subcategory: [],
+};
+
 function CreateProduct() {
   const { state, dispatch } = useContext(Store);
   const router = useRouter();
@@ -28,6 +38,7 @@ function CreateProduct() {
     control,
     watch,
     formState: { errors },
+    reset,
   } = useForm();
   const { categories, shops } = state;
   const [show, setShow] = useState(false);
@@ -102,6 +113,7 @@ function CreateProduct() {
       console.log(error);
     } finally {
       setPageLoading(false);
+      reset(defaultValues);
     }
   };
 
@@ -352,7 +364,7 @@ function CreateProduct() {
                             required
                             fullWidth
                             id="files"
-                            label="File Upload"
+                            // label="File Upload"
                           />
                         </Grid>
                       </Grid>
