@@ -92,7 +92,7 @@ export default function Auth() {
       }
       return { error, user, session };
     } catch (error) {
-      toast.success(error.message || error.error_description, {
+      toast.error(error.message || error.error_description, {
         duration: 4000,
         position: "top-center",
       });
