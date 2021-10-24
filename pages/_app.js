@@ -20,14 +20,14 @@ export default function MyApp(props) {
   }, []);
 
   return (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <StoreProvider>
+    <StoreProvider>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
           <Component {...pageProps} />
-        </StoreProvider>
-      </ThemeProvider>
-    </CacheProvider>
+        </ThemeProvider>
+      </CacheProvider>
+    </StoreProvider>
   );
 }
 

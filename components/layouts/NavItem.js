@@ -4,9 +4,10 @@ import PropTypes from "prop-types";
 import { Button, ListItem } from "@material-ui/core";
 import Badge from "@mui/material/Badge";
 import { supabase } from "../../libs/supabaseClient";
-import Cookies from "js-cookie";
 import { useContext } from "react";
 import { Store } from "../../utils/Store";
+import toast from "react-hot-toast";
+
 const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
   const { dispatch } = useContext(Store);
 
@@ -14,10 +15,9 @@ const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
   const active = router.pathname;
   async function signOutUser() {
     const { error } = await supabase.auth.signOut();
-    Cookies.remove("accountDetails");
-    Cookies.remove("accountSession");
+    toast.loading("Signing out this account");
+
     dispatch({ type: "USER_LOGOUT" });
-    localStorage.clear();
     router.push("/login");
     return;
   }
@@ -53,7 +53,6 @@ const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
               onClick={href === "/logout" ? signOutUser : null}
               className=" flex items-center justify-center space-x-2"
             >
-              {/* {console.log("signOutUser")} */}
               {Icon && <Icon size="20" />}
               <Badge badgeContent={badge} color="error">
                 <span

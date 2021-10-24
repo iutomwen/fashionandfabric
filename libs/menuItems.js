@@ -13,14 +13,20 @@ import {
   LogOut as LogOutIcon,
   MessageCircle as MessagesIcon,
 } from "react-feather";
-import { supabase } from "./supabaseClient";
-const logout = async () => {
-  const { error } = await supabase.auth.signOut();
-};
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import { useContext } from "react";
+import { Store } from "../utils/Store";
+function menuDate() {
+  const { state, dispatch } = useContext(Store);
+  const { notifications } = state;
+}
+export default menuDate;
+
 export const menuItems = [
   {
     href: "/app/dashboard",
-    icon: BarChartIcon,
+    icon: DashboardOutlinedIcon,
     title: "Dashboard",
   },
   {
@@ -57,6 +63,12 @@ export const menuItems = [
     icon: MessagesIcon,
     title: "Vendors Messages",
     badge: 70,
+  },
+  {
+    href: "/app/notifications",
+    icon: NotificationsNoneIcon,
+    title: "Notifications",
+    badge: 900,
   },
   {
     href: "/app/account",

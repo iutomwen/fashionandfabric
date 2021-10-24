@@ -14,16 +14,14 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Copyright from "./utils/Copyright";
-import MessageBox from "./common/MessageBox";
 import ApplicationLogo from "./common/ApplicationLogo";
 import LoadingBox from "./common/LoadingBox";
 import { Store } from "../utils/Store";
 import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
-import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Alert } from "@mui/material";
+import toast from "react-hot-toast";
+import ToastNotify from "../libs/useNotify";
+
 export default function Auth() {
   const { state, dispatch } = useContext(Store);
   const {
@@ -32,32 +30,15 @@ export default function Auth() {
     formState: { errors },
   } = useForm();
   const { accountDetails, accountSession } = state;
-  const [openState, setOpenState] = useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-  });
-
-  const [error, setError] = useState(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
-  const { vertical, horizontal, open } = openState;
-  const handleClick = (newState) => {
-    setOpenState({ open: true, ...newState });
-  };
-
-  const handleClose = (event, reason, newState) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenState({ open: false, ...newState });
-  };
 
   useEffect(() => {
     setLoading(true);
     if (accountDetails && accountSession) {
+      toast.loading("Please wait while we load up the app");
+
       router.push("/app/dashboard");
       return;
     }
@@ -92,12 +73,10 @@ export default function Auth() {
           dispatch({ type: "USER_LOGOUT" });
           localStorage.clear();
           setPending(false);
-          handleClick({ vertical: "bottom", horizontal: "center" });
-          setError({
-            message: "No access allowed.",
-            status: 401,
-            type: "warning",
-          });
+          toast.error(
+            "This account has no permission to access this dashboard!"
+          );
+
           return;
         }
         let { data: users } = await supabase
@@ -105,7 +84,7 @@ export default function Auth() {
           .select("*")
           .eq("id", id)
           .single();
-        setError(null);
+
         dispatch({ type: "ACCOUNTSESSION", payload: session });
         Cookies.set("accountSession", JSON.stringify(session));
         dispatch({ type: "ACCOUNTDETAILS", payload: users });
@@ -113,32 +92,15 @@ export default function Auth() {
       }
       return { error, user, session };
     } catch (error) {
-      handleClick({ vertical: "bottom", horizontal: "center" });
-      setError({
-        message: error.message || error.error_description,
-        status: 400,
-        type: "error",
+      toast.success(error.message || error.error_description, {
+        duration: 4000,
+        position: "top-center",
       });
       return;
     } finally {
       setPending(false);
     }
   };
-  const action = (
-    <>
-      <Button color="secondary" size="small" onClick={handleClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleClose}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </>
-  );
 
   return (
     <>
@@ -146,21 +108,7 @@ export default function Auth() {
         <title>{APPNAME} - Login</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        action={action}
-        key={vertical + horizontal}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={error?.type}
-          sx={{ width: "100%" }}
-        >
-          {error?.message}
-        </Alert>
-      </Snackbar>
+      <ToastNotify />
       {loading ? (
         <LoadingBox />
       ) : (
@@ -256,16 +204,13 @@ export default function Auth() {
               <Button
                 type="submit"
                 fullWidth
-                className="bg-[#995d46]"
+                className="bg-[#995d46] border"
                 variant="contained"
                 disabled={pending}
                 sx={{ mt: 3, mb: 2 }}
               >
                 <span>{pending ? "Loading" : "Sign In"}</span>
               </Button>
-              {/* {error?.status && (
-                <MessageBox types="error"> {error.message}</MessageBox>
-              )} */}
 
               <Grid container>
                 <Grid item xs>
@@ -273,11 +218,7 @@ export default function Auth() {
                     <a>Forgot password? </a>
                   </Link>
                 </Grid>
-                <Grid item>
-                  {/* <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link> */}
-                </Grid>
+                <Grid item></Grid>
               </Grid>
             </Box>
           </Box>

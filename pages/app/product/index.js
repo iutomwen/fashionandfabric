@@ -4,10 +4,16 @@ import React from "react";
 import Link from "next/link";
 import LatestOrders from "../../../components/common/LatestOrders";
 import AppLayout from "../../../components/layouts/AppLayout";
+import Head from "next/head";
+import { APPNAME } from "../../../libs/constant";
 
 function Index() {
   return (
     <AppLayout>
+      <Head>
+        <title>{APPNAME} - Product List</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
       <Box
         // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
         className="mt-2 ml-0 md:ml-5 xl:ml-10 relative"

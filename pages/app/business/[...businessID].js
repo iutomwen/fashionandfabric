@@ -1,24 +1,17 @@
 import React from "react";
 import AppLayout from "../../../components/layouts/AppLayout";
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Divider,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Breadcrumbs, Container, Link, Typography } from "@mui/material";
 import NextLink from "next/link";
+import Head from "next/head";
+import { APPNAME } from "../../../libs/constant";
 
 function BusinessID() {
   return (
     <AppLayout>
+      <Head>
+        <title>{APPNAME} - View Profile</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
       <Box
         sx={{
           backgroundColor: "background.default",

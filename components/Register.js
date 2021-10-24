@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Head from "next/head";
-import { APPNAME } from "../libs/constant";
+import { APPNAME, NEW_USER_REGISTER } from "../libs/constant";
 import { useRouter } from "next/router";
-
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -12,19 +11,14 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Copyright from "./utils/Copyright";
-import MessageBox from "./common/MessageBox";
 import ApplicationLogo from "./common/ApplicationLogo";
 import { supabase } from "../libs/supabaseClient";
 import LoadingBox from "../components/common/LoadingBox";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import { Store } from "../utils/Store";
 import { Controller, useForm } from "react-hook-form";
-import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Alert } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
+import toast from "react-hot-toast";
+import ToastNotify from "../libs/useNotify";
 
 const defaultValues = {
   email: "",
@@ -43,14 +37,8 @@ export default function Register() {
     formState: { errors },
     reset,
   } = useForm();
-  const [openState, setOpenState] = useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-  });
+
   const [pending, setPending] = useState(false);
-  const { vertical, horizontal, open } = openState;
-  const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const doReset = () => {
@@ -58,17 +46,7 @@ export default function Register() {
   };
 
   const router = useRouter();
-  const handleClick = (newState) => {
-    setOpenState({ open: true, ...newState });
-  };
 
-  const handleClose = (event, reason, newState) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenState({ open: false, ...newState });
-  };
   const handleLogin = async ({
     email,
     firstName,
@@ -76,6 +54,7 @@ export default function Register() {
     role,
     password,
   }) => {
+    setPending(true);
     dispatch({ type: "USER_REGISTER" });
     try {
       const { user, session, error } = await supabase.auth.signUp(
@@ -91,61 +70,77 @@ export default function Register() {
           },
         }
       );
-      const gett = { email, firstName, lastName, role, password };
 
       if (error) throw error;
-      const { app: data, errors } = await supabase
-        .from("user_roles")
-        .update({ role })
-        .eq("user_id", user.id);
-      if (role === "personal" || role === "business") {
-        if (role === "business") {
-          const { data, error } = await supabase
-            .from("store")
-            .insert([{ user_id: user.id }]);
-          // console.log("b", data);
+      if (session) {
+        // //create new notification
+        // const getNotification = {
+        //   notifyid: uuidv4(),
+        //   user_id: user.id,
+        //   notify_type: "register",
+        //   notify_url: `/app/${role}/${user.id}/view`,
+        //   notification: NEW_USER_REGISTER,
+        //   created_at: new Date(),
+        // };
+        // set new notification
+        try {
+          const { data, error } = await supabase.from("notifications").insert([
+            {
+              notifyid: uuidv4(),
+              user_id: user.id,
+              notify_type: "register",
+              notify_url: `/app/${role}/${user.id}/view`,
+              notification: NEW_USER_REGISTER,
+              created_at: new Date(),
+            },
+          ]);
+          if (error) throw error;
+          if (data) {
+            dispatch({ type: "ADD_NEW_NOTIFICATION", payload: data });
+          }
+        } catch (error) {
+          toast.error(error.message);
+        }
+        const { app: data, errors } = await supabase
+          .from("user_roles")
+          .update({ role })
+          .eq("user_id", user.id);
+        if (role === "personal" || role === "business") {
+          if (role === "business") {
+            const { data, error } = await supabase
+              .from("store")
+              .insert([{ user_id: user.id }]);
+            // return;
+          }
+          supabase.auth.signOut();
+          console.log("block login");
+          dispatch({ type: "USER_LOGOUT" });
+          localStorage.clear();
+          toast.success("Account Created");
           // return;
         }
-        supabase.auth.signOut();
-        console.log("block login");
-        dispatch({ type: "USER_LOGOUT" });
-        localStorage.clear();
-        handleClick({ vertical: "bottom", horizontal: "center" });
-        setMessage({
-          message: "Account Created",
-          status: 201,
-          type: "success",
-        });
 
-        // return;
-      }
-
-      if (role == "staff") {
-        let { data: users } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", id)
-          .single();
-        setMessage(null);
-        dispatch({ type: "ACCOUNTSESSION", payload: session });
-        dispatch({ type: "ACCOUNTDETAILS", payload: users });
-        console.log("admin pass");
-        router.push("/app/dashboard");
+        if (role == "staff") {
+          let { data: users } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", id)
+            .single();
+          dispatch({ type: "ACCOUNTSESSION", payload: session });
+          dispatch({ type: "ACCOUNTDETAILS", payload: users });
+          // console.log("admin pass");
+          router.push("/app/dashboard");
+        }
       }
     } catch (error) {
-      handleClick({ vertical: "bottom", horizontal: "center" });
-      setMessage({
-        message: error.message || error.error_description,
-        status: 400,
-        type: "warning",
-      });
+      toast.error(error.message || error.error_description);
     } finally {
+      setPending(false);
       reset(defaultValues);
     }
   };
   useEffect(() => {
     setLoading(true);
-
     if (accountDetails && accountSession) {
       console.log("allow");
       router.push("/app/dashboard");
@@ -156,42 +151,14 @@ export default function Register() {
       !accountSession;
     };
   }, [accountDetails, accountSession]);
-  const action = (
-    <>
-      <Button color="secondary" size="small" onClick={handleClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleClose}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </>
-  );
+
   return (
     <>
       <Head>
         <title>{APPNAME} - Login</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        action={action}
-        key={vertical + horizontal}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={message?.type}
-          sx={{ width: "100%" }}
-        >
-          {message?.message}
-        </Alert>
-      </Snackbar>
+      <ToastNotify />
       {loading ? (
         <LoadingBox />
       ) : (
@@ -379,18 +346,35 @@ export default function Register() {
                     <span>{pending ? "Loading" : "Sign Up"}</span>
                   </Button>
                 </Grid>
-
-                <Grid container>
-                  <Grid item xs>
-                    <Link href="/login" variant="body2">
-                      <a>Already have an account? </a>
-                    </Link>
-                    <div className=" cursor-pointer" onClick={() => doReset()}>
-                      Reset Form
-                    </div>
+                <Box
+                  sx={{
+                    marginTop: 3,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "left",
+                  }}
+                >
+                  <Grid container>
+                    <Grid
+                      item
+                      md={12}
+                      flex
+                      alignContent="center"
+                      justifyContent="center"
+                    >
+                      <Link href="/login" variant="body2">
+                        <a>Already have an account? </a>
+                      </Link>
+                      <div
+                        className=" cursor-pointer"
+                        onClick={() => doReset()}
+                      >
+                        Reset Form
+                      </div>
+                    </Grid>
+                    <Grid item></Grid>
                   </Grid>
-                  <Grid item></Grid>
-                </Grid>
+                </Box>
               </Grid>
             </Box>
           </Box>

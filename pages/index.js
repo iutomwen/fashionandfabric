@@ -17,7 +17,7 @@ export default function Home() {
         if (event === "SIGNED_IN") {
           dispatch({ type: "USER_LOGIN" });
           if (accountSession && accountDetails) {
-            //router.push("/app/dashboard");
+            router.push("/app/dashboard");
             console.log("allow to pass");
           }
         }
@@ -35,7 +35,6 @@ export default function Home() {
     const user = await supabase.auth.user();
     if (user) {
       dispatch({ type: "USER_LOGIN" });
-      // setAuthenticatedState("authenticated");
     }
   }
   async function handleAuthChange(event, session) {

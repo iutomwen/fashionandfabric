@@ -20,6 +20,8 @@ import { supabase } from "../../../libs/supabaseClient";
 import LoadingBox from "../../../components/common/LoadingBox";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { APPNAME } from "../../../libs/constant";
+import Head from "next/head";
 
 const defaultValues = {
   name: "",
@@ -119,6 +121,10 @@ function CreateProduct() {
 
   return (
     <AppLayout>
+      <Head>
+        <title>{APPNAME} - Create New Product</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
       {pageLoading ? (
         <LoadingBox />
       ) : (

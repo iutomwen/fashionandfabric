@@ -3,10 +3,15 @@ import { Box, Container, Grid } from "@material-ui/core";
 import LatestUsers from "../../../components/common/LatestUsers";
 import AppLayout from "../../../components/layouts/AppLayout";
 import { Button } from "@mui/material";
-
+import Head from "next/head";
+import { APPNAME } from "../../../libs/constant";
 function Index() {
   return (
     <AppLayout>
+      <Head>
+        <title>{APPNAME} - Personal Profile List</title>
+        <link rel="icon" href="/favicon.ico" />{" "}
+      </Head>
       <Box
         // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
         className="mt-2 ml-0 md:ml-5 xl:ml-10 relative"

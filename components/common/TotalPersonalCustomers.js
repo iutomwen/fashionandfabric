@@ -8,42 +8,31 @@ import {
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import PeopleIcon from "@material-ui/icons/PeopleOutlined";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
-import { supabase } from "../../libs/supabaseClient";
+import { Store } from "../../utils/Store";
 export default function TotalPersonalCustomers(props) {
+  const { state } = useContext(Store);
+  const { personalUsers } = state;
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   useEffect(() => {
     setLoading(true);
-    async function countItem() {
-      try {
-        const {
-          data: user_roles,
-          error,
-          count,
-        } = await supabase
-          .from("user_roles")
-          .select(
-            ` id,
-    users(id) `,
-            { count: "exact", head: true }
-          )
-          .eq("role", "personal");
-        console.log("object", user_roles);
-        if (error) throw error;
-        setTotalCount(count);
-      } catch (error) {
-        console.log(error);
-      } finally {
+    let isCancelled = false;
+    if (!isCancelled) {
+      if (personalUsers) {
+        setTotalCount(
+          Object.keys(personalUsers).length
+            ? Object.keys(personalUsers).length
+            : 0
+        );
         setLoading(false);
       }
     }
-    countItem();
-    // return () => {
-    //   !count;
-    // };
-  }, []);
+    return () => {
+      isCancelled = true;
+    };
+  }, [personalUsers]);
   return (
     <Card {...props}>
       <CardContent>

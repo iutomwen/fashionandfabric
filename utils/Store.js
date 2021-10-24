@@ -13,19 +13,30 @@ const initialState = {
   accountDetails: Cookies.get("accountDetails")
     ? JSON.parse(Cookies.get("accountDetails"))
     : null,
-  vendorMessages: null,
-  contactMessages: null,
+  vendorMessages: Cookies.get("vendorMessages")
+    ? JSON.parse(Cookies.get("vendorMessages"))
+    : null,
+  contactMessages: Cookies.get("contactMessages")
+    ? JSON.parse(Cookies.get("contactMessages"))
+    : null,
   businessUsers: Cookies.get("businessUsers")
     ? JSON.parse(Cookies.get("businessUsers"))
     : null,
   personalUsers: Cookies.get("personalUsers")
     ? JSON.parse(Cookies.get("personalUsers"))
     : null,
-  appSettings: null,
+  appSettings: Cookies.get("appSettings")
+    ? JSON.parse(Cookies.get("appSettings"))
+    : null,
   appSubcriptions: Cookies.get("appSubcriptions")
     ? JSON.parse(Cookies.get("appSubcriptions"))
     : null,
-  products: null,
+  notifications: Cookies.get("notifications")
+    ? JSON.parse(Cookies.get("notifications"))
+    : [],
+  products: Cookies.get("products")
+    ? JSON.parse(Cookies.get("products"))
+    : null,
   shops: Cookies.get("shops") ? JSON.parse(Cookies.get("shops")) : null,
   categories: Cookies.get("categories")
     ? JSON.parse(Cookies.get("categories"))
@@ -38,21 +49,26 @@ function reducer(state, action) {
       //   Cookies.set("isLogin", true);
       return { ...state, isLogin: true };
     case "USER_LOGOUT":
-      Cookies.remove("accountDetails");
-      Cookies.remove("accountSession");
       Cookies.remove("isLogin");
       Cookies.remove("isRegister");
-      Cookies.remove("categories");
-      Cookies.remove("appSubcriptions");
+      Cookies.remove("accountDetails");
+      Cookies.remove("accountSession");
+      Cookies.remove("vendorMessages");
+      Cookies.remove("contactMessages");
       Cookies.remove("businessUsers");
       Cookies.remove("personalUsers");
+      Cookies.remove("appSettings");
+      Cookies.remove("appSubcriptions");
+      Cookies.remove("notifications");
+      Cookies.remove("products");
       Cookies.remove("shops");
+      Cookies.remove("categories");
       localStorage.clear();
       return {
         ...state,
+        isError: [],
         isLogin: false,
         isRegister: false,
-        isError: [],
         accountDetails: null,
         accountSession: null,
         vendorMessages: null,
@@ -61,6 +77,7 @@ function reducer(state, action) {
         personalUsers: null,
         appSettings: null,
         appSubcriptions: null,
+        notifications: [],
         products: null,
         shops: null,
         categories: null,
@@ -79,6 +96,22 @@ function reducer(state, action) {
       return { ...state, appSubcriptions: action.payload };
     case "LOAD_ALL_SHOPS":
       return { ...state, shops: action.payload };
+    case "ADD_NEW_NOTIFICATION":
+      const newNotify = action.payload;
+      const existItem = state.notifications.find(
+        (notify) => notify.notifyid === newNotify.notifyid
+      );
+      const notifyItems = existItem
+        ? state.notifications.map((item) =>
+            item.notifyid === existItem.notifyid ? newNotify : item
+          )
+        : [...state.notifications, newNotify];
+      return {
+        ...state,
+        notifications: notifyItems,
+      };
+    case "LOAD_ALL_NOTIFICATIONS":
+      return { ...state, notifications: action.payload };
     case "LOAD_ALL_PERSONAL":
       return { ...state, personalUsers: action.payload };
     case "LOAD_ALL_BUSINESS":

@@ -7,9 +7,10 @@ import LoadingBox from "../common/LoadingBox";
 import { Store } from "../../utils/Store";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-// import ApiProvider, { checkUserRole, getCategory } from "../../libs/api";
+import toast from "react-hot-toast";
+import ToastNotify from "../../libs/useNotify";
 
-function AppLayout(props, { user }) {
+function AppLayout(props) {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
   const router = useRouter();
@@ -20,11 +21,23 @@ function AppLayout(props, { user }) {
       console.log("logout am here");
       Cookies.remove("accountDetails");
       Cookies.remove("accountSession");
+      Cookies.remove("vendorMessages");
+      Cookies.remove("contactMessages");
+      Cookies.remove("businessUsers");
+      Cookies.remove("personalUsers");
+      Cookies.remove("appSettings");
+      Cookies.remove("appSubcriptions");
+      Cookies.remove("notifications");
+      Cookies.remove("products");
+      Cookies.remove("shops");
+      Cookies.remove("categories");
+      toast.loading("Signing out this account.");
       dispatch({ type: "USER_LOGOUT" });
       localStorage.clear();
       router.push("/login");
       return;
     } catch (error) {
+      toast.error(error.message);
       console.log(error);
     }
   };
@@ -44,6 +57,7 @@ function AppLayout(props, { user }) {
       }
       return role;
     } catch (error) {
+      toast.error(error.message);
       console.log(error);
       logoutUser();
       return;
@@ -64,6 +78,7 @@ function AppLayout(props, { user }) {
       Cookies.set("categories", JSON.stringify(category));
       return { category };
     } catch (error) {
+      toast.error(error.message);
       console.log(error);
     }
   }
@@ -78,6 +93,7 @@ function AppLayout(props, { user }) {
       Cookies.set("appSubcriptions", JSON.stringify(subcriptions));
       return { subcriptions };
     } catch (error) {
+      toast.error(error.message);
       console.log(error);
     }
   }
@@ -87,7 +103,7 @@ function AppLayout(props, { user }) {
         .from("user_roles")
         .select(
           ` 
-  users(id, first_name, username, last_name, phone) `
+  users(id, first_name, username, last_name, phone, verified) `
         )
         .eq("role", userType)
         .order("id", { ascending: false });
@@ -103,6 +119,24 @@ function AppLayout(props, { user }) {
         }
       }
     } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
+  }
+
+  async function getNotifications() {
+    try {
+      let { data: notifications, error } = await supabase
+        .from("notifications")
+        .select("*");
+      if (error) throw error;
+      if (notifications) {
+        dispatch({ type: "LOAD_ALL_NOTIFICATIONS", payload: notifications });
+        Cookies.set("notifications", JSON.stringify(notifications));
+      }
+    } catch (error) {
+      toast.error(error.message);
+
       console.log(error);
     }
   }
@@ -121,6 +155,8 @@ function AppLayout(props, { user }) {
       Cookies.set("shops", JSON.stringify(store));
       return { store };
     } catch (error) {
+      toast.error(error.message);
+
       console.log(error);
     }
   }
@@ -138,40 +174,48 @@ function AppLayout(props, { user }) {
 
   useEffect(() => {
     setLoading(true);
+    let isCancelled = false;
     //check for user session
-    if (!session) {
-      setLoading(true);
-      logoutUser();
-      setLoading(false);
-      router.push("/login");
-      return;
-    }
+    if (!isCancelled) {
+      if (!session) {
+        setLoading(true);
+        logoutUser();
+        setLoading(false);
+        router.push("/login");
+        return;
+      }
 
-    if (!accountSession || !accountDetails) {
-      setLoading(true);
-      logoutUser();
-      setLoading(false);
-      router.push("/login");
-      return;
-    }
-    //check if its the right user
-    if (session) {
-      const { id } = session.user;
-      checkUserRole(id);
-      //load the componenet needed for this app to render
-      getCategory();
-      getSubcriptions();
-      getStores();
-      if (getUsers("personal")) {
-        getUsers("business");
+      if (!accountSession || !accountDetails) {
+        setLoading(true);
+        logoutUser();
+        setLoading(false);
+        router.push("/login");
+        return;
+      }
+      //check if its the right user
+
+      if (session) {
+        const { id } = session.user;
+        checkUserRole(id);
+        //load the componenet needed for this app to render
+        getCategory();
+        getSubcriptions();
+        getStores();
+        getNotifications();
+        if (getUsers("personal")) {
+          getUsers("business");
+        }
       }
     }
     setLoading(false);
-    return () => {};
+    return () => {
+      isCancelled = true;
+    };
   }, [getPayload]);
 
   return (
     <>
+      <ToastNotify />
       {loading ? (
         <LoadingBox />
       ) : (

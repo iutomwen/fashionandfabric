@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import { supabase } from "../../libs/supabaseClient";
 import Cookies from "js-cookie";
 import { Store } from "../../utils/Store";
+import toast from "react-hot-toast";
 
 const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   const [notifications, setNotification] = useState([]);
@@ -27,6 +28,7 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
     const { error } = await supabase.auth.signOut();
     Cookies.remove("accountDetails");
     Cookies.remove("accountSession");
+    toast.loading("Signing out this account.");
     dispatch({ type: "USER_LOGOUT" });
     localStorage.clear();
     router.push("/login");
