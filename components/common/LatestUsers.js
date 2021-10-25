@@ -46,40 +46,41 @@ export default function LatestUsers({ userType }) {
   useEffect(() => {
     let isCancelled = false;
     if (!isCancelled) {
-      async function getUsers() {
-        try {
-          setLoading(true);
-          let { data: user_roles, error } = await supabase
-            .from("user_roles")
-            .select(
-              ` 
-  users(id, first_name, username, last_name, phone, verified) `
-            )
-            .eq("role", userType)
-            .order("id", { ascending: false });
-          if (error) throw error;
-          if (user_roles) {
-            if (userType == "personal") {
-              dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
-              Cookies.set("personalUsers", JSON.stringify(user_roles));
-            }
-            if (userType == "business") {
-              dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
-              Cookies.set("businessUsers", JSON.stringify(user_roles));
-            }
-          }
-        } catch (error) {
-          toast.error(error.message);
+      //     async function getUsers() {
+      //       try {
+      //         setLoading(true);
+      //         let { data: user_roles, error } = await supabase
+      //           .from("user_roles")
+      //           .select(
+      //             `
+      // users(id, first_name, username, last_name, phone, verified) `
+      //           )
+      //           .eq("role", userType)
+      //           .limit(10)
+      //           .order("id", { ascending: false });
+      //         if (error) throw error;
+      //         if (user_roles) {
+      //           if (userType == "personal") {
+      //             dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
+      //             Cookies.set("personalUsers", JSON.stringify(user_roles));
+      //           }
+      //           if (userType == "business") {
+      //             dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
+      //             Cookies.set("businessUsers", JSON.stringify(user_roles));
+      //           }
+      //         }
+      //       } catch (error) {
+      //         toast.error(error.message);
 
-          console.log(error);
-        } finally {
-          setLoading(false);
-        }
-      }
+      //         console.log(error);
+      //       } finally {
+      //         setLoading(false);
+      //       }
+      //     }
 
-      if (!personalUsers || !businessUsers) {
-        getUsers();
-      }
+      //     if (!personalUsers || !businessUsers) {
+      //       getUsers();
+      //     }
       if (userType == "personal") {
         setUsers(personalUsers);
         setLoading(false);
@@ -163,7 +164,7 @@ export default function LatestUsers({ userType }) {
                           marginLeft: 16,
                         }}
                       >
-                        <Link href={`/app/${userType}/${data.users?.id}/view`}>
+                        <Link href={`/app/${userType}/${data.users?.id}`}>
                           <a>
                             <span className="text-xs"> View Profile</span>
                           </a>

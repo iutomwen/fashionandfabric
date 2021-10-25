@@ -11,6 +11,7 @@ import LatestOrders from "../../components/common/LatestOrders";
 import LatestUsers from "../../components/common/LatestUsers";
 import Head from "next/head";
 import { APPNAME } from "../../libs/constant";
+import { supabase } from "../../libs/supabaseClient";
 
 export default function Dashboard() {
   return (

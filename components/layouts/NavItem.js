@@ -4,19 +4,28 @@ import PropTypes from "prop-types";
 import { Button, ListItem } from "@material-ui/core";
 import Badge from "@mui/material/Badge";
 import { supabase } from "../../libs/supabaseClient";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Store } from "../../utils/Store";
 import toast from "react-hot-toast";
 
 const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
-  const { dispatch } = useContext(Store);
-
+  const { state, dispatch } = useContext(Store);
+  const [notify, setNotify] = useState(null);
+  const { notifications } = state;
+  useEffect(() => {
+    let isCancelled = false;
+    if (!isCancelled) {
+      setNotify(Object.keys(notifications).length);
+    }
+    return () => {
+      isCancelled = true;
+    };
+  }, [notifications]);
   const router = useRouter();
   const active = router.pathname;
   async function signOutUser() {
     const { error } = await supabase.auth.signOut();
     toast.loading("Signing out this account");
-
     dispatch({ type: "USER_LOGOUT" });
     router.push("/login");
     return;
@@ -54,7 +63,10 @@ const NavItem = ({ href, icon: Icon, title, badge, ...rest }) => {
               className=" flex items-center justify-center space-x-2"
             >
               {Icon && <Icon size="20" />}
-              <Badge badgeContent={badge} color="error">
+              <Badge
+                badgeContent={href === "/app/notifications" ? notify : badge}
+                color="error"
+              >
                 <span
                   className={`${
                     active === href && "text-red-600"

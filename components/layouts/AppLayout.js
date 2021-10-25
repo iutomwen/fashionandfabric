@@ -14,6 +14,7 @@ function AppLayout(props) {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
   const router = useRouter();
+
   const logoutUser = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -128,9 +129,11 @@ function AppLayout(props) {
     try {
       let { data: notifications, error } = await supabase
         .from("notifications")
-        .select("*");
+        .select("*")
+        .eq("status", false);
       if (error) throw error;
       if (notifications) {
+        // console.log("here", notifications);
         dispatch({ type: "LOAD_ALL_NOTIFICATIONS", payload: notifications });
         Cookies.set("notifications", JSON.stringify(notifications));
       }
@@ -202,8 +205,8 @@ function AppLayout(props) {
         getSubcriptions();
         getStores();
         getNotifications();
-        if (getUsers("personal")) {
-          getUsers("business");
+        if (getUsers("business")) {
+          getUsers("personal");
         }
       }
     }
@@ -226,4 +229,3 @@ function AppLayout(props) {
 }
 
 export default dynamic(() => Promise.resolve(AppLayout), { ssr: false });
-// export default AppLayout;

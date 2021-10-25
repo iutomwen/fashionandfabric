@@ -1,20 +1,19 @@
 import { useContext, useEffect } from "react";
 import { Store } from "../utils/Store";
 import { supabase } from "./supabaseClient";
+import toast from "react-hot-toast";
 
-function useNotifications(notifications) {
+export default function useNotifications(notifications) {
   const { dispatch } = useContext(Store);
-  const { notifications } = state;
-  const {
-    notifyid,
-    user_id,
-    notify_type,
-    notify_url,
-    notification,
-    created_at,
-  } = notifications;
-
-  async function doNotify() {
+  async function doNotify(notifications) {
+    const {
+      notifyid,
+      user_id,
+      notify_type,
+      notify_url,
+      notification,
+      created_at,
+    } = notifications;
     try {
       const { data, error } = await supabase.from("notifications").insert([
         {
@@ -31,18 +30,12 @@ function useNotifications(notifications) {
         dispatch({ type: "ADD_NEW_NOTIFICATION", payload: data });
       }
     } catch (error) {
+      toast.error(error);
       console.log("notify error:", error);
     }
   }
   useEffect(() => {
-    doNotify();
+    doNotify(notifications);
   });
-
-  return {
-    data: null,
-    loading: true,
-    error: null,
-  };
+  return [notifications];
 }
-
-export default useNotifications;

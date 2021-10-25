@@ -26,8 +26,7 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   const router = useRouter();
   async function signOutUser() {
     const { error } = await supabase.auth.signOut();
-    Cookies.remove("accountDetails");
-    Cookies.remove("accountSession");
+
     toast.loading("Signing out this account.");
     dispatch({ type: "USER_LOGOUT" });
     localStorage.clear();
