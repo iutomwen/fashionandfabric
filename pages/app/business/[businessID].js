@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, {useState, useEffect, useContext } from "react";
 import AppLayout from "../../../components/layouts/AppLayout";
 import {
   Box,
@@ -21,10 +21,14 @@ import ContactDetails from "../../../components/users/ContactDetails";
 import StoreDetails from "../../../components/users/StoreDetails";
 import ToastNotify from "../../../libs/useNotify";
 import toast from "react-hot-toast";
+import { route } from "next/dist/server/router";
+import { useRouter } from "next/router";
+import LoadingBox from "../../../components/common/LoadingBox";
+import UserProducts from "../../../components/users/UserProducts";
+import UserSettings from "../../../components/users/UserSettings";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -34,7 +38,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3, maxWidth: "100%" }}>
+        <Box sx={{ py:2, maxWidth: "100%" }}>
           <Container
             sx={{
               width: "100%",
@@ -60,12 +64,88 @@ function a11yProps(index) {
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-export default function BusinessID(user) {
-  const [value, setValue] = React.useState(0);
+export default function BusinessID() {
+  const [value, setValue] = useState(0);
+  const [user, setUser] = useState();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  route = useRouter();
+  // console.log(route)
+ const {businessID} = route?.query;
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  async function getDetails(id){
+    try{
+      let { data: users, error } = await supabase
+      .from("users")
+      .select(
+        `*,
+      store(*)
+      `
+      )
+      .eq("id", id)
+      .single();
+      if(error)throw error;
+      if(users){
+        setUser(users)
+      }
+      return true;
+    }catch(error){
+      toast.error(error.message)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
 
+  async function getStoreProducts(storeid){
+    try{
+      const { data: products, error } = await supabase
+    .from("products")
+    .select(
+      `
+  id, name,price,description,published,created_at, updated_at, category(name), sub_category(name)
+  store (
+  name
+  )
+  `
+    )
+    .eq("store_id", storeid);
+    if(error)throw error
+    if(products){
+      setProducts(products)
+    }
+    return true
+    }catch(error){
+      toast.error(error.message)
+    } finally{
+      setLoading(false)
+    }
+    
+  }
+
+  useEffect(()=>{
+   let isCancelled = false;
+   setLoading(true)
+
+if(!isCancelled){
+  
+  getDetails(businessID);
+  console.log("user:", user)
+  if(user){
+    getStoreProducts(user?.store[0].id);
+    console.log("object",products)
+  }
+  
+
+}
+setLoading(false);
+    return()=>{
+      isCancelled = true;
+    }
+
+  },[])
   return (
     <AppLayout>
       <ToastNotify />
@@ -74,6 +154,8 @@ export default function BusinessID(user) {
         <title>{APPNAME} - View Profile</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
+      {loading ? <LoadingBox /> : (
+        
       <Box
         className="mt-5 ml-0 md:ml-5 xl:ml-10 relative"
         sx={{
@@ -91,9 +173,9 @@ export default function BusinessID(user) {
           }}
         >
           <div className="text-2xl font-bold capitalize">
-            {user.user.first_name} {user.user.last_name}
+            {user?.first_name} {user?.last_name}
           </div>
-          <NextLink href={`/app/user/edit/${user.user.id}`} passHref>
+          <NextLink href={`/app/user/edit/${user?.id}`} passHref>
             <Link>
               <Button startIcon={<Edit />} variant="outlined">
                 Edit
@@ -135,60 +217,23 @@ export default function BusinessID(user) {
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-              <ContactDetails user={user.user} />
+              <ContactDetails user={user} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <StoreDetails store={user.store} />
+              <StoreDetails store={user?.store} />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              Products
+              <UserProducts products={products}/>
             </TabPanel>
             <TabPanel value={value} index={3}>
-              Account Settings
+              <UserSettings />
             </TabPanel>
           </Box>
         </Container>
       </Box>
+      )}
     </AppLayout>
   );
 }
 
-export async function getServerSideProps(context) {
-  const { params } = context;
-  const { businessID } = params;
 
-  let { data: users, error } = await supabase
-    .from("users")
-    .select(
-      `*,
-    store(*)
-    `
-    )
-    .eq("id", businessID)
-    .single();
-
-  const { data: products, productError } = await supabase
-    .from("products")
-    .select(
-      `
-id, name,price,description,published,created_at, updated_at, category(name), sub_category(name)
-store (
-  name
-)
-`
-    )
-    .eq("store_id", users.store[0].id);
-
-  if (!users) {
-    return {
-      notFound: true,
-    };
-  }
-  return {
-    props: {
-      user: users,
-      store: users.store,
-      allProducts: products,
-    },
-  };
-}

@@ -42,68 +42,68 @@ export default function ContactDetails({ user }) {
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">First Name</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.first_name}</div>
+                <div className="capitalize font-bold ">{user?.first_name}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Last Name</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.last_name}</div>
+                <div className="capitalize font-bold ">{user?.last_name}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Email</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.username}</div>
+                <div className="capitalize font-bold ">{user?.username}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Phone</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.phone}</div>
+                <div className="capitalize font-bold ">{user?.phone}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Address</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.address}</div>
+                <div className="capitalize font-bold ">{user?.address}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">City</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.city}</div>
+                <div className="capitalize font-bold ">{user?.city}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">State</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.state}</div>
+                <div className="capitalize font-bold ">{user?.state}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Country</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.country}</div>
+                <div className="capitalize font-bold ">{user?.country}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Postcode</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.postcode}</div>
+                <div className="capitalize font-bold ">{user?.postcode}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">About User</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user.description}</div>
+                <div className="capitalize font-bold ">{user?.description}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Verification</TableCell>
               <TableCell align="left">
                 <div className="capitalize font-bold ">
-                  {user.verified ? "Verified" : "unverified"}
+                  {user?.verified ? "Verified" : "unverified"}
                 </div>
               </TableCell>
             </TableRow>
@@ -125,8 +125,8 @@ export default function ContactDetails({ user }) {
                 }}
               />
               <CardContent>
-                {!user.verified && (
-                  <Button startIcon={<MessageCircle />} variant="contained">
+                {!user?.verified && (
+                  <Button startIcon={<MessageCircle />} color="primary" variant="contained">
                     Resend Verification
                   </Button>
                 )}
@@ -139,7 +139,7 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
                         <div className="capitalize font-bold ">
-                          {user.updated_at}
+                          {user?.updated_at}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -147,7 +147,7 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">Last Update:</TableCell>
                       <TableCell align="left">
                         <div className="capitalize font-bold ">
-                          {user.updated_at}
+                          {user?.updated_at}
                         </div>
                       </TableCell>
                     </TableRow>
