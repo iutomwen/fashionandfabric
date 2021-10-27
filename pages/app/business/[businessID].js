@@ -21,7 +21,6 @@ import ContactDetails from "../../../components/users/ContactDetails";
 import StoreDetails from "../../../components/users/StoreDetails";
 import ToastNotify from "../../../libs/useNotify";
 import toast from "react-hot-toast";
-import { route } from "next/dist/server/router";
 import { useRouter } from "next/router";
 import LoadingBox from "../../../components/common/LoadingBox";
 import UserProducts from "../../../components/users/UserProducts";
@@ -69,7 +68,7 @@ export default function BusinessID() {
   const [user, setUser] = useState();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  route = useRouter();
+ const route = useRouter();
   // console.log(route)
  const {businessID} = route?.query;
   const handleChange = (event, newValue) => {

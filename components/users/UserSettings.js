@@ -13,7 +13,7 @@ import Checkbox from '@mui/material/Checkbox';
 
 export default function UserSettings() {
   return (
-    <Card sx={{ minWidth: "100%" }}>
+    <Card raised sx={{ minWidth: "100%" }}>
       <CardContent>
         <Typography variant="h4" color="text.secondary" gutterBottom>
         Notifications
