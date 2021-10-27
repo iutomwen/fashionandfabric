@@ -41,57 +41,61 @@ export default function StoreDetails({ store }) {
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Store Name</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.first_name}</div>
+                <div className="capitalize font-bold ">{store[0].name}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Store Description</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.description}</div>
+                <div className="capitalize font-bold ">
+                  {store[0]?.description}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Business Registration Number</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.businessreg}</div>
+                <div className="capitalize font-bold ">
+                  {store[0].businessreg}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Subcription</TableCell>
               <TableCell align="left">
                 <div className="capitalize font-bold ">
-                  {store.subcription_id}
+                  {store[0].subcription_id}
                 </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Address</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.address}</div>
+                <div className="capitalize font-bold ">{store[0].address}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">City</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.city}</div>
+                <div className="capitalize font-bold ">{store[0].city}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">State</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.state}</div>
+                <div className="capitalize font-bold ">{store[0].state}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Country</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.country}</div>
+                <div className="capitalize font-bold ">{store[0].country}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Postcode</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{store.postcode}</div>
+                <div className="capitalize font-bold ">{store[0].postcode}</div>
               </TableCell>
             </TableRow>
 
@@ -99,7 +103,7 @@ export default function StoreDetails({ store }) {
               <TableCell align="left">Verification</TableCell>
               <TableCell align="left">
                 <div className="capitalize font-bold ">
-                  {store.isactive ? "Active" : "inActive"}
+                  {store[0].isactive ? "Active" : "inActive"}
                 </div>
               </TableCell>
             </TableRow>
@@ -121,7 +125,7 @@ export default function StoreDetails({ store }) {
                 }}
               />
               <CardContent>
-                {!store.isactive && (
+                {!store[0].isactive && (
                   <Button startIcon={<MessageCircle />} variant="contained">
                     Activate Store
                   </Button>
@@ -135,7 +139,7 @@ export default function StoreDetails({ store }) {
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
                         <div className="capitalize font-bold ">
-                          {store.updated_at}
+                          {store[0].updated_at}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -143,7 +147,7 @@ export default function StoreDetails({ store }) {
                       <TableCell align="left">Last Update:</TableCell>
                       <TableCell align="left">
                         <div className="capitalize font-bold ">
-                          {store.updated_at}
+                          {store[0].updated_at}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -166,7 +170,7 @@ export default function StoreDetails({ store }) {
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  {store.isactive && (
+                  {store[0].isactive && (
                     <Button startIcon={<BlockIcon />} variant="text">
                       Deactivate Store
                     </Button>
