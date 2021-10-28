@@ -68,6 +68,7 @@ function UserEdit({ user }) {
             postcode,
             description,
             address,
+            updated_at: new Date(),
           },
           {
             returning: "minimal",

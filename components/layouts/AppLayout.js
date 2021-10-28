@@ -107,6 +107,7 @@ function AppLayout(props) {
   users(id, first_name, username, last_name, phone, verified) `
         )
         .eq("role", userType)
+        .limit(15)
         .order("id", { ascending: false });
       if (error) throw error;
       if (user_roles) {

@@ -2,7 +2,7 @@ import React from "react";
 
 import AppLayout from "../../components/layouts/AppLayout";
 
-import { Box, Container, Grid } from "@material-ui/core";
+import { Box, Container, Grid, CardHeader, Divider } from "@mui/material";
 import SubcriptionTab from "../../components/common/SubcriptionTab";
 import TotalBusinessCustomers from "../../components/common/TotalBusinessCustomers";
 import TotalPersonalCustomers from "../../components/common/TotalPersonalCustomers";
@@ -11,7 +11,6 @@ import LatestOrders from "../../components/common/LatestOrders";
 import LatestUsers from "../../components/common/LatestUsers";
 import Head from "next/head";
 import { APPNAME } from "../../libs/constant";
-import { supabase } from "../../libs/supabaseClient";
 
 export default function Dashboard() {
   return (
@@ -48,6 +47,12 @@ export default function Dashboard() {
                 <LatestOrders />
               </Grid>
               <Grid item lg={12} md={12} xl={12} xs={12}>
+                <CardHeader
+                  title={`Latest Personal Users`}
+                  className=" capitalize"
+                />
+                <Divider className="mb-4" />
+
                 <LatestUsers userType="personal" />
               </Grid>
             </Grid>

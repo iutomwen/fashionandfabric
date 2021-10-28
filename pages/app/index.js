@@ -7,7 +7,7 @@ function Index(props) {
   return (
     <div>
       {" "}
-      <div>uwuw</div>
+      <div>dashboard</div>
     </div>
   );
 }

@@ -126,7 +126,11 @@ export default function ContactDetails({ user }) {
               />
               <CardContent>
                 {!user?.verified && (
-                  <Button startIcon={<MessageCircle />} color="primary" variant="contained">
+                  <Button
+                    startIcon={<MessageCircle />}
+                    color="primary"
+                    variant="contained"
+                  >
                     Resend Verification
                   </Button>
                 )}
@@ -139,7 +143,7 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
                         <div className="capitalize font-bold ">
-                          {user?.updated_at}
+                          {user?.created_at}
                         </div>
                       </TableCell>
                     </TableRow>

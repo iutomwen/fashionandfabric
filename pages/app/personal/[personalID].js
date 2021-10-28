@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import Head from "next/head";
-import { supabase } from "../../../../libs/supabaseClient";
-import PropTypes from "prop-types";
-import ToastNotify from "../../../../libs/useNotify";
-import NextLink from "next/link";
+import React, { useState, useEffect } from "react";
+import AppLayout from "../../../components/layouts/AppLayout";
 import {
   Box,
-  Link,
-  CssBaseline,
-  Typography,
-  Container,
-  Tabs,
-  Tab,
   Breadcrumbs,
+  Container,
+  Link,
+  Typography,
+  Button,
+  CssBaseline,
 } from "@mui/material";
-import AppLayout from "../../../../components/layouts/AppLayout";
-import { APPNAME } from "../../../../libs/constant";
-import UserEdit from "../../../../components/users/edit/UserEdit";
-import LoadingBox from "../../../../components/common/LoadingBox";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import NextLink from "next/link";
+import Head from "next/head";
+import { APPNAME } from "../../../libs/constant";
+import { supabase } from "../../../libs/supabaseClient";
+import { Edit } from "@material-ui/icons";
+import ContactDetails from "../../../components/users/ContactDetails";
+import ToastNotify from "../../../libs/useNotify";
 import toast from "react-hot-toast";
-import StoreEdit from "../../../../components/users/edit/StoreEdit";
+import router, { useRouter } from "next/router";
+import LoadingBox from "../../../components/common/LoadingBox";
+import UserSettings from "../../../components/users/UserSettings";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -59,23 +61,23 @@ function a11yProps(index) {
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-function EditUser() {
+function personalID() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
+  const route = useRouter();
+  const { personalID } = route.query;
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const route = useRouter();
-  const { id } = route?.query;
   async function getDetails(id) {
     try {
       let { data: users, error } = await supabase
         .from("users")
         .select(
           `*,
-      store(*),
-      user_roles(role)
+      user_settings(*)
       `
         )
         .eq("id", id)
@@ -87,30 +89,31 @@ function EditUser() {
       return true;
     } catch (error) {
       toast.error(error.message);
+      router.push("/app/personal");
     }
   }
 
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
+
     if (!isCancelled) {
-      if (id) {
-        getDetails(id);
-        setLoading(false);
+      if (personalID) {
+        setLoading(true);
+        getDetails(personalID);
       }
     }
-
+    setLoading(false);
     return () => {
       isCancelled = true;
     };
-  }, [id]);
-
+  }, [personalID]);
   return (
     <AppLayout>
       <ToastNotify />
       <CssBaseline />
       <Head>
-        <title>{APPNAME} - Edit Profile</title>
+        <title>{APPNAME} - View Profile</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
       {loading ? (
@@ -135,6 +138,13 @@ function EditUser() {
             <div className="text-2xl font-bold capitalize">
               {user?.first_name} {user?.last_name}
             </div>
+            <NextLink href={`/app/user/edit/${user?.id}`} passHref>
+              <Link>
+                <Button startIcon={<Edit />} variant="outlined">
+                  Edit
+                </Button>
+              </Link>
+            </NextLink>
           </Box>
           <Breadcrumbs aria-label="breadcrumb">
             <NextLink href="/app/dashboard" passHref>
@@ -142,22 +152,13 @@ function EditUser() {
                 Dashboard
               </Link>
             </NextLink>
-            <NextLink href={`/app/${user?.user_roles[0].role}`} passHref>
+            <NextLink href="/app/personal" passHref>
               <Link underline="hover" color="inherit">
-                <div className="capitalize">{`${user?.user_roles[0].role} User`}</div>
+                Personal Users
               </Link>
             </NextLink>
-            <NextLink
-              href={`/app/${user?.user_roles[0].role}/${user?.id}`}
-              passHref
-            >
-              <Link underline="hover" color="inherit">
-                <div className="capitalize">View profile</div>
-              </Link>
-            </NextLink>
-            <Typography color="text.primary">Edit Profile</Typography>
+            <Typography color="text.primary">View Profile</Typography>
           </Breadcrumbs>
-
           <Container
             sx={{
               mt: 2,
@@ -172,24 +173,16 @@ function EditUser() {
                   variant="fullWidth"
                   aria-label="basic tabs example"
                 >
-                  <Tab label="User Edit" {...a11yProps(0)} />
-                  {user?.user_roles[0].role === `personal` ? (
-                    <Tab
-                      disabled
-                      label="Store Not Available"
-                      {...a11yProps(1)}
-                    />
-                  ) : (
-                    <Tab label="Store Edit" {...a11yProps(1)} />
-                  )}
+                  <Tab label="User Details" {...a11yProps(0)} />
+
+                  <Tab label="Account Settings" {...a11yProps(1)} />
                 </Tabs>
               </Box>
               <TabPanel value={value} index={0}>
-                <UserEdit user={user} />
+                <ContactDetails user={user} />
               </TabPanel>
               <TabPanel value={value} index={1}>
-                {/* <Typography>Store</Typography> */}
-                <StoreEdit store={user?.store[0]} />
+                <UserSettings />
               </TabPanel>
             </Box>
           </Container>
@@ -199,4 +192,4 @@ function EditUser() {
   );
 }
 
-export default EditUser;
+export default personalID;

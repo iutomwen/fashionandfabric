@@ -10,49 +10,28 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Copyright from "../components/utils/Copyright";
-import MessageBox from "../components/common/MessageBox";
 import ApplicationLogo from "../components/common/ApplicationLogo";
 import { supabase } from "../libs/supabaseClient";
 import { Store } from "../utils/Store";
 import LoadingBox from "../components/common/LoadingBox";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
-import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Alert } from "@mui/material";
+import toast from "react-hot-toast";
+import ToastNotify from "../libs/useNotify";
+
 export default function Auth() {
-  const { state, dispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { accountDetails, accountSession } = state;
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm();
-  const [openState, setOpenState] = useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-  });
 
-  // const [error, setError] = useState(null);
-  // const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [message, setMessage] = useState(null);
   const [pending, setPending] = useState(false);
-  const { vertical, horizontal, open } = openState;
-  const handleClick = (newState) => {
-    setOpenState({ open: true, ...newState });
-  };
 
-  const handleClose = (event, reason, newState) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenState({ open: false, ...newState });
-  };
   useEffect(() => {
     setLoading(true);
     if (accountDetails && accountSession) {
@@ -73,61 +52,22 @@ export default function Auth() {
       );
       if (error) throw error;
       if (data) {
-        handleClick({ vertical: "bottom", horizontal: "center" });
-        setMessage({
-          message: "A reset mail has been sent",
-          status: 200,
-          type: "success",
-        });
-        console.log(data);
+        toast.success("A reset mail has been sent");
       }
     } catch (error) {
-      handleClick({ vertical: "bottom", horizontal: "center" });
-      setMessage({
-        message: error.message || error.error_description,
-        status: 404,
-        type: "warning",
-      });
+      toast.error(error.message || error.error_description);
     } finally {
       setPending(false);
     }
   };
-  const action = (
-    <>
-      <Button color="secondary" size="small" onClick={handleClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleClose}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </>
-  );
+
   return (
     <>
       <Head>
         <title>{APPNAME} - Password Reset</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        action={action}
-        key={vertical + horizontal}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={message?.type}
-          sx={{ width: "100%" }}
-        >
-          {message?.message}
-        </Alert>
-      </Snackbar>
+      <ToastNotify />
       {loading ? (
         <LoadingBox />
       ) : (

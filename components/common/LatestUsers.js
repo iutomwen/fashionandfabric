@@ -7,18 +7,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button, CardHeader, Divider, Typography } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import Link from "next/link";
-import toast from "react-hot-toast";
 
 import { Badge } from "@mui/material";
 import { supabase } from "../../libs/supabaseClient";
 import { Store } from "../../utils/Store";
-import Cookies from "js-cookie";
 import ToastNotify from "../../libs/useNotify";
 
 export default function LatestUsers({ userType }) {
-  const { state, dispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { businessUsers, personalUsers } = state;
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -46,41 +44,6 @@ export default function LatestUsers({ userType }) {
   useEffect(() => {
     let isCancelled = false;
     if (!isCancelled) {
-      //     async function getUsers() {
-      //       try {
-      //         setLoading(true);
-      //         let { data: user_roles, error } = await supabase
-      //           .from("user_roles")
-      //           .select(
-      //             `
-      // users(id, first_name, username, last_name, phone, verified) `
-      //           )
-      //           .eq("role", userType)
-      //           .limit(10)
-      //           .order("id", { ascending: false });
-      //         if (error) throw error;
-      //         if (user_roles) {
-      //           if (userType == "personal") {
-      //             dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
-      //             Cookies.set("personalUsers", JSON.stringify(user_roles));
-      //           }
-      //           if (userType == "business") {
-      //             dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
-      //             Cookies.set("businessUsers", JSON.stringify(user_roles));
-      //           }
-      //         }
-      //       } catch (error) {
-      //         toast.error(error.message);
-
-      //         console.log(error);
-      //       } finally {
-      //         setLoading(false);
-      //       }
-      //     }
-
-      //     if (!personalUsers || !businessUsers) {
-      //       getUsers();
-      //     }
       if (userType == "personal") {
         setUsers(personalUsers);
         setLoading(false);
@@ -98,8 +61,6 @@ export default function LatestUsers({ userType }) {
     <div style={{ maxWidth: "100%" }}>
       <ToastNotify />
       {loading && <LoadingBox />}
-      <CardHeader title={`Latest ${userType}`} />
-      <Divider className="mb-4" />
 
       {users?.lenght === 0 ? (
         `No ${userType} profile available`
