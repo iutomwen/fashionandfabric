@@ -105,6 +105,11 @@ export default function Register() {
           .from("user_roles")
           .update({ role })
           .eq("user_id", user.id);
+        ///
+        const { userdata: user, errors } = await supabase
+          .from("users")
+          .update({ roles: role })
+          .eq("id", user.id);
         if (role === "personal" || role === "business") {
           if (role === "business") {
             const { data, error } = await supabase

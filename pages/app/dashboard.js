@@ -44,6 +44,8 @@ export default function Dashboard() {
                 <TotalValidProducts sx={{ height: "100%" }} />
               </Grid>
               <Grid item lg={12} md={12} xl={12} xs={12}>
+                <CardHeader title="Latest Products" />
+                <Divider className="mb-4" />
                 <LatestOrders />
               </Grid>
               <Grid item lg={12} md={12} xl={12} xs={12}>

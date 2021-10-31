@@ -56,8 +56,7 @@ export default function LatestOrders() {
     <div style={{ maxWidth: "100%" }}>
       <ToastNotify />
       {loading && <LoadingBox />}
-      <CardHeader title="Latest Products" />
-      <Divider className="mb-4" />
+
       {products?.length === 0 ? (
         "No products available."
       ) : (

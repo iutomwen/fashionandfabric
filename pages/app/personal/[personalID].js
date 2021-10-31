@@ -146,7 +146,7 @@ function personalID() {
               </Link>
             </NextLink>
           </Box>
-          <Breadcrumbs aria-label="breadcrumb">
+          <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2 }}>
             <NextLink href="/app/dashboard" passHref>
               <Link underline="hover" color="inherit">
                 Dashboard
