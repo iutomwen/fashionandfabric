@@ -105,7 +105,6 @@ export default function Register() {
           .from("user_roles")
           .update({ role })
           .eq("user_id", user.id);
-        ///
         const { userdata: user, errors } = await supabase
           .from("users")
           .update({ roles: role })
@@ -115,14 +114,12 @@ export default function Register() {
             const { data, error } = await supabase
               .from("store")
               .insert([{ user_id: user.id }]);
-            // return;
           }
           supabase.auth.signOut();
           console.log("block login");
           dispatch({ type: "USER_LOGOUT" });
           localStorage.clear();
           toast.success("Account Created");
-          // return;
         }
 
         if (role == "staff") {
