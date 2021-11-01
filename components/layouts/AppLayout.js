@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import ToastNotify from "../../libs/useNotify";
+import NoSsr from "@mui/material/NoSsr";
 
 function AppLayout(props) {
   const { state, dispatch } = useContext(Store);

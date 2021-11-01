@@ -114,7 +114,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 700,
+  width: "50%",
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -136,11 +136,23 @@ export default function Category() {
         <Box
           sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
         >
-          <Button onClick={handleOpen} variant="outlined" color="primary">
-            Create New
-          </Button>
+          <div className="mx-3">
+            <Button onClick={handleOpen} variant="outlined" color="primary">
+              Add Sub-Category
+            </Button>
+          </div>
+          <div className="mx-3">
+            <Button
+              onClick={handleOpen}
+              variant="outlined"
+              color="primary"
+              sx={{ mb: 4 }}
+            >
+              Add Category
+            </Button>
+          </div>
         </Box>
-        <TableContainer component={Paper} sx={{ minWidth: "100%" }}>
+        <TableContainer component={Paper} sx={{ minWidth: "100%", mt: 4 }}>
           <Table aria-label="collapsible table" sx={{ minWidth: "100%" }}>
             <TableHead>
               <TableRow>

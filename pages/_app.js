@@ -1,4 +1,3 @@
-import "tailwindcss/tailwind.css";
 import * as React from "react";
 import PropTypes from "prop-types";
 import { StoreProvider } from "../utils/Store";
@@ -6,6 +5,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider } from "@emotion/react";
 import theme from "../utils/theme";
+import "tailwindcss/tailwind.css";
 import createEmotionCache from "../utils/createEmotionCache";
 
 // Client-side cache, shared for the whole session of the user in the browser.

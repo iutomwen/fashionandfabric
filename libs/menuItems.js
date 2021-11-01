@@ -39,7 +39,7 @@ export const menuItems = [
     href: "/app/product",
     icon: ShoppingBagIcon,
     title: "Products",
-    badge: 2,
+    badge: null,
   },
   {
     href: "/app/subcriptions",
@@ -52,19 +52,19 @@ export const menuItems = [
     href: "/app/contactMessages",
     icon: MailIcon,
     title: "Contact Messages",
-    badge: 2,
+    badge: null,
   },
   {
     href: "/app/VendorMessages",
     icon: MessagesIcon,
     title: "Vendors Messages",
-    badge: 70,
+    badge: null,
   },
   {
     href: "/app/notifications",
     icon: NotificationsNoneIcon,
     title: "Notifications",
-    badge: 900,
+    badge: null,
   },
   {
     href: "/app/account",

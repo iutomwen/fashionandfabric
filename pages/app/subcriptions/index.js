@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import AppLayout from "../../components/layouts/AppLayout";
-import { Breadcrumbs, Container, Link } from "@mui/material";
+import AppLayout from "../../../components/layouts/AppLayout";
 import NextLink from "next/link";
-import Category from "../../components/settings/Category";
-import { APPNAME } from "../../libs/constant";
 import Head from "next/head";
+import { APPNAME } from "../../../libs/constant";
+import {
+  Breadcrumbs,
+  Box,
+  Link,
+  Tab,
+  Tabs,
+  Typography,
+  Button,
+} from "@mui/material";
+import PropTypes from "prop-types";
+import SubcriptionList from "../../../components/settings/SubcriptionList";
+import { useRouter } from "next/router";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -36,24 +41,23 @@ TabPanel.propTypes = {
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
+
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-
-export default function Settings() {
+export default function Subcriptions() {
   const [value, setValue] = useState(0);
-
+  const router = useRouter();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   return (
     <AppLayout>
       <Head>
-        <title>{APPNAME} - Settings</title>
+        <title>{APPNAME} - Subcriptions List</title>
         <link rel="icon" href="/favicon.ico" />{" "}
       </Head>
       <Box
@@ -72,32 +76,41 @@ export default function Settings() {
             </Link>
           </NextLink>
           <Typography underline="hover" color="inherit">
-            Application Settings
+            Subcriptions
           </Typography>
         </Breadcrumbs>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            variant="fullWidth"
-            aria-label="basic tabs example"
-          >
-            <Tab label="General" {...a11yProps(0)} />
-            <Tab label="Category" {...a11yProps(1)} />
-            <Tab label="Events" {...a11yProps(2)} />
-            <Tab label="Application" {...a11yProps(3)} />
-          </Tabs>
+        <Box
+          sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+        >
+          <div className="mr-20 mb-5">
+            <Button
+              onClick={() => {
+                router.push("/app/subcriptions/create");
+              }}
+              variant="outlined"
+              color="primary"
+            >
+              Add Subcriptions
+            </Button>
+          </div>
+        </Box>
+        <Box sx={{ width: "100%" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={value}
+              variant="fullWidth"
+              onChange={handleChange}
+              aria-label="basic tabs example"
+            >
+              <Tab label="Subcriptions Items" {...a11yProps(0)} />
+              <Tab label="Shops With Subcriptions" {...a11yProps(1)} />
+            </Tabs>
+          </Box>
           <TabPanel value={value} index={0}>
-            General
+            <SubcriptionList />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <Category />
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            Events
-          </TabPanel>
-          <TabPanel value={value} index={3}>
-            Application
+            ShopsWithSubcription
           </TabPanel>
         </Box>
       </Box>
