@@ -109,7 +109,6 @@ function CreateProduct() {
       if (error) throw error;
       if (data) {
         router.push("/app/product");
-        // 22a65848
       }
     } catch (error) {
       console.log(error);
@@ -370,7 +369,7 @@ function CreateProduct() {
                             required
                             fullWidth
                             id="files"
-                            // label="File Upload"
+                          // label="File Upload"
                           />
                         </Grid>
                       </Grid>
@@ -386,7 +385,7 @@ function CreateProduct() {
                       <Button
                         type="submit"
                         variant="contained"
-                        onClick={() => {}}
+                        onClick={() => { }}
                       >
                         Create Product
                       </Button>

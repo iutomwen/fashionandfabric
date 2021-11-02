@@ -169,13 +169,13 @@ function AppLayout(props) {
   const [getPayload, setGetPayoad] = useState(null);
   const session = supabase.auth.session();
 
-  const userRoles = supabase
-    .from("*")
-    .on("*", (payload) => {
-      // console.log("Change received!", payload);
-      setGetPayoad(payload);
-    })
-    .subscribe();
+  // const userRoles = supabase
+  //   .from("*")
+  //   .on("*", (payload) => {
+  //     // console.log("Change received!", payload);
+  //     setGetPayoad(payload);
+  //   })
+  //   .subscribe();
 
   useEffect(() => {
     setLoading(true);
@@ -216,7 +216,7 @@ function AppLayout(props) {
     return () => {
       isCancelled = true;
     };
-  }, [getPayload]);
+  }, []);
 
   return (
     <>

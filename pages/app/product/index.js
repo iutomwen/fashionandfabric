@@ -18,6 +18,7 @@ import NextLink from "next/link";
 import Tabs from "@mui/material/Tabs";
 import PropTypes from "prop-types";
 import Tab from "@mui/material/Tab";
+import { useRouter } from "next/router";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -58,6 +59,7 @@ function a11yProps(index) {
 function Index() {
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(true);
+  const route = useRouter();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -71,7 +73,7 @@ function Index() {
       <ToastNotify />
       <Box
         // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
-        className="mt-2 ml-0 md:ml-5 xl:ml-10 relative"
+        className="relative mt-2 ml-0 md:ml-5 xl:ml-10"
         sx={{
           backgroundColor: "background.default",
           minHeight: "100%",
@@ -97,17 +99,13 @@ function Index() {
             }}
           >
             <div className=""></div>
-            <Link href="/app/product/create">
-              <Button variant="outlined">
-                <a>Create New</a>
-              </Button>
-            </Link>
+
+            <Button variant="outlined" onClick={() => { route.push("/app/product/create") }}>
+              <a>Create New</a>
+            </Button>
+
           </Box>
-          {/* <Grid className="h-screen" container spacing={3}>
-            <Grid item lg={12} md={12} xl={12} xs={12}>
-              <LatestOrders />
-            </Grid>
-          </Grid> */}
+
 
           <Box sx={{ width: "100%" }}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

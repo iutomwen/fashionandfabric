@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
@@ -18,25 +18,18 @@ import { Button } from "@mui/material";
 import Head from "next/head";
 import { APPNAME } from "../../libs/constant";
 import Modal from "@mui/material/Modal";
+import AddCategory from "./AddCategory";
+import AddSubCategory from "./AddSubCategory";
+import { supabase } from "../../libs/supabaseClient";
+import toast from "react-hot-toast";
+import Dialog from '@mui/material/Dialog';
 
-function createData(name, calories) {
-  return {
-    name,
-    calories,
-    history: [
-      {
-        date: "2020-01-05",
-        customerId: "11091700",
-        amount: 3,
-      },
-      {
-        date: "2020-01-02",
-        customerId: "Anonymous",
-        amount: 1,
-      },
-    ],
-  };
-}
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function Row(props) {
   const { row } = props;
@@ -68,17 +61,17 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Name</TableCell>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Sub Category Name</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
+                  {row?.sub_category?.map((sub) => (
+                    <TableRow key={sub.id}>
                       <TableCell component="th" scope="row">
-                        {historyRow.date}
+                        {sub.id}
                       </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
+                      <TableCell>{sub.name}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -93,22 +86,17 @@ function Row(props) {
 
 Row.propTypes = {
   row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
+    name: PropTypes.number.isRequired,
     sub_category: PropTypes.arrayOf(
       PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired,
+        name: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
       })
     ).isRequired,
-    name: PropTypes.string.isRequired,
   }).isRequired,
 };
 
-const rows = [
-  createData("Frozen yoghurt", 159),
-  createData("Ice cream sandwich", 237),
-];
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -123,8 +111,41 @@ const style = {
 
 export default function Category() {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [rows, setRows] = useState([]);
+  const handleClickOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  useEffect(() => {
+    const getCategory = async () => {
+      try {
+
+        let { data: category, error } = await supabase
+          .from('category')
+          .select(`
+  id, created_at, name, sub_category:sub_category_category_id_fkey(id,name,created_at)
+`)
+        if (error) throw error;
+        if (category) {
+          setRows(category)
+          // console.log(category);
+        }
+      } catch (error) {
+        toast.error(error.message)
+      }
+    }
+    getCategory();
+  }, [])
 
   return (
     <>
@@ -137,14 +158,14 @@ export default function Category() {
           sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
         >
           <div className="mx-3">
-            <Button onClick={handleOpen} variant="outlined" color="primary">
+            <Button onClick={handleClickOpen} variant="text" color="primary">
               Add Sub-Category
             </Button>
           </div>
           <div className="mx-3">
             <Button
               onClick={handleOpen}
-              variant="outlined"
+              variant="text"
               color="primary"
               sx={{ mb: 4 }}
             >
@@ -162,11 +183,12 @@ export default function Category() {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <Row key={row.name} row={row} />
+                <Row key={row.id} row={row} />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+
         <Modal
           open={open}
           onClose={handleClose}
@@ -177,23 +199,22 @@ export default function Category() {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Add New Category
             </Typography>
-            <Box component="form" onSubmit={() => {}} noValidate sx={{ mt: 3 }}>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
-              <Typography
-                id="modal-modal-description"
-                sx={{ mt: 2 }}
-                gutterBottom
-              >
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
-            </Box>
+            <AddCategory onClick={(e) => handleClose()} />
           </Box>
-        </Modal>
+        </Modal >
+
+        <Dialog
+          open={dialogOpen}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleDialogClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Add Sub Category"}</DialogTitle>
+
+          <AddSubCategory onClick={(e) => handleDialogClose()} />
+
+        </Dialog>
       </NoSsr>
     </>
   );
