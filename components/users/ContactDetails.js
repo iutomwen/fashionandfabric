@@ -110,7 +110,7 @@ export default function ContactDetails({ user }) {
       try {
         const { data, error } = await supabase
           .from('users')
-          .update({ isdeleted: false, updated_at: new Date() })
+          .update({ isdeleted: true, updated_at: new Date() })
           .eq('id', popup.id);
         if (data) {
           //get store details
