@@ -46,7 +46,7 @@ export default function CreateSubcription() {
   const [pageLoading, setPageLoading] = useState(false);
 
   const SubmitHandler = async ({ name, productlimit, price, timeframe }) => {
-    setPageLoading(true);
+    setLoading(true);
     try {
       const { data, error } = await supabase.from("subcriptions	").insert([
         {
@@ -60,13 +60,13 @@ export default function CreateSubcription() {
 
       if (error) throw error;
       if (data) {
+        toast.success("Subcriptions Created Successfully");
         router.push("/app/subcriptions");
       }
     } catch (error) {
       toast.error(error.message);
-      console.log(error.message);
     } finally {
-      setPageLoading(false);
+      setLoading(false);
       reset(defaultValues);
     }
   };
@@ -242,8 +242,8 @@ export default function CreateSubcription() {
                         p: 2,
                       }}
                     >
-                      <Button type="submit" variant="contained">
-                        Create Subcription
+                      <Button type="submit" variant="text">
+                        {loading ? 'loading...' : 'Create Subcription'}
                       </Button>
                     </Container>
                   </Card>

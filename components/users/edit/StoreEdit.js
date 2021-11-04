@@ -16,6 +16,7 @@ import { supabase } from "../../../libs/supabaseClient";
 
 function StoreEdit({ store }) {
   const [loading, setLoading] = useState(false);
+  const [subcriptions, setSubcriptions] = useState([]);
   const [pageLoading, setPageLoading] = useState(false);
   const router = useRouter();
   const {
@@ -28,10 +29,23 @@ function StoreEdit({ store }) {
     defaultValues: store,
   });
 
+  async function getAllSubcription() {
+    try {
+
+      let { data: subcriptions, error } = await supabase
+        .from('subcriptions')
+        .select('*')
+      if (error) throw error;
+      setSubcriptions(subcriptions)
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   useEffect(() => {
     let isCancelled = false;
     if (!isCancelled) {
       if (store) {
+        getAllSubcription();
         reset(store);
       }
     }
@@ -49,6 +63,7 @@ function StoreEdit({ store }) {
     postcode,
     description,
     address,
+    subcription,
   }) => {
     setPageLoading(true);
     setLoading(true);
@@ -68,6 +83,7 @@ function StoreEdit({ store }) {
             postcode,
             description,
             address,
+            subcription_id: subcription,
           },
           {
             returning: "minimal",
@@ -361,6 +377,43 @@ function StoreEdit({ store }) {
                   )}
                 ></Controller>
               </Grid>
+              <Grid item md={6} xs={12}>
+                <Controller
+                  name="subcription"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: true,
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      fullWidth
+                      label="Select Subcription"
+                      id="subcription"
+                      select
+                      SelectProps={{ native: true }}
+                      variant="outlined"
+                      error={Boolean(errors.subcription)}
+                      helperText={
+                        errors.subcription
+                          ? errors.subcription.type === "required"
+                            ? "Please select a subcription"
+                            : "Subcription is required"
+                          : ""
+                      }
+                      {...field}
+                    >
+                      <option value={store.subcription_id}></option>
+                      {subcriptions?.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.package}
+                        </option>
+                      ))}
+
+                    </TextField>
+                  )}
+                ></Controller>
+              </Grid>
             </Grid>
           </CardContent>
           <CardActions sx={{ my: 4, pl: 3 }}>
@@ -368,11 +421,11 @@ function StoreEdit({ store }) {
               type="submit"
               startIcon={<Save />}
               size="medium"
-              variant="outlined"
+              variant="text"
               color="primary"
               disabled={loading}
             >
-              {loading ? "Updating.." : "Update Store"}
+              {loading ? "Updating..." : "Update Store"}
             </Button>
           </CardActions>
         </Card>

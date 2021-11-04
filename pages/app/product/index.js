@@ -19,6 +19,7 @@ import Tabs from "@mui/material/Tabs";
 import PropTypes from "prop-types";
 import Tab from "@mui/material/Tab";
 import { useRouter } from "next/router";
+import AddIcon from '@mui/icons-material/Add';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -100,8 +101,8 @@ function Index() {
           >
             <div className=""></div>
 
-            <Button variant="outlined" onClick={() => { route.push("/app/product/create") }}>
-              <a>Create New</a>
+            <Button startIcon={<AddIcon />} variant="text" onClick={() => { route.push("/app/product/create") }}>
+              Create New
             </Button>
 
           </Box>

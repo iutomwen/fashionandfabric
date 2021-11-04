@@ -20,7 +20,7 @@ import { Edit } from "@material-ui/icons";
 import ContactDetails from "../../../components/users/ContactDetails";
 import ToastNotify from "../../../libs/useNotify";
 import toast from "react-hot-toast";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import LoadingBox from "../../../components/common/LoadingBox";
 import UserSettings from "../../../components/users/UserSettings";
 
@@ -89,7 +89,7 @@ function personalID() {
       return true;
     } catch (error) {
       toast.error(error.message);
-      router.push("/app/personal");
+      route.push("/app/personal");
     }
   }
 
@@ -107,7 +107,7 @@ function personalID() {
     return () => {
       isCancelled = true;
     };
-  }, [personalID]);
+  }, [user]);
   return (
     <AppLayout>
       <ToastNotify />
@@ -120,7 +120,7 @@ function personalID() {
         <LoadingBox />
       ) : (
         <Box
-          className="mt-5 ml-0 md:ml-5 xl:ml-10 relative"
+          className="relative mt-5 ml-0 md:ml-5 xl:ml-10"
           sx={{
             backgroundColor: "background.default",
             minHeight: "100%",
@@ -138,13 +138,11 @@ function personalID() {
             <div className="text-2xl font-bold capitalize">
               {user?.first_name} {user?.last_name}
             </div>
-            <NextLink href={`/app/user/edit/${user?.id}`} passHref>
-              <Link>
-                <Button startIcon={<Edit />} variant="outlined">
-                  Edit
-                </Button>
-              </Link>
-            </NextLink>
+
+            <Button startIcon={<Edit />} onClick={() => route.push(`/app/user/edit/${user?.id}`)} variant="text">
+              Edit
+            </Button>
+
           </Box>
           <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2 }}>
             <NextLink href="/app/dashboard" passHref>

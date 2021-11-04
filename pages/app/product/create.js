@@ -22,7 +22,14 @@ import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { APPNAME } from "../../../libs/constant";
 import Head from "next/head";
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import Stack from '@mui/material/Stack';
 
+const Input = styled('input')({
+  display: 'none',
+});
 const defaultValues = {
   name: "",
   description: "",
@@ -364,13 +371,20 @@ function CreateProduct() {
                           </div>
                         </Grid>
                         <Grid item md={6} xs={12}>
-                          <TextField
-                            inputProps={{ type: "file" }}
-                            required
-                            fullWidth
-                            id="files"
-                          // label="File Upload"
-                          />
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <label htmlFor="contained-button-file">
+                              <Input accept="image/*" id="contained-button-file" multiple type="file" />
+                              <Button variant="text" component="span">
+                                Upload
+                              </Button>
+                            </label>
+                            <label htmlFor="icon-button-file">
+                              <Input accept="image/*" id="icon-button-file" type="file" />
+                              <IconButton color="primary" aria-label="upload picture" component="span">
+                                <PhotoCamera />
+                              </IconButton>
+                            </label>
+                          </Stack>
                         </Grid>
                       </Grid>
                     </CardContent>
@@ -384,7 +398,7 @@ function CreateProduct() {
                     >
                       <Button
                         type="submit"
-                        variant="contained"
+                        variant="text"
                         onClick={() => { }}
                       >
                         Create Product

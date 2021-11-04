@@ -14,18 +14,88 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useRouter } from "next/router";
+import { DeleteOutline } from "@mui/icons-material";
+
+function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
+  const [open, setOpen] = React.useState(true);
+
+  const handleClose = () => {
+    setOpen(false);
+    handleDeleteFalse();
+  };
+  return (
+    <div className="modal">
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {`Remove Subcription`}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleDeleteTrue} autoFocus>
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
+
 
 export default function SubcriptionList() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const handleClickOpen = () => {
-    setOpen(true);
+  const [popup, setPopup] = useState({
+    show: false, // initial values set to false and null
+    id: null,
+  });
+
+  const handleDelete = (id) => {
+    setPopup({
+      show: true,
+      id,
+    });
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleDeleteTrue = async () => {
+    if (popup.show && popup.id) {
+
+      try {
+        const { data, error } = await supabase
+          .from('subcriptions')
+          .delete()
+          .eq('id', popup.id);
+        if (error) throw error;
+        toast.success("Subcription Removed Successfully")
+      } catch (error) {
+        toast.error(error.message)
+      }
+
+      setPopup({
+        show: false,
+        id: null,
+      });
+    }
+  };
+
+  // This will just hide the Confirmation Box when user clicks "No"/"Cancel"
+
+  const handleDeleteFalse = () => {
+    setPopup({
+      show: false,
+      id: null,
+    });
   };
   async function getSubcription() {
     setLoading(true);
@@ -48,9 +118,9 @@ export default function SubcriptionList() {
   function loadSubcription(id) {
     router.push(`/app/subcriptions/${id}`);
   }
+
   useEffect(() => {
     let isCanelled = false;
-
     if (!isCanelled) {
       getSubcription();
     }
@@ -83,11 +153,11 @@ export default function SubcriptionList() {
               <TableCell>{row.package}</TableCell>
               <TableCell>{row.price}</TableCell>
               <TableCell>{row.productlimit} </TableCell>
-              <TableCell>{row.timeframe} days</TableCell>
+              <TableCell>{row.timeframe} Days</TableCell>
               <TableCell>
                 <Box
                   sx={{
-                    width: "50%",
+                    width: "60%",
                     display: "flex",
                     justifyContent: "space-between",
                   }}
@@ -98,39 +168,25 @@ export default function SubcriptionList() {
                     }}
                     variant="outlined"
                     color="primary"
+                    sx={{ mx: 4 }}
                   >
                     Edit
                   </Button>
                   <Button
-                    onClick={handleClickOpen}
-                    variant="outlined"
-                    color="warning"
+                    endIcon={<DeleteOutline />}
+                    onClick={(e) => handleDelete(row.id)}
+                    variant="text"
+                    color="primary"
                   >
                     Remove
                   </Button>
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby={`alert-dialog-title-${row.id}`}
-                    aria-describedby={`alert-dialog-description-${row.id}`}
-                  >
-                    <DialogTitle id={`alert-dialog-title-${row.id}`}>
-                      {`Remove ${row.package}?`}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText
-                        id={`alert-dialog-description-${row.id}`}
-                      >
-                        Are you sure you want to remove this subcription?.
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose}>No</Button>
-                      <Button onClick={handleClose} autoFocus>
-                        Yes
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                  {popup.show && (
+                    <Popup
+                      id={popup.id}
+                      handleDeleteTrue={handleDeleteTrue}
+                      handleDeleteFalse={handleDeleteFalse}
+                    />
+                  )}
                 </Box>
               </TableCell>
             </TableRow>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
 import AppLayout from "../../../components/layouts/AppLayout";
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   Typography,
   Button,
   CssBaseline,
+  Alert,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -25,6 +26,8 @@ import { useRouter } from "next/router";
 import LoadingBox from "../../../components/common/LoadingBox";
 import UserProducts from "../../../components/users/UserProducts";
 import UserSettings from "../../../components/users/UserSettings";
+
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -65,6 +68,7 @@ function a11yProps(index) {
 }
 export default function BusinessID() {
   const [value, setValue] = useState(0);
+  const [userID, setUserID] = useState(0);
   const [user, setUser] = useState();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +84,8 @@ export default function BusinessID() {
         .from("users")
         .select(
           `*,
-      store(*)
+      store(*,
+        subcriptions(package,id))
       `
         )
         .eq("id", id)
@@ -111,7 +116,6 @@ export default function BusinessID() {
       if (error) throw error;
       if (products) {
         setProducts(products);
-        console.log(storeid);
       }
       return true;
     } catch (error) {
@@ -124,8 +128,8 @@ export default function BusinessID() {
     setLoading(true);
 
     if (!isCancelled) {
-      if (businessID) {
-        getDetails(businessID);
+      if (userID) {
+        getDetails(userID);
         if (user) {
           getStoreProducts(user?.store[0].id);
           setLoading(true);
@@ -136,6 +140,12 @@ export default function BusinessID() {
     return () => {
       isCancelled = true;
     };
+  }, [userID]);
+
+  useLayoutEffect(() => {
+    if (businessID) {
+      setUserID(businessID);
+    }
   }, [businessID]);
   return (
     <AppLayout>
@@ -149,7 +159,7 @@ export default function BusinessID() {
         <LoadingBox />
       ) : (
         <Box
-          className="mt-5 ml-0 md:ml-5 xl:ml-10 relative"
+          className="relative mt-5 ml-0 md:ml-5 xl:ml-10"
           sx={{
             backgroundColor: "background.default",
             minHeight: "100%",
@@ -167,13 +177,11 @@ export default function BusinessID() {
             <div className="text-2xl font-bold capitalize">
               {user?.first_name} {user?.last_name}
             </div>
-            <NextLink href={`/app/user/edit/${user?.id}`} passHref>
-              <Link>
-                <Button startIcon={<Edit />} variant="outlined">
-                  Edit
-                </Button>
-              </Link>
-            </NextLink>
+
+            <Button startIcon={<Edit />} variant="text" onClick={() => route.push(`/app/user/edit/${user?.id}`)}>
+              Edit
+            </Button>
+
           </Box>
           <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2 }}>
             <NextLink href="/app/dashboard" passHref>
@@ -194,6 +202,17 @@ export default function BusinessID() {
               width: "100%",
             }}
           >
+            {user?.isdeleted && <Alert
+              variant="outlined"
+              severity="warning"
+              action={
+                <Button color="inherit" size="small">
+                  UNDO
+                </Button>
+              }
+            >
+              This account has been deleted. — Every associate products and store will be deactivated!
+            </Alert>}
             <Box sx={{ width: "100%" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs

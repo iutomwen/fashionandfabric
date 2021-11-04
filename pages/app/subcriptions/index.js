@@ -11,10 +11,12 @@ import {
   Tabs,
   Typography,
   Button,
+  ThemeProvider,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import SubcriptionList from "../../../components/settings/SubcriptionList";
 import { useRouter } from "next/router";
+import theme from "../../../utils/theme";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -29,7 +31,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -55,65 +57,69 @@ export default function Subcriptions() {
     setValue(newValue);
   };
   return (
-    <AppLayout>
-      <Head>
-        <title>{APPNAME} - Subcriptions List</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
-      </Head>
-      <Box
-        // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
-        className="mt-2 ml-0 md:ml-5 xl:ml-10 relative"
-        sx={{
-          backgroundColor: "background.default",
-          minHeight: "100%",
-          py: 3,
-        }}
-      >
-        <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2, mb: 3 }}>
-          <NextLink href="/app/dashboard" passHref>
-            <Link underline="hover" color="inherit">
-              Dashboard
-            </Link>
-          </NextLink>
-          <Typography underline="hover" color="inherit">
-            Subcriptions
-          </Typography>
-        </Breadcrumbs>
+    <ThemeProvider theme={theme}>
+
+
+      <AppLayout>
+        <Head>
+          <title>{APPNAME} - Subcriptions List</title>
+          <link rel="icon" href="/favicon.ico" />{" "}
+        </Head>
         <Box
-          sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+          // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
+          className="relative mt-2 ml-0 md:ml-5 xl:ml-10"
+          sx={{
+            backgroundColor: "background.default",
+            minHeight: "100%",
+            py: 3,
+          }}
         >
-          <div className="mr-20 mb-5">
-            <Button
-              onClick={() => {
-                router.push("/app/subcriptions/create");
-              }}
-              variant="outlined"
-              color="primary"
-            >
-              Add Subcriptions
-            </Button>
-          </div>
-        </Box>
-        <Box sx={{ width: "100%" }}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={value}
-              variant="fullWidth"
-              onChange={handleChange}
-              aria-label="basic tabs example"
-            >
-              <Tab label="Subcriptions Items" {...a11yProps(0)} />
-              <Tab label="Shops With Subcriptions" {...a11yProps(1)} />
-            </Tabs>
+          <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2, mb: 3 }}>
+            <NextLink href="/app/dashboard" passHref>
+              <Link underline="hover" color="inherit">
+                Dashboard
+              </Link>
+            </NextLink>
+            <Typography underline="hover" color="inherit">
+              Subcriptions
+            </Typography>
+          </Breadcrumbs>
+          <Box
+            sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+          >
+            <div className="mb-5 mr-20">
+              <Button
+                onClick={() => {
+                  router.push("/app/subcriptions/create");
+                }}
+                variant="text"
+                color="primary"
+              >
+                Add Subcriptions
+              </Button>
+            </div>
           </Box>
-          <TabPanel value={value} index={0}>
-            <SubcriptionList />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            ShopsWithSubcription
-          </TabPanel>
+          <Box sx={{ width: "100%" }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={value}
+                variant="fullWidth"
+                onChange={handleChange}
+                aria-label="basic tabs example"
+              >
+                <Tab label="Subcriptions Items" {...a11yProps(0)} />
+                <Tab label="Shops With Subcriptions" {...a11yProps(1)} />
+              </Tabs>
+            </Box>
+            <TabPanel value={value} index={0}>
+              <SubcriptionList />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              ShopsWithSubcription
+            </TabPanel>
+          </Box>
         </Box>
-      </Box>
-    </AppLayout>
+      </AppLayout>
+    </ThemeProvider>
   );
 }

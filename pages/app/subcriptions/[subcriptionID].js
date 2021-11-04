@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import AppLayout from "../../../components/layouts/AppLayout";
 import Head from "next/head";
 import NextLink from "next/link";
-
+import { supabase } from "../../../libs/supabaseClient"
 import { APPNAME } from "../../../libs/constant";
-import { useRouter } from "next/router";
-import { route } from "next/dist/server/router";
 import { Controller, useForm } from "react-hook-form";
 import {
   Box,
@@ -21,13 +19,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 export default function SubcriptionID() {
+  const route = useRouter();
+  const { subcriptionID } = route.query;
+  const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [subcription, setSubcription] = useState([]);
-  const [pageLoading, setPageLoading] = useState(false);
-  const SubmitHandler = async ({ name, productlimit, price, timeframe }) => {};
-  route = useRouter();
-  const { subcriptionID } = route.query;
   const {
     handleSubmit,
     control,
@@ -35,8 +34,65 @@ export default function SubcriptionID() {
     formState: { errors },
     reset,
   } = useForm({
-    defaultValues: subcription,
+    defaultValues: {
+      name: subcription?.package,
+      productlimit: subcription?.productlimit,
+      price: subcription?.price,
+      timeframe: subcription?.timeframe,
+    },
   });
+  const SubmitHandler = async ({ name, productlimit, price, timeframe }) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('subcriptions')
+        .update({ package: name, productlimit, price, timeframe })
+        .eq('id', subcriptionID)
+      if (error) throw error;
+      toast.success("Subcription Updated successfully");
+      route.push("/app/subcriptions")
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isCancelled = false;
+    const getSubcription = async () => {
+      try {
+        let { data: subcriptions, error } = await supabase
+          .from('subcriptions')
+          .select("*")
+          .eq('id', value)
+          .single();
+        setSubcription(subcriptions)
+        reset({
+          name: subcriptions?.package,
+          productlimit: subcriptions?.productlimit,
+          price: subcriptions?.price,
+          timeframe: subcriptions?.timeframe,
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+
+    }
+    if (!isCancelled) {
+      getSubcription();
+    }
+
+    return () => {
+      isCancelled = true;
+    }
+  }, [reset, value]);
+
+  useLayoutEffect(() => {
+    if (subcriptionID) {
+      setValue(subcriptionID);
+    }
+  }, [subcriptionID]);
   return (
     <AppLayout>
       <Head>
@@ -205,8 +261,8 @@ export default function SubcriptionID() {
                       p: 2,
                     }}
                   >
-                    <Button type="submit" variant="contained">
-                      Create Subcription
+                    <Button type="submit" variant="text" >
+                      {loading ? `loading...` : `Edit Subcription`}
                     </Button>
                   </Container>
                 </Card>

@@ -1,18 +1,18 @@
-import * as React from "react";
+import "tailwindcss/tailwind.css";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { StoreProvider } from "../utils/Store";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider } from "@emotion/react";
 import theme from "../utils/theme";
-import "tailwindcss/tailwind.css";
 import createEmotionCache from "../utils/createEmotionCache";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  React.useEffect(() => {
+  useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
@@ -20,14 +20,14 @@ export default function MyApp(props) {
   }, []);
 
   return (
-    <StoreProvider>
-      <CacheProvider value={emotionCache}>
+    <CacheProvider value={emotionCache}>
+      <StoreProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Component {...pageProps} />
         </ThemeProvider>
-      </CacheProvider>
-    </StoreProvider>
+      </StoreProvider>
+    </CacheProvider>
   );
 }
 

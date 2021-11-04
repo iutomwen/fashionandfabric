@@ -74,7 +74,8 @@ function EditUser() {
         .from("users")
         .select(
           `*,
-      store(*),
+      store(*,
+        subcriptions(package,id)),
       user_roles(role)
       `
         )
@@ -117,7 +118,7 @@ function EditUser() {
         <LoadingBox />
       ) : (
         <Box
-          className="mt-5 ml-0 md:ml-5 xl:ml-10 relative"
+          className="relative mt-5 ml-0 md:ml-5 xl:ml-10"
           sx={{
             backgroundColor: "background.default",
             minHeight: "100%",
@@ -188,7 +189,6 @@ function EditUser() {
                 <UserEdit user={user} />
               </TabPanel>
               <TabPanel value={value} index={1}>
-                {/* <Typography>Store</Typography> */}
                 <StoreEdit store={user?.store[0]} />
               </TabPanel>
             </Box>

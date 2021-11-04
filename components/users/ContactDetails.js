@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,14 +16,155 @@ import BlockIcon from "@mui/icons-material/Block";
 import CardHeader from "@mui/material/CardHeader";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { MessageCircle } from "react-feather";
+import Moment from 'moment';
+import { MessageOutlined } from "@mui/icons-material";
+import toast from "react-hot-toast";
+import { supabase } from "../../libs/supabaseClient";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useRouter } from "next/router";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
+function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
+  const [open, setOpen] = useState(true);
+
+  const handleClose = () => {
+    setOpen(false);
+    handleDeleteFalse();
+  };
+  return (
+    <div className="modal">
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {`Close Account`}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleDeleteTrue} autoFocus>
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
+function Verified() {
+  return (
+    <>
+      <div className="flex items-center space-x-1">
+        <CheckCircleIcon className="text-green-600 fill-current" />
+        <div className="text-lg">Verified</div>
+      </div>
+
+    </>)
+}
+
+function UnVerified() {
+  return (
+    <>
+      <div className="flex items-center space-x-1">
+        <CloseIcon className="text-red-600 fill-current" />
+        <div className="text-lg">Unverified</div>
+      </div>
+
+    </>)
+}
 export default function ContactDetails({ user }) {
+  Moment.locale('en');
+  const route = useRouter();
+  const [popup, setPopup] = useState({
+    show: false, // initial values set to false and null
+    id: null,
+  });
+
+  const handleDelete = (id) => {
+    setPopup({
+      show: true,
+      id,
+    });
+  };
+
+  const handleDeleteTrue = async () => {
+    if (popup.show && popup.id) {
+      console.log(popup.id)
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .update({ isdeleted: false, updated_at: new Date() })
+          .eq('id', popup.id);
+        if (data) {
+          //get store details
+          let { data: users, error } = await supabase
+            .from('users')
+            .select(`
+  id,
+  store (
+    id
+  )
+`)
+            .eq('id', popup.id)
+            .single();
+          console.log(users);
+          const { data: storeData, storeError } = await supabase
+            .from('store')
+            .update({ isactive: false, updated_at: new Date() })
+            .eq('id', users.store[0].id)
+        }
+        route.push(`/app/business/${popup.id}`)
+        if (error) throw error;
+        toast.success("Account Has been Deleted")
+      } catch (error) {
+        toast.error(error.message)
+      }
+
+      setPopup({
+        show: false,
+        id: null,
+      });
+    }
+  };
+
+  // This will just hide the Confirmation Box when user clicks "No"/"Cancel"
+
+  const handleDeleteFalse = () => {
+    setPopup({
+      show: false,
+      id: null,
+    });
+  };
+  async function validateUser(id) {
+    try {
+
+      const { data, error } = await supabase
+        .from('users')
+        .update({ verified: true, updated_at: new Date() })
+        .eq('id', id);
+      if (error) throw error;
+      toast.success("User has been verified.");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   return (
     <>
       <TableContainer
@@ -42,68 +183,68 @@ export default function ContactDetails({ user }) {
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">First Name</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.first_name}</div>
+                <div className="font-bold capitalize ">{user?.first_name}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Last Name</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.last_name}</div>
+                <div className="font-bold capitalize ">{user?.last_name}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Email</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.username}</div>
+                <div className="font-bold capitalize ">{user?.username}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Phone</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.phone}</div>
+                <div className="font-bold capitalize ">{user?.phone}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Address</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.address}</div>
+                <div className="font-bold capitalize ">{user?.address}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">City</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.city}</div>
+                <div className="font-bold capitalize ">{user?.city}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">State</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.state}</div>
+                <div className="font-bold capitalize ">{user?.state}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Country</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.country}</div>
+                <div className="font-bold capitalize ">{user?.country}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Postcode</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.postcode}</div>
+                <div className="font-bold capitalize ">{user?.postcode}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">About User</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">{user?.description}</div>
+                <div className="font-bold capitalize ">{user?.description}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Verification</TableCell>
               <TableCell align="left">
-                <div className="capitalize font-bold ">
-                  {user?.verified ? "Verified" : "unverified"}
+                <div className="font-bold capitalize ">
+                  {user?.verified ? <Verified /> : <UnVerified />}
                 </div>
               </TableCell>
             </TableRow>
@@ -127,9 +268,10 @@ export default function ContactDetails({ user }) {
               <CardContent>
                 {!user?.verified && (
                   <Button
-                    startIcon={<MessageCircle />}
+                    onClick={(e) => validateUser(user?.id)}
+                    startIcon={<MessageOutlined />}
                     color="primary"
-                    variant="contained"
+                    variant="text"
                   >
                     Resend Verification
                   </Button>
@@ -142,16 +284,16 @@ export default function ContactDetails({ user }) {
                     <TableRow sx={{ whiteSpace: "nowrap" }}>
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
-                        <div className="capitalize font-bold ">
-                          {user?.created_at}
+                        <div className="flex items-start font-bold capitalize">
+                          {user?.created_at ? Moment(user?.created_at).format('d MMM YYYY') : null}
                         </div>
                       </TableCell>
                     </TableRow>
                     <TableRow sx={{ whiteSpace: "nowrap" }}>
                       <TableCell align="left">Last Update:</TableCell>
                       <TableCell align="left">
-                        <div className="capitalize font-bold ">
-                          {user?.updated_at}
+                        <div className="font-bold capitalize ">
+                          {user?.updated_at ? Moment(user?.updated_at).format('d MMM YYYY') : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -174,19 +316,25 @@ export default function ContactDetails({ user }) {
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  <Button startIcon={<BlockIcon />} variant="text">
-                    Close Account
-                  </Button>
-                  <Button startIcon={<FileDownloadIcon />} variant="text">
-                    Export Data
-                  </Button>
+                  <Grid container spacing={1}>
+                    <Grid item xs={12}>
+                      <Button startIcon={<BlockIcon />} variant="text" onClick={(e) => handleDelete(user?.id)}>
+                        Close Account
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button startIcon={<FileDownloadIcon />} variant="text">
+                        Export Data
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Typography>
                 <Typography gutterBottom variant="body2" color="text.secondary">
                   Remove this user's profile if he requested that, if not please
                   be aware that what has been deleted can never brought back
                 </Typography>
                 <Button
-                  variant="outlined"
+                  variant="text"
                   color="error"
                   startIcon={<DeleteIcon />}
                 >
@@ -197,6 +345,13 @@ export default function ContactDetails({ user }) {
           </Grid>
         </Grid>
       </Box>
+      {popup.show && (
+        <Popup
+          id={popup.id}
+          handleDeleteTrue={handleDeleteTrue}
+          handleDeleteFalse={handleDeleteFalse}
+        />
+      )}
     </>
   );
 }

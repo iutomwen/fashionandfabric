@@ -26,6 +26,7 @@ import Dialog from '@mui/material/Dialog';
 
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+import { Delete } from "@mui/icons-material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -49,6 +50,9 @@ function Row(props) {
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Button variant="text" startIcon={<Delete />}> Remove</Button>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -138,14 +142,13 @@ export default function Category() {
         if (error) throw error;
         if (category) {
           setRows(category)
-          // console.log(category);
         }
       } catch (error) {
         toast.error(error.message)
       }
     }
     getCategory();
-  }, [])
+  }, [rows])
 
   return (
     <>

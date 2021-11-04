@@ -370,7 +370,7 @@ function UserEdit({ user }) {
               type="submit"
               startIcon={<Save />}
               size="medium"
-              variant="outlined"
+              variant="text"
               color="primary"
               disabled={loading}
             >
