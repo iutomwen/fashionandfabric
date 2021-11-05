@@ -9,7 +9,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import ToastNotify from "../../libs/useNotify";
-import NoSsr from "@mui/material/NoSsr";
 
 function AppLayout(props) {
   const { state, dispatch } = useContext(Store);
@@ -105,7 +104,7 @@ function AppLayout(props) {
         .from("user_roles")
         .select(
           ` 
-  users(id, first_name, username, last_name, phone, verified) `
+  users(id, first_name, username, last_name, phone, verified, isdeleted) `
         )
         .eq("role", userType)
         .limit(15)
@@ -135,7 +134,6 @@ function AppLayout(props) {
         .eq("status", false);
       if (error) throw error;
       if (notifications) {
-        // console.log("here", notifications);
         dispatch({ type: "LOAD_ALL_NOTIFICATIONS", payload: notifications });
         Cookies.set("notifications", JSON.stringify(notifications));
       }
@@ -169,36 +167,35 @@ function AppLayout(props) {
   const [getPayload, setGetPayoad] = useState(null);
   const session = supabase.auth.session();
 
-  // const userRoles = supabase
-  //   .from("*")
-  //   .on("*", (payload) => {
-  //     // console.log("Change received!", payload);
-  //     setGetPayoad(payload);
-  //   })
-  //   .subscribe();
+  const userRoles = supabase
+    .from("users")
+    .on("UPDATE", (payload) => {
+      setGetPayoad(payload);
+    })
+    .subscribe();
 
   useEffect(() => {
     setLoading(true);
     let isCancelled = false;
     //check for user session
+
+    if (!session) {
+      setLoading(true);
+      logoutUser();
+      setLoading(false);
+      router.push("/login");
+      return;
+    }
+
+    if (!accountSession || !accountDetails) {
+      setLoading(true);
+      logoutUser();
+      setLoading(false);
+      router.push("/login");
+      return;
+    }
+    //check if its the right user
     if (!isCancelled) {
-      if (!session) {
-        setLoading(true);
-        logoutUser();
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
-
-      if (!accountSession || !accountDetails) {
-        setLoading(true);
-        logoutUser();
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
-      //check if its the right user
-
       if (session) {
         const { id } = session.user;
         checkUserRole(id);

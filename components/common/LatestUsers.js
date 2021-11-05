@@ -14,6 +14,7 @@ import { Badge } from "@mui/material";
 import { supabase } from "../../libs/supabaseClient";
 import { Store } from "../../utils/Store";
 import ToastNotify from "../../libs/useNotify";
+import { Delete } from "react-feather";
 
 export default function LatestUsers({ userType }) {
   const { state } = useContext(Store);
@@ -27,7 +28,7 @@ export default function LatestUsers({ userType }) {
         "email@example.com"
       );
       if (error) throw error;
-    } catch (error) {}
+    } catch (error) { }
   }
   let findUsers = null;
   switch (userType) {
@@ -88,7 +89,9 @@ export default function LatestUsers({ userType }) {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      {data.users?.first_name}
+                      <div className="flex space-x-2">
+                        {data.users?.isdeleted && <Delete className="items-center mr-2 text-red-500 fill-current" />}   {data.users?.first_name}
+                      </div>
                     </TableCell>
                     <TableCell align="center">
                       {data.users?.last_name}
@@ -99,14 +102,14 @@ export default function LatestUsers({ userType }) {
                       {data.users?.verified ? (
                         <Badge badgeContent={`verified`} color="success" />
                       ) : (
-                        <div className="flex justify-evenly items-center">
+                        <div className="flex items-center justify-evenly">
                           <div>
                             <Badge
                               badgeContent={`unverified`}
                               color="warning"
                             />
                           </div>
-                          <div className="ml-8 max-w-full cursor-pointer">
+                          <div className="max-w-full ml-8 cursor-pointer">
                             <Badge
                               badgeContent={`Resend`}
                               color="info"

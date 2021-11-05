@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Alert, Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -28,12 +27,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useRouter } from "next/router";
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
+
 function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
   const [open, setOpen] = useState(true);
 
@@ -90,6 +84,7 @@ function UnVerified() {
     </>)
 }
 export default function ContactDetails({ user }) {
+  const [item, setItem] = useState([])
   Moment.locale('en');
   const route = useRouter();
   const [popup, setPopup] = useState({
@@ -106,7 +101,6 @@ export default function ContactDetails({ user }) {
 
   const handleDeleteTrue = async () => {
     if (popup.show && popup.id) {
-      console.log(popup.id)
       try {
         const { data, error } = await supabase
           .from('users')
@@ -124,15 +118,15 @@ export default function ContactDetails({ user }) {
 `)
             .eq('id', popup.id)
             .single();
-          console.log(users);
           const { data: storeData, storeError } = await supabase
             .from('store')
             .update({ isactive: false, updated_at: new Date() })
             .eq('id', users.store[0].id)
         }
-        route.push(`/app/business/${popup.id}`)
+        route.reload(`/app/business`)
+        // window.location.reload(false);
         if (error) throw error;
-        toast.success("Account Has been Deleted")
+        toast.success("Account Has Been Closed")
       } catch (error) {
         toast.error(error.message)
       }
@@ -165,14 +159,18 @@ export default function ContactDetails({ user }) {
       toast.error(error.message);
     }
   }
+
+
   return (
     <>
+
       <TableContainer
         component={Paper}
         sx={{
           width: "100%",
         }}
       >
+
         <Table sx={{ maxWidth: "98%", whiteSpace: "nowrap" }} size="medium">
           <TableBody>
             <TableRow sx={{ whiteSpace: "nowrap" }}>

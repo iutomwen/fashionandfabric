@@ -42,7 +42,7 @@ const columns = [
 export default function UnverifiedUsers({ userType }) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState();
+  const [rows, setRows] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState("");
 
@@ -132,14 +132,14 @@ export default function UnverifiedUsers({ userType }) {
                           {row?.verified ? (
                             <Badge badgeContent={`verified`} color="success" />
                           ) : (
-                            <div className="flex justify-evenly items-center">
+                            <div className="flex items-center justify-evenly">
                               <div>
                                 <Badge
                                   badgeContent={`unverified`}
                                   color="warning"
                                 />
                               </div>
-                              <div className="ml-8 max-w-full cursor-pointer">
+                              <div className="max-w-full ml-8 cursor-pointer">
                                 <Badge
                                   badgeContent={`Resend`}
                                   color="info"
