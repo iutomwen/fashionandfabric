@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Save } from "react-feather";
 import {
@@ -13,12 +13,18 @@ import {
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { supabase } from "../../../libs/supabaseClient";
+import { Store } from "../../../utils/Store";
 
 function StoreEdit({ store }) {
   const [loading, setLoading] = useState(false);
   const [subcriptions, setSubcriptions] = useState([]);
-  const [pageLoading, setPageLoading] = useState(false);
+  const { state } = useContext(Store);
+  const { appSubcriptions } = state;
   const router = useRouter();
+  const subID = appSubcriptions.filter(
+    (item) => item.id == store?.subcription_id
+  );
+
   const {
     handleSubmit,
     control,
@@ -31,12 +37,11 @@ function StoreEdit({ store }) {
 
   async function getAllSubcription() {
     try {
-
       let { data: subcriptions, error } = await supabase
-        .from('subcriptions')
-        .select('*')
+        .from("subcriptions")
+        .select("*");
       if (error) throw error;
-      setSubcriptions(subcriptions)
+      setSubcriptions(subcriptions);
     } catch (error) {
       toast.error(error.message);
     }
@@ -65,7 +70,6 @@ function StoreEdit({ store }) {
     address,
     subcription,
   }) => {
-    setPageLoading(true);
     setLoading(true);
 
     try {
@@ -97,7 +101,6 @@ function StoreEdit({ store }) {
       toast.error(error.message);
     } finally {
       setLoading(false);
-      setPageLoading(false);
     }
   };
   return (
@@ -403,13 +406,16 @@ function StoreEdit({ store }) {
                       }
                       {...field}
                     >
-                      <option value={store.subcription_id}></option>
+                      {/* <option value={subID[0].id}>{subID[0].package}</option> */}
                       {subcriptions?.map((option) => (
-                        <option key={option.id} value={option.id}>
+                        <option
+                          key={option.id}
+                          value={option.id}
+                          selected={subID[0].id === option.id ? true : false}
+                        >
                           {option.package}
                         </option>
                       ))}
-
                     </TextField>
                   )}
                 ></Controller>

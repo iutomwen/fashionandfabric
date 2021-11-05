@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import AppLayout from "../../../components/layouts/AppLayout";
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   Typography,
   Button,
   CssBaseline,
+  Alert,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -63,6 +64,7 @@ function a11yProps(index) {
 }
 function personalID() {
   const [value, setValue] = useState(0);
+  const [userID, setUserID] = useState(0);
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
   const route = useRouter();
@@ -92,7 +94,39 @@ function personalID() {
       route.push("/app/personal");
     }
   }
-
+  async function undoDelete(id) {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ isdeleted: false, updated_at: new Date() })
+        .eq("id", id);
+      if (data) {
+        //get store details
+        let { data: users, error } = await supabase
+          .from("users")
+          .select(
+            `
+id,roles,
+store (
+id
+)
+`
+          )
+          .eq("id", id)
+          .single();
+        if (users.roles == "business") {
+          const { data: storeData, storeError } = await supabase
+            .from("store")
+            .update({ isactive: true, updated_at: new Date() })
+            .eq("id", users.store[0].id);
+        }
+      }
+      route.reload(`/app/business`);
+      if (error) throw error;
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
@@ -107,7 +141,12 @@ function personalID() {
     return () => {
       isCancelled = true;
     };
-  }, [user]);
+  }, [userID]);
+  useLayoutEffect(() => {
+    if (personalID) {
+      setUserID(personalID);
+    }
+  }, [personalID]);
   return (
     <AppLayout>
       <ToastNotify />
@@ -139,10 +178,13 @@ function personalID() {
               {user?.first_name} {user?.last_name}
             </div>
 
-            <Button startIcon={<Edit />} onClick={() => route.push(`/app/user/edit/${user?.id}`)} variant="text">
+            <Button
+              startIcon={<Edit />}
+              onClick={() => route.push(`/app/user/edit/${user?.id}`)}
+              variant="text"
+            >
               Edit
             </Button>
-
           </Box>
           <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2 }}>
             <NextLink href="/app/dashboard" passHref>
@@ -163,6 +205,25 @@ function personalID() {
               width: "100%",
             }}
           >
+            {user?.isdeleted && (
+              <Alert
+                variant="outlined"
+                severity="warning"
+                action={
+                  <Button
+                    onClick={() => {
+                      undoDelete(user?.id);
+                    }}
+                    color="inherit"
+                    size="small"
+                  >
+                    UNDO
+                  </Button>
+                }
+              >
+                This account has been deleted.
+              </Alert>
+            )}
             <Box sx={{ width: "100%" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs

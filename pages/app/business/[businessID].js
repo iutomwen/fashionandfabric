@@ -27,8 +27,6 @@ import LoadingBox from "../../../components/common/LoadingBox";
 import UserProducts from "../../../components/users/UserProducts";
 import UserSettings from "../../../components/users/UserSettings";
 
-
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -122,7 +120,39 @@ export default function BusinessID() {
       toast.error(error.message);
     }
   }
-
+  async function undoDelete(id) {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ isdeleted: false, updated_at: new Date() })
+        .eq("id", id);
+      if (data) {
+        //get store details
+        let { data: users, error } = await supabase
+          .from("users")
+          .select(
+            `
+  id,roles,
+  store (
+  id
+  )
+  `
+          )
+          .eq("id", id)
+          .single();
+        if (users.roles == "business") {
+          const { data: storeData, storeError } = await supabase
+            .from("store")
+            .update({ isactive: true, updated_at: new Date() })
+            .eq("id", users.store[0].id);
+        }
+      }
+      route.reload(`/app/business`);
+      if (error) throw error;
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
@@ -178,10 +208,13 @@ export default function BusinessID() {
               {user?.first_name} {user?.last_name}
             </div>
 
-            <Button startIcon={<Edit />} variant="text" onClick={() => route.push(`/app/user/edit/${user?.id}`)}>
+            <Button
+              startIcon={<Edit />}
+              variant="text"
+              onClick={() => route.push(`/app/user/edit/${user?.id}`)}
+            >
               Edit
             </Button>
-
           </Box>
           <Breadcrumbs aria-label="breadcrumb" sx={{ pl: 2 }}>
             <NextLink href="/app/dashboard" passHref>
@@ -202,17 +235,24 @@ export default function BusinessID() {
               width: "100%",
             }}
           >
-            {user?.isdeleted && <Alert
-              variant="outlined"
-              severity="warning"
-              action={
-                <Button color="inherit" size="small">
-                  UNDO
-                </Button>
-              }
-            >
-              This account has been deleted. — Every associate products and store will be deactivated!
-            </Alert>}
+            {user?.isdeleted && (
+              <Alert
+                variant="outlined"
+                severity="warning"
+                action={
+                  <Button
+                    onClick={() => undoDelete(user?.id)}
+                    color="inherit"
+                    size="small"
+                  >
+                    UNDO
+                  </Button>
+                }
+              >
+                This account has been deleted. — Every associate products and
+                store will be deactivated!
+              </Alert>
+            )}
             <Box sx={{ width: "100%" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs
@@ -231,7 +271,7 @@ export default function BusinessID() {
                 <ContactDetails user={user} />
               </TabPanel>
               <TabPanel value={value} index={1}>
-                <StoreDetails store={user?.store} />
+                <StoreDetails store={user?.store} userID={user?.id} />
               </TabPanel>
               <TabPanel value={value} index={2}>
                 <UserProducts products={products} />

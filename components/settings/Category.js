@@ -22,10 +22,10 @@ import AddCategory from "./AddCategory";
 import AddSubCategory from "./AddSubCategory";
 import { supabase } from "../../libs/supabaseClient";
 import toast from "react-hot-toast";
-import Dialog from '@mui/material/Dialog';
+import Dialog from "@mui/material/Dialog";
 
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
 import { Delete } from "@mui/icons-material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -52,7 +52,10 @@ function Row(props) {
           {row.name}
         </TableCell>
         <TableCell component="th" scope="row">
-          <Button variant="text" startIcon={<Delete />}> Remove</Button>
+          <Button variant="text" startIcon={<Delete />}>
+            {" "}
+            Remove
+          </Button>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -73,9 +76,9 @@ function Row(props) {
                   {row?.sub_category?.map((sub) => (
                     <TableRow key={sub.id}>
                       <TableCell component="th" scope="row">
-                        {sub.id}
+                        {sub?.id}
                       </TableCell>
-                      <TableCell>{sub.name}</TableCell>
+                      <TableCell>{sub?.name}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -100,13 +103,12 @@ Row.propTypes = {
   }).isRequired,
 };
 
-
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "50%",
+  width: "80%",
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -133,22 +135,19 @@ export default function Category() {
   useEffect(() => {
     const getCategory = async () => {
       try {
-
-        let { data: category, error } = await supabase
-          .from('category')
-          .select(`
+        let { data: category, error } = await supabase.from("category").select(`
   id, created_at, name, sub_category:sub_category_category_id_fkey(id,name,created_at)
-`)
+`);
         if (error) throw error;
         if (category) {
-          setRows(category)
+          setRows(category);
         }
       } catch (error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
-    }
+    };
     getCategory();
-  }, [rows])
+  }, [rows]);
 
   return (
     <>
@@ -185,8 +184,8 @@ export default function Category() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <Row key={row.id} row={row} />
+              {rows?.map((row) => (
+                <Row key={row?.id} row={row} />
               ))}
             </TableBody>
           </Table>
@@ -204,7 +203,7 @@ export default function Category() {
             </Typography>
             <AddCategory onClick={(e) => handleClose()} />
           </Box>
-        </Modal >
+        </Modal>
 
         <Dialog
           open={dialogOpen}
@@ -216,7 +215,6 @@ export default function Category() {
           <DialogTitle>{"Add Sub Category"}</DialogTitle>
 
           <AddSubCategory onClick={(e) => handleDialogClose()} />
-
         </Dialog>
       </NoSsr>
     </>

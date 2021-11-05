@@ -16,11 +16,12 @@ import BlockIcon from "@mui/icons-material/Block";
 import CardHeader from "@mui/material/CardHeader";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { MessageCircle } from "react-feather";
-import Moment from 'moment';
+import Moment from "moment";
 import toast from "react-hot-toast";
 import { supabase } from "../../libs/supabaseClient";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CloseIcon from "@mui/icons-material/Close";
+import { useRouter } from "next/router";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -34,8 +35,8 @@ function Active() {
         <CheckCircleIcon className="text-green-600 fill-current" />
         <div className="text-lg">Active</div>
       </div>
-
-    </>)
+    </>
+  );
 }
 
 function InActive() {
@@ -45,29 +46,50 @@ function InActive() {
         <CloseIcon className="text-red-600 fill-current" />
         <div className="text-lg">InActive</div>
       </div>
-
-    </>)
+    </>
+  );
 }
 
-
-export default function StoreDetails({ store }) {
-  Moment.locale('en');
+export default function StoreDetails({ store, userID }) {
+  Moment.locale("en");
+  const route = useRouter();
   async function deactivateStore(id) {
-    toast.success("coming soon");
-  }
-  async function validateStore(id) {
     try {
-
-      const { data, error } = await supabase
-        .from('store')
-        .update({ isactive: true, updated_at: new Date() })
-        .eq('id', id)
-      if (error) throw error;
-      toast.success("This Store is now Active.");
+      const { data: updatedata, updateError } = await supabase
+        .from("store")
+        .update({ isactive: false, updated_at: new Date() })
+        .eq("id", id);
+      if (updateError) throw updateError;
+      toast.success("This Store has been deactivated.");
+      route.replace(`/app/business/${userID}`, undefined, { shallow: true });
     } catch (error) {
       toast.error(error.message);
+    }
+  }
+  async function activateStore(id) {
+    try {
+      //check if store owner is active
+      let { data: user, error } = await supabase
+        .from("users")
+        .select("verified, isdeleted")
+        .eq("id", userID)
+        .single();
+      if (user.isdeleted === true || user.verified === false) {
+        toast.error(
+          "The owner of this store is not active or has been deleted. we cant proceed with this request"
+        );
+      } else {
+        const { data: updatedata, updateError } = await supabase
+          .from("store")
+          .update({ isactive: true, updated_at: new Date() })
+          .eq("id", id);
+        if (updateError) throw updateError;
+        toast.success("This Store is now Active.");
+        route.push(`/app/business/${userID}`, undefined, { shallow: true });
+      }
+    } catch (updateError) {
+      toast.error(updateError.message);
     } finally {
-
     }
   }
   return (
@@ -174,8 +196,10 @@ export default function StoreDetails({ store }) {
               <CardContent>
                 {!store[0].isactive && (
                   <Button
-                    onClick={(e) => validateStore(store[0].id)}
-                    startIcon={<MessageCircle />} variant="text">
+                    onClick={(e) => activateStore(store[0].id)}
+                    startIcon={<MessageCircle />}
+                    variant="text"
+                  >
                     Activate Store
                   </Button>
                 )}
@@ -188,7 +212,9 @@ export default function StoreDetails({ store }) {
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
-                          {store[0].created_at ? Moment(store[0].created_at).format('d MMM YYYY') : null}
+                          {store[0].created_at
+                            ? Moment(store[0].created_at).format("d MMM YYYY")
+                            : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -196,7 +222,9 @@ export default function StoreDetails({ store }) {
                       <TableCell align="left">Last Update:</TableCell>
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
-                          {store[0].updated_at ? Moment(store[0].updated_at).format('d MMM YYYY') : null}
+                          {store[0].updated_at
+                            ? Moment(store[0].updated_at).format("d MMM YYYY")
+                            : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -222,11 +250,14 @@ export default function StoreDetails({ store }) {
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
                       {store[0].isactive && (
-                        <Button onClick={(e) => deactivateStore(store[0].id)} startIcon={<BlockIcon />} variant="text">
+                        <Button
+                          onClick={(e) => deactivateStore(store[0].id)}
+                          startIcon={<BlockIcon />}
+                          variant="text"
+                        >
                           Deactivate Store
                         </Button>
                       )}
-
                     </Grid>
                     <Grid item xs={12}>
                       <Button startIcon={<FileDownloadIcon />} variant="text">
@@ -234,14 +265,16 @@ export default function StoreDetails({ store }) {
                       </Button>
                     </Grid>
                   </Grid>
-
-
                 </Typography>
                 {store[0].isactive && (
-                  <Typography gutterBottom variant="body2" color="text.secondary">
-                    Disable this user's store if he requested that, if not please
-                    be aware that all products under this store will be removed
-                    from the app.
+                  <Typography
+                    gutterBottom
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    Disable this user's store if he requested that, if not
+                    please be aware that all products under this store will be
+                    removed from the app.
                   </Typography>
                 )}
               </CardContent>

@@ -15,12 +15,12 @@ import BlockIcon from "@mui/icons-material/Block";
 import CardHeader from "@mui/material/CardHeader";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import Moment from 'moment';
+import Moment from "moment";
 import { MessageOutlined } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import { supabase } from "../../libs/supabaseClient";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -37,16 +37,13 @@ function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
   };
   return (
     <div className="modal">
-
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {`Close Account`}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{`Close Account`}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete.
@@ -69,8 +66,8 @@ function Verified() {
         <CheckCircleIcon className="text-green-600 fill-current" />
         <div className="text-lg">Verified</div>
       </div>
-
-    </>)
+    </>
+  );
 }
 
 function UnVerified() {
@@ -80,12 +77,12 @@ function UnVerified() {
         <CloseIcon className="text-red-600 fill-current" />
         <div className="text-lg">Unverified</div>
       </div>
-
-    </>)
+    </>
+  );
 }
 export default function ContactDetails({ user }) {
-  const [item, setItem] = useState([])
-  Moment.locale('en');
+  const [item, setItem] = useState([]);
+  Moment.locale("en");
   const route = useRouter();
   const [popup, setPopup] = useState({
     show: false, // initial values set to false and null
@@ -103,32 +100,35 @@ export default function ContactDetails({ user }) {
     if (popup.show && popup.id) {
       try {
         const { data, error } = await supabase
-          .from('users')
+          .from("users")
           .update({ isdeleted: true, updated_at: new Date() })
-          .eq('id', popup.id);
+          .eq("id", popup.id);
         if (data) {
           //get store details
           let { data: users, error } = await supabase
-            .from('users')
-            .select(`
-  id,
+            .from("users")
+            .select(
+              `
+  id,roles,
   store (
     id
   )
-`)
-            .eq('id', popup.id)
+`
+            )
+            .eq("id", popup.id)
             .single();
-          const { data: storeData, storeError } = await supabase
-            .from('store')
-            .update({ isactive: false, updated_at: new Date() })
-            .eq('id', users.store[0].id)
+          if (users.roles == "business") {
+            const { data: storeData, storeError } = await supabase
+              .from("store")
+              .update({ isactive: false, updated_at: new Date() })
+              .eq("id", users.store[0].id);
+          }
         }
-        route.reload(`/app/business`)
-        // window.location.reload(false);
+        route.reload(`/app/business`);
         if (error) throw error;
-        toast.success("Account Has Been Closed")
+        toast.success("Account Has Been Closed");
       } catch (error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
 
       setPopup({
@@ -148,11 +148,10 @@ export default function ContactDetails({ user }) {
   };
   async function validateUser(id) {
     try {
-
       const { data, error } = await supabase
-        .from('users')
+        .from("users")
         .update({ verified: true, updated_at: new Date() })
-        .eq('id', id);
+        .eq("id", id);
       if (error) throw error;
       toast.success("User has been verified.");
     } catch (error) {
@@ -160,17 +159,14 @@ export default function ContactDetails({ user }) {
     }
   }
 
-
   return (
     <>
-
       <TableContainer
         component={Paper}
         sx={{
           width: "100%",
         }}
       >
-
         <Table sx={{ maxWidth: "98%", whiteSpace: "nowrap" }} size="medium">
           <TableBody>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
@@ -283,7 +279,9 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
                         <div className="flex items-start font-bold capitalize">
-                          {user?.created_at ? Moment(user?.created_at).format('d MMM YYYY') : null}
+                          {user?.created_at
+                            ? Moment(user?.created_at).format("d MMM YYYY")
+                            : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -291,7 +289,9 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">Last Update:</TableCell>
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
-                          {user?.updated_at ? Moment(user?.updated_at).format('d MMM YYYY') : null}
+                          {user?.updated_at
+                            ? Moment(user?.updated_at).format("d MMM YYYY")
+                            : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -316,7 +316,11 @@ export default function ContactDetails({ user }) {
                 <Typography gutterBottom variant="h5" component="div">
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
-                      <Button startIcon={<BlockIcon />} variant="text" onClick={(e) => handleDelete(user?.id)}>
+                      <Button
+                        startIcon={<BlockIcon />}
+                        variant="text"
+                        onClick={(e) => handleDelete(user?.id)}
+                      >
                         Close Account
                       </Button>
                     </Grid>
@@ -331,11 +335,7 @@ export default function ContactDetails({ user }) {
                   Remove this user's profile if he requested that, if not please
                   be aware that what has been deleted can never brought back
                 </Typography>
-                <Button
-                  variant="text"
-                  color="error"
-                  startIcon={<DeleteIcon />}
-                >
+                <Button variant="text" color="error" startIcon={<DeleteIcon />}>
                   Delete
                 </Button>
               </CardContent>

@@ -15,20 +15,21 @@ import { supabase } from "../../libs/supabaseClient";
 import { Store } from "../../utils/Store";
 import ToastNotify from "../../libs/useNotify";
 import { Delete } from "react-feather";
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useRouter } from "next/router";
 export default function LatestUsers({ userType }) {
   const { state } = useContext(Store);
   const { businessUsers, personalUsers } = state;
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
-
+  const route = useRouter();
   async function resendVerification(email) {
     try {
       const { data, error } = await supabase.auth.api.resendEmailConfirmation(
         "email@example.com"
       );
       if (error) throw error;
-    } catch (error) { }
+    } catch (error) {}
   }
   let findUsers = null;
   switch (userType) {
@@ -90,7 +91,10 @@ export default function LatestUsers({ userType }) {
                   >
                     <TableCell component="th" scope="row">
                       <div className="flex space-x-2">
-                        {data.users?.isdeleted && <Delete className="items-center mr-2 text-red-500 fill-current" />}   {data.users?.first_name}
+                        {data.users?.isdeleted && (
+                          <Delete className="items-center mr-2 text-red-500 fill-current" />
+                        )}{" "}
+                        {data.users?.first_name}
                       </div>
                     </TableCell>
                     <TableCell align="center">
@@ -121,18 +125,18 @@ export default function LatestUsers({ userType }) {
                     </TableCell>
                     <TableCell align="center">
                       <Button
-                        variant="contained"
+                        onClick={() =>
+                          route.push(`/app/${userType}/${data.users?.id}`)
+                        }
+                        startIcon={<VisibilityIcon />}
+                        variant="text"
                         color="primary"
                         size="small"
                         style={{
-                          marginLeft: 16,
+                          marginLeft: 15,
                         }}
                       >
-                        <Link href={`/app/${userType}/${data.users?.id}`}>
-                          <a>
-                            <span className="text-xs"> View Profile</span>
-                          </a>
-                        </Link>
+                        <span className="text-xs"> View Profile</span>
                       </Button>
                     </TableCell>
                   </TableRow>

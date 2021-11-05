@@ -12,7 +12,10 @@ import { supabase } from "../../libs/supabaseClient";
 import LoadingBox from "./LoadingBox";
 import { Badge, Button, TextField } from "@mui/material";
 import Link from "next/link";
+import { Delete } from "react-feather";
+import { useRouter } from "next/router";
 
+import VisibilityIcon from "@mui/icons-material/Visibility";
 const columns = [
   { id: "first_name", label: "First Name", minWidth: 170 },
   { id: "last_name", label: "Last Name", minWidth: 170 },
@@ -45,6 +48,7 @@ export default function VerifiedUsers({ userType }) {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const route = useRouter();
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -66,7 +70,9 @@ export default function VerifiedUsers({ userType }) {
     try {
       let { data: verified, error } = await supabase
         .from("users")
-        .select(`id, first_name, username, last_name, phone, verified, roles  `)
+        .select(
+          `id, first_name, username, last_name, phone, verified, roles, isdeleted  `
+        )
         .filter("roles", "eq", userType)
         .filter("verified", "eq", true)
         .ilike("first_name", `%${search}%`)
@@ -121,7 +127,14 @@ export default function VerifiedUsers({ userType }) {
                         tabIndex={-1}
                         key={row.id}
                       >
-                        <TableCell>{row?.first_name}</TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            {row?.isdeleted && (
+                              <Delete className="items-center mr-2 text-red-500 fill-current" />
+                            )}{" "}
+                            {row?.first_name}
+                          </div>
+                        </TableCell>
                         <TableCell>{row?.last_name}</TableCell>
                         <TableCell>{row?.username}</TableCell>
                         <TableCell>{row?.phone}</TableCell>
@@ -149,7 +162,11 @@ export default function VerifiedUsers({ userType }) {
                         </TableCell>
                         <TableCell>
                           <Button
-                            variant="outlined"
+                            onClick={() =>
+                              route.push(`/app/${userType}/${row?.id}`)
+                            }
+                            startIcon={<VisibilityIcon />}
+                            variant="text"
                             color="primary"
                             size="small"
                             style={{
