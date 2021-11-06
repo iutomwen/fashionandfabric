@@ -22,13 +22,13 @@ import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { APPNAME } from "../../../libs/constant";
 import Head from "next/head";
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import Stack from '@mui/material/Stack';
-
-const Input = styled('input')({
-  display: 'none',
+import { styled } from "@mui/material/styles";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import Stack from "@mui/material/Stack";
+import { v4 as uuidv4 } from "uuid";
+import toast from "react-hot-toast";
+const Input = styled("input")({
+  display: "none",
 });
 const defaultValues = {
   name: "",
@@ -37,6 +37,7 @@ const defaultValues = {
   store: "",
   category: { value: "category", label: "Category" },
   subcategory: [],
+  images: [],
 };
 
 function CreateProduct() {
@@ -54,6 +55,7 @@ function CreateProduct() {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
   const [subCat, setSubCat] = useState(null);
+  const [productImage, setProductImage] = useState(null);
 
   useEffect(() => {
     setPageLoading(true);
@@ -75,8 +77,8 @@ function CreateProduct() {
       console.log(error);
     }
   }
+
   const cat = watch("category");
-  // console.log(cat);
   useEffect(() => {
     setShow(false);
     if (cat == null) {
@@ -98,18 +100,18 @@ function CreateProduct() {
     subcategory,
   }) => {
     setPageLoading(true);
+
     try {
-      const { data, error } = await supabase.from("product").insert([
+      const { data, error } = await supabase.from("products").insert([
         {
           name,
           description,
           price,
           store_id: store,
-          subCategory_id: subcategory,
+          sub_category_id: subcategory,
           category_id: category,
-          approved: false,
+          published: false,
           created_at: new Date(),
-          currency: "USD",
         },
       ]);
 
@@ -118,6 +120,7 @@ function CreateProduct() {
         router.push("/app/product");
       }
     } catch (error) {
+      toast.error(error.message);
       console.log(error);
     } finally {
       setPageLoading(false);
@@ -370,22 +373,33 @@ function CreateProduct() {
                             )}
                           </div>
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                          <Stack direction="row" alignItems="center" spacing={2}>
+                        {/* <Grid item md={6} xs={12}>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={2}
+                            sx={{ ml: 3 }}
+                          >
                             <label htmlFor="contained-button-file">
-                              <Input accept="image/*" id="contained-button-file" multiple type="file" />
-                              <Button variant="text" component="span">
-                                Upload
+                              <Input
+                                accept="image/*"
+                                id="contained-button-file"
+                                name="image"
+                                type="file"
+                                onChange={() => handleUpload()}
+                                {...register("image", { required: true })}
+                              />
+
+                              <Button
+                                startIcon={<PhotoCamera />}
+                                variant="text"
+                                component="span"
+                              >
+                                Upload Files
                               </Button>
                             </label>
-                            <label htmlFor="icon-button-file">
-                              <Input accept="image/*" id="icon-button-file" type="file" />
-                              <IconButton color="primary" aria-label="upload picture" component="span">
-                                <PhotoCamera />
-                              </IconButton>
-                            </label>
                           </Stack>
-                        </Grid>
+                        </Grid> */}
                       </Grid>
                     </CardContent>
                     <Divider />
@@ -396,11 +410,7 @@ function CreateProduct() {
                         p: 2,
                       }}
                     >
-                      <Button
-                        type="submit"
-                        variant="text"
-                        onClick={() => { }}
-                      >
+                      <Button type="submit" variant="text" onClick={() => {}}>
                         Create Product
                       </Button>
                     </Container>
