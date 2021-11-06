@@ -15,7 +15,6 @@ import InputIcon from "@material-ui/icons/Input";
 import Logo from "../common/ApplicationLogo";
 import { useRouter } from "next/router";
 import { supabase } from "../../libs/supabaseClient";
-import Cookies from "js-cookie";
 import { Store } from "../../utils/Store";
 import toast from "react-hot-toast";
 
@@ -27,7 +26,9 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   async function signOutUser() {
     const { error } = await supabase.auth.signOut();
 
-    toast.loading("Signing out this account.");
+    toast.loading("Signing out this account.", {
+      duration: 1000,
+    });
     dispatch({ type: "USER_LOGOUT" });
     localStorage.clear();
     router.push("/login");

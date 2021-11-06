@@ -9,38 +9,38 @@ const initialState = {
   isRegister: false,
   accountSession: Cookies.get("accountSession")
     ? JSON.parse(Cookies.get("accountSession"))
-    : null,
+    : {},
   accountDetails: Cookies.get("accountDetails")
     ? JSON.parse(Cookies.get("accountDetails"))
-    : null,
+    : {},
   vendorMessages: Cookies.get("vendorMessages")
     ? JSON.parse(Cookies.get("vendorMessages"))
-    : null,
+    : [],
   contactMessages: Cookies.get("contactMessages")
     ? JSON.parse(Cookies.get("contactMessages"))
-    : null,
+    : [],
   businessUsers: Cookies.get("businessUsers")
     ? JSON.parse(Cookies.get("businessUsers"))
-    : null,
+    : [],
   personalUsers: Cookies.get("personalUsers")
     ? JSON.parse(Cookies.get("personalUsers"))
-    : null,
+    : [],
   appSettings: Cookies.get("appSettings")
     ? JSON.parse(Cookies.get("appSettings"))
-    : null,
+    : {},
   appSubcriptions: Cookies.get("appSubcriptions")
     ? JSON.parse(Cookies.get("appSubcriptions"))
-    : null,
+    : [],
   notifications: Cookies.get("notifications")
     ? JSON.parse(Cookies.get("notifications"))
     : [],
   products: Cookies.get("products")
     ? JSON.parse(Cookies.get("products"))
-    : null,
-  shops: Cookies.get("shops") ? JSON.parse(Cookies.get("shops")) : null,
+    : [],
+  shops: Cookies.get("shops") ? JSON.parse(Cookies.get("shops")) : [],
   categories: Cookies.get("categories")
     ? JSON.parse(Cookies.get("categories"))
-    : null,
+    : [],
 };
 
 function reducer(state, action) {
@@ -69,18 +69,18 @@ function reducer(state, action) {
         isError: [],
         isLogin: false,
         isRegister: false,
-        accountDetails: null,
-        accountSession: null,
-        vendorMessages: null,
-        contactMessages: null,
-        businessUsers: null,
-        personalUsers: null,
-        appSettings: null,
-        appSubcriptions: null,
+        accountDetails: {},
+        accountSession: {},
+        vendorMessages: [],
+        contactMessages: [],
+        businessUsers: [],
+        personalUsers: [],
+        appSettings: {},
+        appSubcriptions: [],
         notifications: [],
-        products: null,
-        shops: null,
-        categories: null,
+        products: [],
+        shops: [],
+        categories: [],
       };
     case "USER_REGISTER":
       Cookies.set("isLogin", true);
@@ -103,8 +103,8 @@ function reducer(state, action) {
       );
       const notifyItems = existItem
         ? state.notifications.map((item) =>
-            item.notifyid === existItem.notifyid ? newNotify : item
-          )
+          item.notifyid === existItem.notifyid ? newNotify : item
+        )
         : [...state.notifications, newNotify];
       return {
         ...state,

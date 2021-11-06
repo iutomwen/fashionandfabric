@@ -7,7 +7,7 @@ export default function ToastNotify() {
       toastOptions={{
         // Define default options
         className: "bg-blue-300",
-        duration: 5000,
+        duration: 2000,
         style: {
           background: "#ffffff",
           color: "#000",

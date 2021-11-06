@@ -9,7 +9,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import ToastNotify from "../../libs/useNotify";
-
+import { ThemeProvider, CssBaseline, createMuiTheme } from '@material-ui/core';
 function AppLayout(props) {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
@@ -19,20 +19,9 @@ function AppLayout(props) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      console.log("logout am here");
-      Cookies.remove("accountDetails");
-      Cookies.remove("accountSession");
-      Cookies.remove("vendorMessages");
-      Cookies.remove("contactMessages");
-      Cookies.remove("businessUsers");
-      Cookies.remove("personalUsers");
-      Cookies.remove("appSettings");
-      Cookies.remove("appSubcriptions");
-      Cookies.remove("notifications");
-      Cookies.remove("products");
-      Cookies.remove("shops");
-      Cookies.remove("categories");
-      toast.loading("Signing out this account.");
+      toast.loading("Signing out this account.", {
+        duration: 1000,
+      });
       dispatch({ type: "USER_LOGOUT" });
       localStorage.clear();
       router.push("/login");
@@ -147,12 +136,9 @@ function AppLayout(props) {
     try {
       let { data: store, error } = await supabase.from("store").select(`
       id,address, businessreg, city, country, created_at, description, name, postcode, state,isactive,
-      users (
-        id,username
-      ),
-      subcriptions (
-        id, package, price
-        ) `);
+      users(id,username),
+      subcriptions(id, package, price)
+      `);
       if (error) throw error;
       dispatch({ type: "LOAD_ALL_SHOPS", payload: store });
       Cookies.set("shops", JSON.stringify(store));
@@ -199,7 +185,6 @@ function AppLayout(props) {
       if (session) {
         const { id } = session.user;
         checkUserRole(id);
-        //load the componenet needed for this app to render
         getCategory();
         getSubcriptions();
         getStores();
@@ -214,15 +199,40 @@ function AppLayout(props) {
       isCancelled = true;
     };
   }, []);
-
+  const theme = createMuiTheme({
+    typography: {
+      h1: {
+        fontSize: '1.6rem',
+        fontWeight: 400,
+        margin: '1rem 0',
+      },
+      h2: {
+        fontSize: '1.4rem',
+        fontWeight: 400,
+        margin: '1rem 0',
+      },
+    },
+    palette: {
+      type: 'light',
+      primary: {
+        main: '#9b5f4a',
+      },
+      secondary: {
+        main: '#208080',
+      },
+    },
+  });
   return (
     <>
-      <ToastNotify />
-      {loading ? (
-        <LoadingBox />
-      ) : (
-        <DashboardLayout>{props.children}</DashboardLayout>
-      )}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ToastNotify />
+        {loading ? (
+          <LoadingBox />
+        ) : (
+          <DashboardLayout>{props.children}</DashboardLayout>
+        )}
+      </ThemeProvider>
     </>
   );
 }
