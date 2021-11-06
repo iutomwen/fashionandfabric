@@ -52,6 +52,11 @@ function InActive() {
 
 export default function StoreDetails({ store, userID }) {
   Moment.locale("en");
+  const [storeDetails, setStoreDetails] = React.useState({})
+  console.log("st", storeDetails);
+  React.useEffect(() => {
+    setStoreDetails(store);
+  }, [store])
   const route = useRouter();
   async function deactivateStore(id) {
     try {
@@ -59,6 +64,7 @@ export default function StoreDetails({ store, userID }) {
         .from("store")
         .update({ isactive: false, updated_at: new Date() })
         .eq("id", id);
+      setStoreDetails({ ...storeDetails, isactive: false })
       if (updateError) throw updateError;
       toast.success("This Store has been deactivated.");
       route.replace(`/app/business/${userID}`, undefined, { shallow: true });
@@ -83,15 +89,18 @@ export default function StoreDetails({ store, userID }) {
           .from("store")
           .update({ isactive: true, updated_at: new Date() })
           .eq("id", id);
+        setStoreDetails({ ...storeDetails, isactive: true })
+
         if (updateError) throw updateError;
         toast.success("This Store is now Active.");
         route.push(`/app/business/${userID}`, undefined, { shallow: true });
       }
     } catch (updateError) {
       toast.error(updateError.message);
-    } finally {
     }
   }
+
+
   return (
     <>
       <TableContainer
@@ -110,14 +119,14 @@ export default function StoreDetails({ store, userID }) {
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Store Name</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{store[0].name}</div>
+                <div className="font-bold capitalize ">{storeDetails?.name}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Store Description</TableCell>
               <TableCell align="left">
                 <div className="font-bold capitalize ">
-                  {store[0]?.description}
+                  {storeDetails?.description}
                 </div>
               </TableCell>
             </TableRow>
@@ -125,7 +134,7 @@ export default function StoreDetails({ store, userID }) {
               <TableCell align="left">Business Registration Number</TableCell>
               <TableCell align="left">
                 <div className="font-bold capitalize ">
-                  {store[0].businessreg}
+                  {storeDetails?.businessreg}
                 </div>
               </TableCell>
             </TableRow>
@@ -133,38 +142,38 @@ export default function StoreDetails({ store, userID }) {
               <TableCell align="left">Subcription</TableCell>
               <TableCell align="left">
                 <div className="font-bold capitalize ">
-                  {store[0].subcriptions?.package}
+                  {storeDetails?.subcriptions?.package}
                 </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Address</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{store[0].address}</div>
+                <div className="font-bold capitalize ">{storeDetails?.address}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">City</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{store[0].city}</div>
+                <div className="font-bold capitalize ">{storeDetails?.city}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">State</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{store[0].state}</div>
+                <div className="font-bold capitalize ">{storeDetails?.state}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Country</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{store[0].country}</div>
+                <div className="font-bold capitalize ">{storeDetails?.country}</div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Postcode</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{store[0].postcode}</div>
+                <div className="font-bold capitalize ">{storeDetails?.postcode}</div>
               </TableCell>
             </TableRow>
 
@@ -172,7 +181,7 @@ export default function StoreDetails({ store, userID }) {
               <TableCell align="left">Verification</TableCell>
               <TableCell align="left">
                 <div className="font-bold capitalize ">
-                  {store[0].isactive ? <Active /> : <InActive />}
+                  {storeDetails?.isactive ? <Active /> : <InActive />}
                 </div>
               </TableCell>
             </TableRow>
@@ -194,9 +203,9 @@ export default function StoreDetails({ store, userID }) {
                 }}
               />
               <CardContent>
-                {!store[0].isactive && (
+                {!storeDetails?.isactive && (
                   <Button
-                    onClick={(e) => activateStore(store[0].id)}
+                    onClick={(e) => activateStore(storeDetails?.id)}
                     startIcon={<MessageCircle />}
                     variant="text"
                   >
@@ -212,8 +221,8 @@ export default function StoreDetails({ store, userID }) {
                       <TableCell align="left">Registration Date:</TableCell>
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
-                          {store[0].created_at
-                            ? Moment(store[0].created_at).format("d MMM YYYY")
+                          {storeDetails?.created_at
+                            ? Moment(storeDetails?.created_at).format("d MMM YYYY")
                             : null}
                         </div>
                       </TableCell>
@@ -222,8 +231,8 @@ export default function StoreDetails({ store, userID }) {
                       <TableCell align="left">Last Update:</TableCell>
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
-                          {store[0].updated_at
-                            ? Moment(store[0].updated_at).format("d MMM YYYY")
+                          {storeDetails?.updated_at
+                            ? Moment(storeDetails?.updated_at).format("d MMM YYYY")
                             : null}
                         </div>
                       </TableCell>
@@ -249,9 +258,9 @@ export default function StoreDetails({ store, userID }) {
                 <Typography gutterBottom variant="h5" component="div">
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
-                      {store[0].isactive && (
+                      {storeDetails?.isactive && (
                         <Button
-                          onClick={(e) => deactivateStore(store[0].id)}
+                          onClick={(e) => deactivateStore(storeDetails?.id)}
                           startIcon={<BlockIcon />}
                           variant="text"
                         >
@@ -266,7 +275,7 @@ export default function StoreDetails({ store, userID }) {
                     </Grid>
                   </Grid>
                 </Typography>
-                {store[0].isactive && (
+                {storeDetails?.isactive && (
                   <Typography
                     gutterBottom
                     variant="body2"

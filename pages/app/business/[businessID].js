@@ -271,7 +271,7 @@ export default function BusinessID() {
                 <ContactDetails user={user} />
               </TabPanel>
               <TabPanel value={value} index={1}>
-                <StoreDetails store={user?.store} userID={user?.id} />
+                <StoreDetails store={user?.store[0]} userID={user?.id} />
               </TabPanel>
               <TabPanel value={value} index={2}>
                 <UserProducts products={products} />
