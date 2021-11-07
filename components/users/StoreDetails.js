@@ -52,11 +52,10 @@ function InActive() {
 
 export default function StoreDetails({ store, userID }) {
   Moment.locale("en");
-  const [storeDetails, setStoreDetails] = React.useState({})
-  console.log("st", storeDetails);
+  const [storeDetails, setStoreDetails] = React.useState({});
   React.useEffect(() => {
     setStoreDetails(store);
-  }, [store])
+  }, [store]);
   const route = useRouter();
   async function deactivateStore(id) {
     try {
@@ -64,7 +63,7 @@ export default function StoreDetails({ store, userID }) {
         .from("store")
         .update({ isactive: false, updated_at: new Date() })
         .eq("id", id);
-      setStoreDetails({ ...storeDetails, isactive: false })
+      setStoreDetails({ ...storeDetails, isactive: false });
       if (updateError) throw updateError;
       toast.success("This Store has been deactivated.");
       route.replace(`/app/business/${userID}`, undefined, { shallow: true });
@@ -89,7 +88,7 @@ export default function StoreDetails({ store, userID }) {
           .from("store")
           .update({ isactive: true, updated_at: new Date() })
           .eq("id", id);
-        setStoreDetails({ ...storeDetails, isactive: true })
+        setStoreDetails({ ...storeDetails, isactive: true });
 
         if (updateError) throw updateError;
         toast.success("This Store is now Active.");
@@ -99,7 +98,6 @@ export default function StoreDetails({ store, userID }) {
       toast.error(updateError.message);
     }
   }
-
 
   return (
     <>
@@ -119,7 +117,9 @@ export default function StoreDetails({ store, userID }) {
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Store Name</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{storeDetails?.name}</div>
+                <div className="font-bold capitalize ">
+                  {storeDetails?.name}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
@@ -149,31 +149,41 @@ export default function StoreDetails({ store, userID }) {
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Address</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{storeDetails?.address}</div>
+                <div className="font-bold capitalize ">
+                  {storeDetails?.address}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">City</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{storeDetails?.city}</div>
+                <div className="font-bold capitalize ">
+                  {storeDetails?.city}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">State</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{storeDetails?.state}</div>
+                <div className="font-bold capitalize ">
+                  {storeDetails?.state}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Country</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{storeDetails?.country}</div>
+                <div className="font-bold capitalize ">
+                  {storeDetails?.country}
+                </div>
               </TableCell>
             </TableRow>
             <TableRow sx={{ whiteSpace: "nowrap" }}>
               <TableCell align="left">Postcode</TableCell>
               <TableCell align="left">
-                <div className="font-bold capitalize ">{storeDetails?.postcode}</div>
+                <div className="font-bold capitalize ">
+                  {storeDetails?.postcode}
+                </div>
               </TableCell>
             </TableRow>
 
@@ -222,7 +232,9 @@ export default function StoreDetails({ store, userID }) {
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
                           {storeDetails?.created_at
-                            ? Moment(storeDetails?.created_at).format("d MMM YYYY")
+                            ? Moment(storeDetails?.created_at).format(
+                                "d MMM YYYY"
+                              )
                             : null}
                         </div>
                       </TableCell>
@@ -232,7 +244,9 @@ export default function StoreDetails({ store, userID }) {
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
                           {storeDetails?.updated_at
-                            ? Moment(storeDetails?.updated_at).format("d MMM YYYY")
+                            ? Moment(storeDetails?.updated_at).format(
+                                "d MMM YYYY"
+                              )
                             : null}
                         </div>
                       </TableCell>

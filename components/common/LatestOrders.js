@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LoadingBox from "./LoadingBox";
 import Link from "next/link";
 import Table from "@mui/material/Table";
@@ -13,10 +13,28 @@ import { DeleteForeverOutlined } from "@material-ui/icons";
 import { supabase } from "../../libs/supabaseClient";
 import toast from "react-hot-toast";
 import ToastNotify from "../../libs/useNotify";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useRouter } from "next/router";
+import NumberFormat from "react-number-format";
+import { Store } from "../../utils/Store";
+
+const CustomBadge = ({ text, className }) => {
+  return (
+    <div
+      className={`${className} text-xs rounded py-1 text-white min-w-full max-w-full overflow-hidden px-2`}
+    >
+      {text}
+    </div>
+  );
+};
 
 export default function LatestOrders() {
+  const { state } = useContext(Store);
+  let { appSettings } = state;
+
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState(null);
+  const route = useRouter();
   useEffect(() => {
     let isCancelled = false;
     if (!isCancelled) {
@@ -84,15 +102,32 @@ export default function LatestOrders() {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row" align="center">
-                      {product.name}
-                    </TableCell>
-                    <TableCell align="center">{product.price}</TableCell>
-                    <TableCell align="center">{product.store?.name}</TableCell>
-                    <TableCell align="center">
-                      {product.category.name}
+                      {product?.name}
                     </TableCell>
                     <TableCell align="center">
-                      {product.approved ? "Approved" : "Not Approved"}
+                      <NumberFormat
+                        value={product?.price}
+                        displayType={"text"}
+                        thousandSeparator={true}
+                        prefix={appSettings?.currency}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{product?.store?.name}</TableCell>
+                    <TableCell align="center">
+                      {product?.category?.name}
+                    </TableCell>
+                    <TableCell align="center">
+                      {product?.published ? (
+                        <CustomBadge
+                          text="Published"
+                          className="bg-green-600"
+                        />
+                      ) : (
+                        <CustomBadge
+                          text="Un-Published"
+                          className="bg-red-600"
+                        />
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       <div className="flex items-center justify-center">
@@ -100,12 +135,13 @@ export default function LatestOrders() {
                           variant="contained"
                           color="primary"
                           size="small"
+                          startIcon={<VisibilityIcon />}
                           style={{ marginLeft: 16 }}
-                          onClick={() => {}}
+                          onClick={() => {
+                            route.push(`/app/product/${product?.id}`);
+                          }}
                         >
-                          <Link href={`/app/product/${product.id}/view`}>
-                            <a>View</a>
-                          </Link>
+                          View
                         </Button>
                         <Button
                           startIcon={<DeleteForeverOutlined size={10} />}
@@ -115,7 +151,7 @@ export default function LatestOrders() {
                           style={{ marginLeft: 16 }}
                           onClick={() => {}}
                         >
-                          <Link href={`/app/product/${product.id}/delete`}>
+                          <Link href={`/app/product/${product?.id}`}>
                             <a>Remove</a>
                           </Link>
                         </Button>

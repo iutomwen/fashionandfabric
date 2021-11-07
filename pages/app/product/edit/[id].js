@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import NextLink from "next/link";
-import AppLayout from "../../../components/layouts/AppLayout";
 import {
   Box,
   Breadcrumbs,
@@ -15,47 +14,54 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Store } from "../../../utils/Store";
-import { supabase } from "../../../libs/supabaseClient";
-import LoadingBox from "../../../components/common/LoadingBox";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { APPNAME } from "../../../libs/constant";
 import Head from "next/head";
-import { styled } from "@mui/material/styles";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import Stack from "@mui/material/Stack";
-import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
-const Input = styled("input")({
-  display: "none",
-});
-const defaultValues = {
-  name: "",
-  description: "",
-  price: "",
-  store: "",
-  category: { value: "category", label: "Category" },
-  subcategory: [],
-  images: [],
-};
-
-function CreateProduct() {
+import { Store } from "../../../../utils/Store";
+import { supabase } from "../../../../libs/supabaseClient";
+import AppLayout from "../../../../components/layouts/AppLayout";
+import { APPNAME } from "../../../../libs/constant";
+import LoadingBox from "../../../../components/common/LoadingBox";
+function Product() {
   const { state, dispatch } = useContext(Store);
-  const router = useRouter();
+  const [product, setProduct] = useState({});
+  let { products } = state;
+  const route = useRouter();
+  const { id } = route.query;
+  useLayoutEffect(() => {
+    let prod = products.find((x) => x.id == id);
+    setProduct(prod);
+    reset({
+      name: product?.name,
+      description: product?.description,
+      price: product?.price,
+      store: product?.store?.id,
+      category: product?.category?.id,
+      subcategory: product?.sub_category?.id,
+    });
+  }, [products, id]);
   const {
     handleSubmit,
     control,
     watch,
     formState: { errors },
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: product?.name,
+      description: product?.description,
+      price: product?.price,
+      store: product?.store?.id,
+      category: product?.category?.id,
+      subcategory: product?.sub_category?.id,
+    },
+  });
   const { categories, shops } = state;
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
   const [subCat, setSubCat] = useState(null);
-  const [productImage, setProductImage] = useState(null);
 
   useEffect(() => {
     setPageLoading(true);
@@ -102,38 +108,38 @@ function CreateProduct() {
     setPageLoading(true);
 
     try {
-      const { data, error } = await supabase.from("products").insert([
-        {
-          name,
-          description,
-          price,
-          store_id: store,
-          sub_category_id: subcategory,
-          category_id: category,
-          published: false,
-          created_at: new Date(),
-        },
-      ]);
+      const { data, error } = await supabase
+        .from("products")
+        .update([
+          {
+            name,
+            description,
+            price,
+            store_id: store,
+            sub_category_id: subcategory,
+            category_id: category,
+            updated_at: new Date(),
+          },
+        ])
+        .match({ id: product.id });
 
       if (error) throw error;
       if (data) {
-        toast.success("Product Added Successfully.");
-        router.push("/app/product");
+        toast.success("Product Edited Successfully.");
+        route.push("/app/product");
       }
     } catch (error) {
       toast.error(error.message);
       console.log(error);
     } finally {
       setPageLoading(false);
-      reset(defaultValues);
     }
   };
 
   return (
     <AppLayout>
       <Head>
-        <title>{APPNAME} - Create New Product</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <title>{APPNAME} - Edit Product</title>
       </Head>
       {pageLoading ? (
         <LoadingBox />
@@ -157,7 +163,12 @@ function CreateProduct() {
                   Products
                 </Link>
               </NextLink>
-              <Typography color="text.primary">Create</Typography>
+              <NextLink href={`/app/product/${product?.id}`} passHref>
+                <Link underline="hover" color="inherit">
+                  View Product
+                </Link>
+              </NextLink>
+              <Typography color="text.primary">Edit</Typography>
             </Breadcrumbs>
             <Grid container spacing={3}>
               <Box
@@ -375,32 +386,32 @@ function CreateProduct() {
                           </div>
                         </Grid>
                         {/* <Grid item md={6} xs={12}>
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={2}
-                            sx={{ ml: 3 }}
-                          >
-                            <label htmlFor="contained-button-file">
-                              <Input
-                                accept="image/*"
-                                id="contained-button-file"
-                                name="image"
-                                type="file"
-                                onChange={() => handleUpload()}
-                                {...register("image", { required: true })}
-                              />
-
-                              <Button
-                                startIcon={<PhotoCamera />}
-                                variant="text"
-                                component="span"
-                              >
-                                Upload Files
-                              </Button>
-                            </label>
-                          </Stack>
-                        </Grid> */}
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              spacing={2}
+                              sx={{ ml: 3 }}
+                            >
+                              <label htmlFor="contained-button-file">
+                                <Input
+                                  accept="image/*"
+                                  id="contained-button-file"
+                                  name="image"
+                                  type="file"
+                                  onChange={() => handleUpload()}
+                                  {...register("image", { required: true })}
+                                />
+  
+                                <Button
+                                  startIcon={<PhotoCamera />}
+                                  variant="text"
+                                  component="span"
+                                >
+                                  Upload Files
+                                </Button>
+                              </label>
+                            </Stack>
+                          </Grid> */}
                       </Grid>
                     </CardContent>
                     <Divider />
@@ -426,4 +437,4 @@ function CreateProduct() {
   );
 }
 
-export default CreateProduct;
+export default Product;

@@ -9,7 +9,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import ToastNotify from "../../libs/useNotify";
-import { ThemeProvider, CssBaseline, createMuiTheme } from '@material-ui/core';
+import { ThemeProvider, CssBaseline, createTheme } from "@material-ui/core";
 function AppLayout(props) {
   const { state, dispatch } = useContext(Store);
   const { accountDetails, accountSession } = state;
@@ -149,10 +149,46 @@ function AppLayout(props) {
       console.log(error);
     }
   }
+
+  async function getProducts() {
+    try {
+      let { data: products, error } = await supabase
+        .from("products")
+        .select(
+          `
+      id,description, price, published, name,created_at,updated_at,
+      category(id,name),
+      sub_category(id,name),
+      store(id, name)
+      `
+        )
+        .order("id", { ascending: false });
+      if (error) throw error;
+      dispatch({ type: "LOAD_ALL_PRODUCTS", payload: products });
+      Cookies.set("products", JSON.stringify(products));
+      return { products };
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
+  }
   const [loading, setLoading] = useState(false);
   const [getPayload, setGetPayoad] = useState(null);
   const session = supabase.auth.session();
-
+  async function getSettings() {
+    try {
+      let { data: app_settings, error } = await supabase
+        .from("app_settings")
+        .select("*")
+        .single();
+      if (error) throw error;
+      dispatch({ type: "LOAD_SETTINGS", payload: app_settings });
+      Cookies.set("appSettings", JSON.stringify(app_settings));
+      return { app_settings };
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   const userRoles = supabase
     .from("users")
     .on("UPDATE", (payload) => {
@@ -188,6 +224,8 @@ function AppLayout(props) {
         getCategory();
         getSubcriptions();
         getStores();
+        getSettings();
+        getProducts();
         getNotifications();
         if (getUsers("business")) {
           getUsers("personal");
@@ -199,26 +237,26 @@ function AppLayout(props) {
       isCancelled = true;
     };
   }, []);
-  const theme = createMuiTheme({
+  const theme = createTheme({
     typography: {
       h1: {
-        fontSize: '1.6rem',
+        fontSize: "1.6rem",
         fontWeight: 400,
-        margin: '1rem 0',
+        margin: "1rem 0",
       },
       h2: {
-        fontSize: '1.4rem',
+        fontSize: "1.4rem",
         fontWeight: 400,
-        margin: '1rem 0',
+        margin: "1rem 0",
       },
     },
     palette: {
-      type: 'light',
+      type: "light",
       primary: {
-        main: '#9b5f4a',
+        main: "#9b5f4a",
       },
       secondary: {
-        main: '#208080',
+        main: "#208080",
       },
     },
   });

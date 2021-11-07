@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -15,6 +15,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useRouter } from "next/router";
 import { DeleteOutline } from "@mui/icons-material";
+import { Store } from "../../utils/Store";
+import NumberFormat from "react-number-format";
 
 function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
   const [open, setOpen] = React.useState(true);
@@ -25,7 +27,6 @@ function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
   };
   return (
     <div className="modal">
-
       <Dialog
         open={open}
         onClose={handleClose}
@@ -51,8 +52,9 @@ function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
   );
 }
 
-
 export default function SubcriptionList() {
+  const { state } = useContext(Store);
+  let { appSettings } = state;
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
   const router = useRouter();
@@ -70,16 +72,15 @@ export default function SubcriptionList() {
 
   const handleDeleteTrue = async () => {
     if (popup.show && popup.id) {
-
       try {
         const { data, error } = await supabase
-          .from('subcriptions')
+          .from("subcriptions")
           .delete()
-          .eq('id', popup.id);
+          .eq("id", popup.id);
         if (error) throw error;
-        toast.success("Subcription Removed Successfully")
+        toast.success("Subcription Removed Successfully");
       } catch (error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
 
       setPopup({
@@ -151,7 +152,14 @@ export default function SubcriptionList() {
                 {row.id}
               </TableCell>
               <TableCell>{row.package}</TableCell>
-              <TableCell>{row.price}</TableCell>
+              <TableCell>
+                <NumberFormat
+                  value={row.price}
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  prefix={appSettings?.currency}
+                />
+              </TableCell>
               <TableCell>{row.productlimit} </TableCell>
               <TableCell>{row.timeframe} Days</TableCell>
               <TableCell>

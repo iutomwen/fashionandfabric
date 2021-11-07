@@ -19,7 +19,7 @@ import Tabs from "@mui/material/Tabs";
 import PropTypes from "prop-types";
 import Tab from "@mui/material/Tab";
 import { useRouter } from "next/router";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -101,12 +101,16 @@ function Index() {
           >
             <div className=""></div>
 
-            <Button startIcon={<AddIcon />} variant="text" onClick={() => { route.push("/app/product/create") }}>
-              Create New
+            <Button
+              startIcon={<AddIcon />}
+              variant="text"
+              onClick={() => {
+                route.push("/app/product/create");
+              }}
+            >
+              Add New
             </Button>
-
           </Box>
-
 
           <Box sx={{ width: "100%" }}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -125,10 +129,10 @@ function Index() {
               <LatestOrders />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              {/* <VerifiedUsers userType="personal" /> */}
+              {/* <Published /> */}
             </TabPanel>
             <TabPanel value={value} index={2}>
-              {/* <UnverifiedUsers userType="personal" /> */}
+              {/* <UnPublished  /> */}
             </TabPanel>
           </Box>
         </Container>

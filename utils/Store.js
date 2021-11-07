@@ -34,9 +34,7 @@ const initialState = {
   notifications: Cookies.get("notifications")
     ? JSON.parse(Cookies.get("notifications"))
     : [],
-  products: Cookies.get("products")
-    ? JSON.parse(Cookies.get("products"))
-    : [],
+  products: Cookies.get("products") ? JSON.parse(Cookies.get("products")) : [],
   shops: Cookies.get("shops") ? JSON.parse(Cookies.get("shops")) : [],
   categories: Cookies.get("categories")
     ? JSON.parse(Cookies.get("categories"))
@@ -96,6 +94,10 @@ function reducer(state, action) {
       return { ...state, appSubcriptions: action.payload };
     case "LOAD_ALL_SHOPS":
       return { ...state, shops: action.payload };
+    case "LOAD_ALL_PRODUCTS":
+      return { ...state, products: action.payload };
+    case "LOAD_SETTINGS":
+      return { ...state, appSettings: action.payload };
     case "ADD_NEW_NOTIFICATION":
       const newNotify = action.payload;
       const existItem = state.notifications.find(
@@ -103,8 +105,8 @@ function reducer(state, action) {
       );
       const notifyItems = existItem
         ? state.notifications.map((item) =>
-          item.notifyid === existItem.notifyid ? newNotify : item
-        )
+            item.notifyid === existItem.notifyid ? newNotify : item
+          )
         : [...state.notifications, newNotify];
       return {
         ...state,
