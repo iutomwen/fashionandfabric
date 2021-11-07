@@ -19,36 +19,15 @@ import { MessageCircle } from "react-feather";
 import Moment from "moment";
 import toast from "react-hot-toast";
 import { supabase } from "../../libs/supabaseClient";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
+import Active from "../common/Active";
+import InActive from "../common/InActive";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
-function Active() {
-  return (
-    <>
-      <div className="flex items-center space-x-1">
-        <CheckCircleIcon className="text-green-600 fill-current" />
-        <div className="text-lg">Active</div>
-      </div>
-    </>
-  );
-}
-
-function InActive() {
-  return (
-    <>
-      <div className="flex items-center space-x-1">
-        <CloseIcon className="text-red-600 fill-current" />
-        <div className="text-lg">InActive</div>
-      </div>
-    </>
-  );
-}
 
 export default function StoreDetails({ store, userID }) {
   Moment.locale("en");
@@ -191,7 +170,11 @@ export default function StoreDetails({ store, userID }) {
               <TableCell align="left">Verification</TableCell>
               <TableCell align="left">
                 <div className="font-bold capitalize ">
-                  {storeDetails?.isactive ? <Active /> : <InActive />}
+                  {storeDetails?.isactive ? (
+                    <Active>Active</Active>
+                  ) : (
+                    <InActive>InActive</InActive>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -233,7 +216,7 @@ export default function StoreDetails({ store, userID }) {
                         <div className="font-bold capitalize ">
                           {storeDetails?.created_at
                             ? Moment(storeDetails?.created_at).format(
-                                "d MMM YYYY"
+                                "ddd Do, MMM YYYY LT"
                               )
                             : null}
                         </div>
@@ -245,7 +228,7 @@ export default function StoreDetails({ store, userID }) {
                         <div className="font-bold capitalize ">
                           {storeDetails?.updated_at
                             ? Moment(storeDetails?.updated_at).format(
-                                "d MMM YYYY"
+                                "ddd Do, MMM YYYY LT"
                               )
                             : null}
                         </div>

@@ -128,11 +128,10 @@ export default function UnverifiedUsers({ userType }) {
                         key={row.id}
                       >
                         <TableCell>
-                          {" "}
                           <div className="flex space-x-2">
                             {row?.isdeleted && (
                               <Delete className="items-center mr-2 text-red-500 fill-current" />
-                            )}{" "}
+                            )}
                             {row?.first_name}
                           </div>
                         </TableCell>
@@ -140,7 +139,6 @@ export default function UnverifiedUsers({ userType }) {
                         <TableCell>{row?.username}</TableCell>
                         <TableCell>{row?.phone}</TableCell>
                         <TableCell align="center">
-                          {" "}
                           {row?.verified ? (
                             <Badge badgeContent={`verified`} color="success" />
                           ) : (

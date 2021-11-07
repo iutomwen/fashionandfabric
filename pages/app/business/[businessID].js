@@ -183,7 +183,7 @@ export default function BusinessID() {
       <CssBaseline />
       <Head>
         <title>{APPNAME} - View Profile</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       {loading ? (
         <LoadingBox />

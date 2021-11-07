@@ -29,11 +29,7 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -58,12 +54,10 @@ export default function Subcriptions() {
   };
   return (
     <ThemeProvider theme={theme}>
-
-
       <AppLayout>
         <Head>
           <title>{APPNAME} - Subcriptions List</title>
-          <link rel="icon" href="/favicon.ico" />{" "}
+          <link rel="icon" href="/favicon.ico" />
         </Head>
         <Box
           // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}

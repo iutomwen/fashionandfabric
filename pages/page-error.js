@@ -10,7 +10,7 @@ function Error({ statusCode }) {
         <title>
           Error: {statusCode} - {APPNAME}
         </title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Box

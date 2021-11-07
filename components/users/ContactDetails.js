@@ -280,7 +280,9 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">
                         <div className="flex items-start font-bold capitalize">
                           {user?.created_at
-                            ? Moment(user?.created_at).format("d MMM YYYY")
+                            ? Moment(user?.created_at).format(
+                                "ddd Do, MMM YYYY LT"
+                              )
                             : null}
                         </div>
                       </TableCell>
@@ -290,7 +292,9 @@ export default function ContactDetails({ user }) {
                       <TableCell align="left">
                         <div className="font-bold capitalize ">
                           {user?.updated_at
-                            ? Moment(user?.updated_at).format("d MMM YYYY")
+                            ? Moment(user?.updated_at).format(
+                                "ddd Do, MMM YYYY LT"
+                              )
                             : null}
                         </div>
                       </TableCell>

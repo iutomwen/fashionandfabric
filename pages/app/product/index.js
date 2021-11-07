@@ -69,7 +69,7 @@ function Index() {
     <AppLayout>
       <Head>
         <title>{APPNAME} - Product List</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <ToastNotify />
       <Box

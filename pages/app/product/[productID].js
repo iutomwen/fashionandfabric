@@ -30,22 +30,65 @@ import { Edit } from "react-feather";
 import { Done } from "@material-ui/icons";
 import { Remove } from "@mui/icons-material";
 import NumberFormat from "react-number-format";
+import Moment from "moment";
+import toast from "react-hot-toast";
+import { supabase } from "../../../libs/supabaseClient";
+import Active from "../../../components/common/Active";
+import InActive from "../../../components/common/InActive";
+
 function Product() {
   const { state } = useContext(Store);
   const [product, setProduct] = useState({});
   let { products, appSettings } = state;
-
+  Moment.locale("en");
   const route = useRouter();
   const { productID } = route.query;
   useLayoutEffect(() => {
     let prod = products.find((x) => x.id == productID);
     setProduct(prod);
   }, [products, productID]);
+  async function handleDisableProduct(id) {
+    try {
+      const { data: product, error } = await supabase
+        .from("products")
+        .update({ published: false })
+        .eq("id", id);
+      if (error) throw error;
+      if (product) {
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          published: false,
+        }));
+        toast.success("Product has been unpublished.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+  async function handleApprove(id) {
+    try {
+      const { data: product, error } = await supabase
+        .from("products")
+        .update({ published: true })
+        .eq("id", id);
+      if (error) throw error;
+      if (product) {
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          published: true,
+        }));
+        toast.success("Product has been published.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+
   return (
     <AppLayout>
       <Head>
         <title>{APPNAME} - Product View</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Box
@@ -78,7 +121,9 @@ function Product() {
           >
             {!product?.published ? (
               <Button
-                onClick={() => {}}
+                onClick={() => {
+                  handleApprove(product?.id);
+                }}
                 variant="text"
                 color="success"
                 startIcon={<Done />}
@@ -87,7 +132,9 @@ function Product() {
               </Button>
             ) : (
               <Button
-                onClick={() => {}}
+                onClick={() => {
+                  handleDisableProduct(product?.id);
+                }}
                 variant="text"
                 color="primary"
                 startIcon={<Remove />}
@@ -145,7 +192,7 @@ function Product() {
                       {product?.description}
                     </div>
                   </TableCell>
-                </TableRow>{" "}
+                </TableRow>
                 <TableRow sx={{ whiteSpace: "nowrap" }}>
                   <TableCell align="left">Store</TableCell>
                   <TableCell align="left">
@@ -153,7 +200,7 @@ function Product() {
                       {product?.store?.name}
                     </div>
                   </TableCell>
-                </TableRow>{" "}
+                </TableRow>
                 <TableRow sx={{ whiteSpace: "nowrap" }}>
                   <TableCell align="left">Product Category</TableCell>
                   <TableCell align="left">
@@ -161,7 +208,7 @@ function Product() {
                       {product?.category?.name}
                     </div>
                   </TableCell>
-                </TableRow>{" "}
+                </TableRow>
                 <TableRow sx={{ whiteSpace: "nowrap" }}>
                   <TableCell align="left">Product Sub Category</TableCell>
                   <TableCell align="left">
@@ -169,12 +216,18 @@ function Product() {
                       {product?.sub_category?.name}
                     </div>
                   </TableCell>
-                </TableRow>{" "}
+                </TableRow>
                 <TableRow sx={{ whiteSpace: "nowrap" }}>
                   <TableCell align="left">Product Updated At</TableCell>
                   <TableCell align="left">
                     <div className="font-bold capitalize ">
-                      {product?.updated_at}
+                      {product?.updated_at
+                        ? Moment(product?.updated_at).format(
+                            "ddd Do, MMM YYYY LT"
+                          )
+                        : null}
+
+                      {/* {product?.updated_at} */}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -182,7 +235,23 @@ function Product() {
                   <TableCell align="left">Product Created At</TableCell>
                   <TableCell align="left">
                     <div className="font-bold capitalize ">
-                      {product?.created_at}
+                      {product?.created_at
+                        ? Moment(product?.created_at).format(
+                            "ddd Do, MMM YYYY LT"
+                          )
+                        : null}
+                    </div>
+                  </TableCell>
+                </TableRow>
+                <TableRow sx={{ whiteSpace: "nowrap" }}>
+                  <TableCell align="left">Status</TableCell>
+                  <TableCell align="left">
+                    <div className="font-bold capitalize ">
+                      {product?.published ? (
+                        <Active>Published</Active>
+                      ) : (
+                        <InActive>UnPublished</InActive>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

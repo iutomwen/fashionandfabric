@@ -38,7 +38,10 @@ export default function Auth() {
     setLoading(true);
     let isCancelled = false;
     if (!isCancelled) {
-      if (Object.keys(accountDetails).length !== 0 && Object.keys(accountSession).length !== 0) {
+      if (
+        Object.keys(accountDetails).length !== 0 &&
+        Object.keys(accountSession).length !== 0
+      ) {
         setLoading(false);
         toast.loading("Please wait while we load up the app", {
           duration: 1000,
@@ -46,7 +49,8 @@ export default function Auth() {
         router.push("/app/dashboard");
         return;
       }
-    } setLoading(false);
+    }
+    setLoading(false);
     return () => {
       isCancelled = true;
     };
@@ -109,7 +113,7 @@ export default function Auth() {
     <>
       <Head>
         <title>{APPNAME} - Login</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <ToastNotify />
       {loading ? (

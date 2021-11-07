@@ -423,7 +423,7 @@ function Product() {
                       }}
                     >
                       <Button type="submit" variant="text" onClick={() => {}}>
-                        Create Product
+                        Edit Product
                       </Button>
                     </Container>
                   </Card>

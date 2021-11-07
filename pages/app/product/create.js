@@ -133,7 +133,7 @@ function CreateProduct() {
     <AppLayout>
       <Head>
         <title>{APPNAME} - Create New Product</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       {pageLoading ? (
         <LoadingBox />

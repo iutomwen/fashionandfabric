@@ -112,7 +112,7 @@ function EditUser() {
       <CssBaseline />
       <Head>
         <title>{APPNAME} - Edit Profile</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       {loading ? (
         <LoadingBox />

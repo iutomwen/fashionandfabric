@@ -75,7 +75,7 @@ export default function CreateSubcription() {
     <AppLayout>
       <Head>
         <title>{APPNAME} - Create New Subcription</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       {pageLoading ? (
         <LoadingBox />
@@ -243,7 +243,7 @@ export default function CreateSubcription() {
                       }}
                     >
                       <Button type="submit" variant="text">
-                        {loading ? 'loading...' : 'Create Subcription'}
+                        {loading ? "loading..." : "Create Subcription"}
                       </Button>
                     </Container>
                   </Card>

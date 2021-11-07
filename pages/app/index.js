@@ -6,7 +6,6 @@ function Index(props) {
 
   return (
     <div>
-      {" "}
       <div>dashboard</div>
     </div>
   );

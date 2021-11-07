@@ -17,7 +17,7 @@ export default function Dashboard() {
     <>
       <Head>
         <title>{APPNAME} - Application Dashboard</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AppLayout>
         <Box

@@ -105,7 +105,6 @@ function StoreEdit({ store }) {
   };
   return (
     <>
-      {" "}
       <Box
         component="form"
         onSubmit={handleSubmit(SubmitHandler)}

@@ -58,7 +58,6 @@ export default function LatestUsers({ userType }) {
       isCancelled = true;
     };
   }, [findUsers]);
-
   return (
     <div style={{ maxWidth: "100%" }}>
       <ToastNotify />
@@ -82,7 +81,7 @@ export default function LatestUsers({ userType }) {
 
             <TableBody>
               {!loading &&
-                users?.map((data, i) => (
+                users?.slice(0, 3).map((user, i) => (
                   <TableRow
                     key={i}
                     sx={{
@@ -91,19 +90,17 @@ export default function LatestUsers({ userType }) {
                   >
                     <TableCell component="th" scope="row">
                       <div className="flex space-x-2">
-                        {data.users?.isdeleted && (
+                        {user?.isdeleted && (
                           <Delete className="items-center mr-2 text-red-500 fill-current" />
-                        )}{" "}
-                        {data.users?.first_name}
+                        )}
+                        {user?.first_name}
                       </div>
                     </TableCell>
+                    <TableCell align="center">{user?.last_name}</TableCell>
+                    <TableCell align="center">{user?.username}</TableCell>
+                    <TableCell align="center">{user?.phone}</TableCell>
                     <TableCell align="center">
-                      {data.users?.last_name}
-                    </TableCell>
-                    <TableCell align="center">{data.users?.username}</TableCell>
-                    <TableCell align="center">{data.users?.phone}</TableCell>
-                    <TableCell align="center">
-                      {data.users?.verified ? (
+                      {user?.verified ? (
                         <Badge badgeContent={`verified`} color="success" />
                       ) : (
                         <div className="flex items-center justify-evenly">
@@ -126,7 +123,7 @@ export default function LatestUsers({ userType }) {
                     <TableCell align="center">
                       <Button
                         onClick={() =>
-                          route.push(`/app/${userType}/${data.users?.id}`)
+                          route.push(`/app/${userType}/${user?.id}`)
                         }
                         startIcon={<VisibilityIcon />}
                         variant="text"

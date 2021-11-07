@@ -47,7 +47,7 @@ export default function Register() {
 
   const router = useRouter();
 
-  const handleLogin = async ({
+  const handleRegister = async ({
     email,
     firstName,
     lastName,
@@ -97,7 +97,7 @@ export default function Register() {
           .eq("user_id", user.id);
         const { userdata: userInfo, errorUser } = await supabase
           .from("users")
-          .update({ roles: role })
+          .update({ roles: role, created_at: new Date() })
           .match({ id: user.id });
         if (role === "personal" || role === "business") {
           if (role === "business") {
@@ -148,7 +148,7 @@ export default function Register() {
     <>
       <Head>
         <title>{APPNAME} - Login</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <ToastNotify />
       {loading ? (
@@ -174,7 +174,7 @@ export default function Register() {
             </Typography>
             <Box
               component="form"
-              onSubmit={handleSubmit(handleLogin)}
+              onSubmit={handleSubmit(handleRegister)}
               noValidate
               sx={{ mt: 1 }}
             >
@@ -322,7 +322,7 @@ export default function Register() {
                         <option value={null}></option>
                         <option value={`personal`}>Personal</option>
                         <option value={`business`}>Business</option>
-                        <option value={`staff`}>Staff</option>
+                        {/* <option value={`staff`}>Staff</option> */}
                       </TextField>
                     )}
                   ></Controller>

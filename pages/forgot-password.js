@@ -65,7 +65,7 @@ export default function Auth() {
     <>
       <Head>
         <title>{APPNAME} - Password Reset</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <ToastNotify />
       {loading ? (

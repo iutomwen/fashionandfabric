@@ -88,7 +88,6 @@ function UserEdit({ user }) {
   };
   return (
     <>
-      {" "}
       <Box
         component="form"
         onSubmit={handleSubmit(SubmitHandler)}

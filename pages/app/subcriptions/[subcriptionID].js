@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import AppLayout from "../../../components/layouts/AppLayout";
 import Head from "next/head";
 import NextLink from "next/link";
-import { supabase } from "../../../libs/supabaseClient"
+import { supabase } from "../../../libs/supabaseClient";
 import { APPNAME } from "../../../libs/constant";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -45,14 +45,14 @@ export default function SubcriptionID() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('subcriptions')
+        .from("subcriptions")
         .update({ package: name, productlimit, price, timeframe })
-        .eq('id', subcriptionID)
+        .eq("id", subcriptionID);
       if (error) throw error;
       toast.success("Subcription Updated successfully");
-      route.push("/app/subcriptions")
+      route.push("/app/subcriptions");
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -63,11 +63,11 @@ export default function SubcriptionID() {
     const getSubcription = async () => {
       try {
         let { data: subcriptions, error } = await supabase
-          .from('subcriptions')
+          .from("subcriptions")
           .select("*")
-          .eq('id', value)
+          .eq("id", value)
           .single();
-        setSubcription(subcriptions)
+        setSubcription(subcriptions);
         reset({
           name: subcriptions?.package,
           productlimit: subcriptions?.productlimit,
@@ -77,15 +77,14 @@ export default function SubcriptionID() {
       } catch (error) {
         console.log(error.message);
       }
-
-    }
+    };
     if (!isCancelled) {
       getSubcription();
     }
 
     return () => {
       isCancelled = true;
-    }
+    };
   }, [reset, value]);
 
   useLayoutEffect(() => {
@@ -97,7 +96,7 @@ export default function SubcriptionID() {
     <AppLayout>
       <Head>
         <title>{APPNAME} - Edit Subcription</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box
         sx={{
@@ -261,7 +260,7 @@ export default function SubcriptionID() {
                       p: 2,
                     }}
                   >
-                    <Button type="submit" variant="text" >
+                    <Button type="submit" variant="text">
                       {loading ? `loading...` : `Edit Subcription`}
                     </Button>
                   </Container>

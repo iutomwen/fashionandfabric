@@ -53,7 +53,6 @@ function Row(props) {
         </TableCell>
         <TableCell component="th" scope="row">
           <Button variant="text" startIcon={<Delete />}>
-            {" "}
             Remove
           </Button>
         </TableCell>
@@ -153,7 +152,7 @@ export default function Category() {
     <>
       <Head>
         <title>{APPNAME} - Category Listing</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <NoSsr>
         <Box

@@ -89,24 +89,23 @@ function AppLayout(props) {
   }
   async function getUsers(userType) {
     try {
-      let { data: user_roles, error } = await supabase
-        .from("user_roles")
+      let { data: users, error } = await supabase
+        .from("users")
         .select(
-          ` 
-  users(id, first_name, username, last_name, phone, verified, isdeleted) `
+          ` *
+          user_settings(*) `
         )
-        .eq("role", userType)
-        .limit(15)
+        .eq("roles", userType)
         .order("id", { ascending: false });
       if (error) throw error;
-      if (user_roles) {
+      if (users) {
         if (userType == "personal") {
-          dispatch({ type: "LOAD_ALL_PERSONAL", payload: user_roles });
-          Cookies.set("personalUsers", JSON.stringify(user_roles));
+          dispatch({ type: "LOAD_ALL_PERSONAL", payload: users });
+          Cookies.set("personalUsers", JSON.stringify(users));
         }
         if (userType == "business") {
-          dispatch({ type: "LOAD_ALL_BUSINESS", payload: user_roles });
-          Cookies.set("businessUsers", JSON.stringify(user_roles));
+          dispatch({ type: "LOAD_ALL_BUSINESS", payload: users });
+          Cookies.set("businessUsers", JSON.stringify(users));
         }
       }
     } catch (error) {

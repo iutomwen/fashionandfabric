@@ -56,7 +56,7 @@ export default function Home() {
     <div className="container">
       <Head>
         <title>{APPNAME}</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Auth className="mt-24 ml-0 md:ml-5 xl:ml-52" />
     </div>

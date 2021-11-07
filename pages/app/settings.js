@@ -50,7 +50,7 @@ export default function Settings() {
     <AppLayout>
       <Head>
         <title>{APPNAME} - Settings</title>
-        <link rel="icon" href="/favicon.ico" />{" "}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box
         // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
