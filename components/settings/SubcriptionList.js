@@ -17,47 +17,14 @@ import { useRouter } from "next/router";
 import { DeleteOutline } from "@mui/icons-material";
 import { Store } from "../../utils/Store";
 import NumberFormat from "react-number-format";
-
-function Popup({ handleDeleteTrue, handleDeleteFalse, id }) {
-  const [open, setOpen] = React.useState(true);
-
-  const handleClose = () => {
-    setOpen(false);
-    handleDeleteFalse();
-  };
-  return (
-    <div className="modal">
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {`Remove Subcription`}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleDeleteTrue} autoFocus>
-            Remove
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
-}
+import PopUpDelete from "../common/PopUpDelete";
 
 export default function SubcriptionList() {
-  const { state } = useContext(Store);
-  let { appSettings } = state;
+  const { state, dispatch } = useContext(Store);
+  let { appSettings, appSubcriptions } = state;
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
-  const router = useRouter();
+  const route = useRouter();
   const [popup, setPopup] = useState({
     show: false, // initial values set to false and null
     id: null,
@@ -98,37 +65,16 @@ export default function SubcriptionList() {
       id: null,
     });
   };
-  async function getSubcription() {
-    setLoading(true);
-    try {
-      let { data: subcriptions, error } = await supabase
-        .from("subcriptions")
-        .select("*")
-        .order("id", { ascending: false });
-      if (error) throw error;
-      if (subcriptions) {
-        setRows(subcriptions);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function loadSubcription(id) {
-    router.push(`/app/subcriptions/${id}`);
-  }
 
   useEffect(() => {
     let isCanelled = false;
     if (!isCanelled) {
-      getSubcription();
+      setRows(appSubcriptions);
     }
     return () => {
       isCanelled = true;
     };
-  }, []);
+  }, [appSubcriptions]);
   return (
     <NoSsr>
       <Table sx={{ minWidth: "95%" }} aria-label="simple table">
@@ -167,19 +113,21 @@ export default function SubcriptionList() {
                   sx={{
                     width: "60%",
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "space-evenly",
                   }}
                 >
-                  <Button
-                    onClick={() => {
-                      loadSubcription(row.id);
-                    }}
-                    variant="outlined"
-                    color="primary"
-                    sx={{ mx: 4 }}
-                  >
-                    Edit
-                  </Button>
+                  <div className="mr-6">
+                    <Button
+                      onClick={() => {
+                        route.push(`/app/subcriptions/${row.id}`);
+                      }}
+                      variant="outlined"
+                      color="primary"
+                      sx={{ mx: 4 }}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                   <Button
                     endIcon={<DeleteOutline />}
                     onClick={(e) => handleDelete(row.id)}
@@ -189,8 +137,9 @@ export default function SubcriptionList() {
                     Remove
                   </Button>
                   {popup.show && (
-                    <Popup
+                    <PopUpDelete
                       id={popup.id}
+                      text={`Remove Subcription`}
                       handleDeleteTrue={handleDeleteTrue}
                       handleDeleteFalse={handleDeleteFalse}
                     />

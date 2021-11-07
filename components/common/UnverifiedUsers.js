@@ -10,11 +10,11 @@ import TableRow from "@mui/material/TableRow";
 import toast from "react-hot-toast";
 import { supabase } from "../../libs/supabaseClient";
 import LoadingBox from "./LoadingBox";
-import { Badge, Button, TextField } from "@mui/material";
-import Link from "next/link";
+import { Button, TextField } from "@mui/material";
 import { Delete } from "react-feather";
 import { useRouter } from "next/router";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import CustomBadge from "./CustomBadge";
 const columns = [
   { id: "first_name", label: "First Name", minWidth: 170 },
   { id: "last_name", label: "Last Name", minWidth: 170 },
@@ -140,20 +140,22 @@ export default function UnverifiedUsers({ userType }) {
                         <TableCell>{row?.phone}</TableCell>
                         <TableCell align="center">
                           {row?.verified ? (
-                            <Badge badgeContent={`verified`} color="success" />
+                            <CustomBadge
+                              text="verified"
+                              className="bg-green-600 w-1/2"
+                            />
                           ) : (
                             <div className="flex items-center justify-evenly">
                               <div>
-                                <Badge
-                                  badgeContent={`unverified`}
-                                  color="warning"
+                                <CustomBadge
+                                  text="unverified"
+                                  className="bg-yellow-600"
                                 />
                               </div>
                               <div className="max-w-full ml-8 cursor-pointer">
-                                <Badge
-                                  badgeContent={`Resend`}
-                                  color="info"
-                                  title={`Resend verification email`}
+                                <CustomBadge
+                                  text="Resend"
+                                  className="bg-blue-600"
                                 />
                               </div>
                             </div>

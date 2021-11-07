@@ -77,7 +77,8 @@ function AppLayout(props) {
     try {
       let { data: subcriptions, error } = await supabase
         .from("subcriptions")
-        .select("*");
+        .select("*")
+        .order("id", { ascending: true });
       if (error) throw error;
       dispatch({ type: "LOAD_ALL_SUBCRIPTION", payload: subcriptions });
       Cookies.set("appSubcriptions", JSON.stringify(subcriptions));
@@ -135,8 +136,9 @@ function AppLayout(props) {
     try {
       let { data: store, error } = await supabase.from("store").select(`
       id,address, businessreg, city, country, created_at, description, name, postcode, state,isactive,
-      users(id,username),
-      subcriptions(id, package, price)
+      users(id,username, first_name, last_name),
+      subcriptions(id, package, price),
+      products(id)
       `);
       if (error) throw error;
       dispatch({ type: "LOAD_ALL_SHOPS", payload: store });
@@ -230,8 +232,9 @@ function AppLayout(props) {
           getUsers("personal");
         }
       }
+      setLoading(true);
     }
-    setLoading(false);
+    setLoading(true);
     return () => {
       isCancelled = true;
     };

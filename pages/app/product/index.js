@@ -20,6 +20,7 @@ import PropTypes from "prop-types";
 import Tab from "@mui/material/Tab";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
+import Products from "../../../components/common/Products";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -129,10 +130,10 @@ function Index() {
               <LatestOrders />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              {/* <Published /> */}
+              <Products type="published" />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              {/* <UnPublished  /> */}
+              <Products type="unpublished" />
             </TabPanel>
           </Box>
         </Container>

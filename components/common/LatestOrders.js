@@ -17,59 +17,68 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useRouter } from "next/router";
 import NumberFormat from "react-number-format";
 import { Store } from "../../utils/Store";
-
-const CustomBadge = ({ text, className }) => {
-  return (
-    <div
-      className={`${className} text-xs rounded py-1 text-white min-w-full max-w-full overflow-hidden px-2`}
-    >
-      {text}
-    </div>
-  );
-};
+import PopUpDelete from "./PopUpDelete";
+import Cookies from "js-cookie";
+import CustomBadge from "./CustomBadge";
 
 export default function LatestOrders() {
-  const { state } = useContext(Store);
-  let { appSettings } = state;
+  const { state, dispatch } = useContext(Store);
+  let { appSettings, products } = state;
 
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState(null);
+  const [allProducts, setAllProducts] = useState(null);
   const route = useRouter();
   useEffect(() => {
     let isCancelled = false;
     if (!isCancelled) {
-      async function getProducts() {
-        try {
-          setLoading(true);
-          let { data: product, error } = await supabase
-            .from("products")
-            .select(
-              `
-            published, name, price,id,
-    store(name),
-    category(name),
-    sub_category(name)
-    `
-            )
-            .order("id", { ascending: false });
-          if (error) throw error;
-          if (product) {
-            setProducts(product);
-          }
-        } catch (error) {
-          toast.error(error.message);
-          console.log(error);
-        } finally {
-          setLoading(false);
-        }
-      }
-      getProducts();
+      setAllProducts(products);
+      setLoading(false);
     }
     return () => {
       isCancelled = true;
     };
-  }, []);
-  // toast.success(products.length);
+  }, [products]);
+  const [popup, setPopup] = useState({
+    show: false, // initial values set to false and null
+    id: null,
+  });
+
+  const handleDelete = (id) => {
+    setPopup({
+      show: true,
+      id,
+    });
+  };
+  const handleDeleteTrue = async () => {
+    if (popup.show && popup.id) {
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .delete()
+          .eq("id", popup.id);
+        if (error) throw error;
+        toast.success("Product Removed Successfully");
+        //mutate the state
+        let newProducts = allProducts.filter((x) => x.id !== popup.id);
+        dispatch({ type: "LOAD_ALL_PRODUCTS", payload: newProducts });
+        Cookies.set("products", JSON.stringify(newProducts));
+        setAllProducts(newProducts);
+      } catch (error) {
+        toast.error(error.message);
+      }
+
+      setPopup({
+        show: false,
+        id: null,
+      });
+    }
+  };
+  const handleDeleteFalse = () => {
+    setPopup({
+      show: false,
+      id: null,
+    });
+  };
   return (
     <div style={{ maxWidth: "100%" }}>
       <ToastNotify />
@@ -96,7 +105,7 @@ export default function LatestOrders() {
 
             <TableBody>
               {!loading &&
-                products?.map((product, i) => (
+                allProducts?.slice(0, 10).map((product, i) => (
                   <TableRow
                     key={i}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -149,11 +158,9 @@ export default function LatestOrders() {
                           color="secondary"
                           size="small"
                           style={{ marginLeft: 16 }}
-                          onClick={() => {}}
+                          onClick={(e) => handleDelete(product?.id)}
                         >
-                          <Link href={`/app/product/${product?.id}`}>
-                            <a>Remove</a>
-                          </Link>
+                          Remove
                         </Button>
                       </div>
                     </TableCell>
@@ -161,6 +168,14 @@ export default function LatestOrders() {
                 ))}
             </TableBody>
           </Table>
+          {popup.show && (
+            <PopUpDelete
+              id={popup.id}
+              text={`Delete Product `}
+              handleDeleteTrue={handleDeleteTrue}
+              handleDeleteFalse={handleDeleteFalse}
+            />
+          )}
         </TableContainer>
       )}
     </div>

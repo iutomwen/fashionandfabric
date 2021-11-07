@@ -98,28 +98,28 @@ export default function BusinessID() {
     }
   }
 
-  async function getStoreProducts(storeid) {
-    try {
-      const { data: products, error } = await supabase
-        .from("products")
-        .select(
-          `
-  id, name,price,description,published,created_at, updated_at, category(name), sub_category(name)
-  store (
-  name
-  )
-  `
-        )
-        .eq("store_id", storeid);
-      if (error) throw error;
-      if (products) {
-        setProducts(products);
-      }
-      return true;
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
+  // async function getStoreProducts(storeid) {
+  //   try {
+  //     const { data: products, error } = await supabase
+  //       .from("products")
+  //       .select(
+  //         `
+  // id, name,price,description,published,created_at, updated_at, category(name), sub_category(name)
+  // store (
+  // name
+  // )
+  // `
+  //       )
+  //       .eq("store_id", storeid);
+  //     if (error) throw error;
+  //     if (products) {
+  //       setProducts(products);
+  //     }
+  //     return true;
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //   }
+  // }
   async function undoDelete(id) {
     try {
       const { data, error } = await supabase
@@ -160,10 +160,10 @@ export default function BusinessID() {
     if (!isCancelled) {
       if (userID) {
         getDetails(userID);
-        if (user) {
-          getStoreProducts(user?.store[0].id);
-          setLoading(true);
-        }
+        // if (user) {
+        //   getStoreProducts(user?.store[0].id);
+        //   setLoading(true);
+        // }
       }
     }
     setLoading(false);
@@ -274,7 +274,7 @@ export default function BusinessID() {
                 <StoreDetails store={user?.store[0]} userID={user?.id} />
               </TabPanel>
               <TabPanel value={value} index={2}>
-                <UserProducts products={products} />
+                <UserProducts storeID={user?.store[0].id} />
               </TabPanel>
               <TabPanel value={value} index={3}>
                 <UserSettings />

@@ -17,6 +17,7 @@ import ToastNotify from "../../libs/useNotify";
 import { Delete } from "react-feather";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useRouter } from "next/router";
+import CustomBadge from "./CustomBadge";
 export default function LatestUsers({ userType }) {
   const { state } = useContext(Store);
   const { businessUsers, personalUsers } = state;
@@ -101,20 +102,22 @@ export default function LatestUsers({ userType }) {
                     <TableCell align="center">{user?.phone}</TableCell>
                     <TableCell align="center">
                       {user?.verified ? (
-                        <Badge badgeContent={`verified`} color="success" />
+                        <CustomBadge
+                          text="verified"
+                          className="bg-green-600 w-1/2"
+                        />
                       ) : (
                         <div className="flex items-center justify-evenly">
                           <div>
-                            <Badge
-                              badgeContent={`unverified`}
-                              color="warning"
+                            <CustomBadge
+                              text="unverified"
+                              className="bg-yellow-600"
                             />
                           </div>
-                          <div className="max-w-full ml-8 cursor-pointer">
-                            <Badge
-                              badgeContent={`Resend`}
-                              color="info"
-                              title={`Resend verification email`}
+                          <div className="max-w-full ml-2 cursor-pointer">
+                            <CustomBadge
+                              text="Resend"
+                              className="bg-blue-600"
                             />
                           </div>
                         </div>

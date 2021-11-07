@@ -17,6 +17,7 @@ import PropTypes from "prop-types";
 import SubcriptionList from "../../../components/settings/SubcriptionList";
 import { useRouter } from "next/router";
 import theme from "../../../utils/theme";
+import ShopsWithSubcription from "../../../components/settings/ShopsWithSubcription";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -109,7 +110,7 @@ export default function Subcriptions() {
               <SubcriptionList />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              ShopsWithSubcription
+              <ShopsWithSubcription />
             </TabPanel>
           </Box>
         </Box>

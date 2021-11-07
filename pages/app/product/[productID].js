@@ -51,13 +51,14 @@ function Product() {
     try {
       const { data: product, error } = await supabase
         .from("products")
-        .update({ published: false })
+        .update({ published: false, updated_at: new Date() })
         .eq("id", id);
       if (error) throw error;
       if (product) {
         setProduct((prevProduct) => ({
           ...prevProduct,
           published: false,
+          updated_at: new Date(),
         }));
         toast.success("Product has been unpublished.");
       }
@@ -69,13 +70,14 @@ function Product() {
     try {
       const { data: product, error } = await supabase
         .from("products")
-        .update({ published: true })
+        .update({ published: true, updated_at: new Date() })
         .eq("id", id);
       if (error) throw error;
       if (product) {
         setProduct((prevProduct) => ({
           ...prevProduct,
           published: true,
+          updated_at: new Date(),
         }));
         toast.success("Product has been published.");
       }

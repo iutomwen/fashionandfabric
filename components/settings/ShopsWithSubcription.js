@@ -1,9 +1,6 @@
 import { useRouter } from "next/dist/client/router";
 import React, { useContext, useEffect, useState } from "react";
-import NumberFormat from "react-number-format";
 import { Store } from "../../utils/Store";
-import CustomBadge from "./CustomBadge";
-import PopUpDelete from "./PopUpDelete";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,29 +9,32 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import toast from "react-hot-toast";
-import { supabase } from "../../libs/supabaseClient";
-import LoadingBox from "./LoadingBox";
+import LoadingBox from "../common/LoadingBox";
 import { Button, TextField } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { DeleteForeverOutlined } from "@material-ui/icons";
+import CustomBadge from "../common/CustomBadge";
 
 const columns = [
   { id: "name", label: "Name", minWidth: 170 },
-  { id: "price", label: "Price", minWidth: 170 },
+  { id: "description", label: "Store Description", minWidth: 170 },
   {
-    id: "store",
-    label: "Email",
+    id: "owner",
+    label: "Store Owner",
     minWidth: 170,
   },
   {
-    id: "category",
-    label: "Category",
+    id: "businessreg",
+    label: "Business Reg Number",
     minWidth: 170,
   },
   {
-    id: "Status",
-    label: "Verification",
+    id: "subcription",
+    label: "Subcription",
+    minWidth: 170,
+  },
+  {
+    id: "products",
+    label: "No of Products",
     minWidth: 170,
   },
   {
@@ -43,57 +43,16 @@ const columns = [
     minWidth: 170,
   },
 ];
-
-function Products({ type }) {
+function ShopsWithSubcription() {
   const { state, dispatch } = useContext(Store);
-  let { appSettings, products } = state;
+  let { appSettings, shops } = state;
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const route = useRouter();
-  const [popup, setPopup] = useState({
-    show: false, // initial values set to false and null
-    id: null,
-  });
 
-  const handleDelete = (id) => {
-    setPopup({
-      show: true,
-      id,
-    });
-  };
-  const handleDeleteTrue = async () => {
-    if (popup.show && popup.id) {
-      try {
-        const { data, error } = await supabase
-          .from("products")
-          .delete()
-          .eq("id", popup.id);
-        if (error) throw error;
-        toast.success("Product Removed Successfully");
-        //mutate the state
-        let newProducts = allProducts.filter((x) => x.id !== popup.id);
-        dispatch({ type: "LOAD_ALL_PRODUCTS", payload: newProducts });
-        Cookies.set("products", JSON.stringify(newProducts));
-        setAllProducts(newProducts);
-      } catch (error) {
-        toast.error(error.message);
-      }
-
-      setPopup({
-        show: false,
-        id: null,
-      });
-    }
-  };
-  const handleDeleteFalse = () => {
-    setPopup({
-      show: false,
-      id: null,
-    });
-  };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -102,27 +61,21 @@ function Products({ type }) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
   useEffect(() => {
     setLoading(true);
     let isCancelled = false;
     if (!isCancelled) {
-      if (type == "published") {
-        let getProducts = products.filter((x) => x.published !== false);
-        setRows(getProducts);
-      } else if (type == "unpublished") {
-        let getProducts = products.filter((x) => x.published !== true);
-        setRows(getProducts);
-      }
+      setRows(shops);
     }
     setLoading(false);
     return () => (isCancelled = true);
-  }, [products]);
+  }, [shops]);
 
   useEffect(() => {
-    const prevState = rows;
     let calls = setTimeout(() => {
       if (search != "") {
-        let searchText = prevState.filter(
+        let searchText = shops.filter(
           ({ name }) =>
             search.toLowerCase() &&
             name.toLowerCase().includes(search.toLowerCase())
@@ -130,16 +83,6 @@ function Products({ type }) {
         setRows(searchText);
       }
     }, 400);
-
-    if (search == "") {
-      if (type == "published") {
-        let getProducts = products.filter((x) => x.published !== false);
-        setRows(getProducts);
-      } else if (type == "unpublished") {
-        let getProducts = products.filter((x) => x.published !== true);
-        setRows(getProducts);
-      }
-    }
 
     return () => clearTimeout(calls);
   }, [search]);
@@ -186,16 +129,16 @@ function Products({ type }) {
                         key={row.id}
                       >
                         <TableCell>{row?.name}</TableCell>
+                        <TableCell>{row?.description}</TableCell>
                         <TableCell>
-                          <NumberFormat
-                            value={row?.price}
-                            displayType={"text"}
-                            thousandSeparator={true}
-                            prefix={appSettings?.currency}
-                          />
+                          <div className=" capitalize">
+                            {row?.users?.first_name} {row?.users?.last_name}
+                          </div>
                         </TableCell>
-                        <TableCell>{row?.store?.name}</TableCell>
-                        <TableCell>{row?.category?.name}</TableCell>
+                        <TableCell>{row?.businessreg}</TableCell>
+                        <TableCell>{row?.subcriptions?.package}</TableCell>
+                        <TableCell>{row?.products?.length}</TableCell>
+
                         <TableCell align="center">
                           {row?.published ? (
                             <CustomBadge
@@ -218,20 +161,10 @@ function Products({ type }) {
                               startIcon={<VisibilityIcon />}
                               style={{ marginLeft: 16 }}
                               onClick={() => {
-                                route.push(`/app/product/${row?.id}`);
+                                route.push(`/app/business/${row?.users.id}`);
                               }}
                             >
                               View
-                            </Button>
-                            <Button
-                              startIcon={<DeleteForeverOutlined size={10} />}
-                              variant="text"
-                              color="secondary"
-                              size="small"
-                              style={{ marginLeft: 16 }}
-                              onClick={(e) => handleDelete(row?.id)}
-                            >
-                              Remove
                             </Button>
                           </div>
                         </TableCell>
@@ -241,14 +174,7 @@ function Products({ type }) {
               </TableBody>
             </Table>
           </TableContainer>
-          {popup.show && (
-            <PopUpDelete
-              id={popup.id}
-              text={`Delete Product`}
-              handleDeleteTrue={handleDeleteTrue}
-              handleDeleteFalse={handleDeleteFalse}
-            />
-          )}
+
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
@@ -264,4 +190,4 @@ function Products({ type }) {
   );
 }
 
-export default Products;
+export default ShopsWithSubcription;
