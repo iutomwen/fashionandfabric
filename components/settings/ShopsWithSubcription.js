@@ -16,7 +16,7 @@ import CustomBadge from "../common/CustomBadge";
 
 const columns = [
   { id: "name", label: "Name", minWidth: 170 },
-  { id: "description", label: "Store Description", minWidth: 170 },
+  { id: "description", label: "Subcription Details", minWidth: 270 },
   {
     id: "owner",
     label: "Store Owner",
@@ -35,7 +35,7 @@ const columns = [
   {
     id: "products",
     label: "No of Products",
-    minWidth: 170,
+    minWidth: 40,
   },
   {
     id: "options",
@@ -52,6 +52,24 @@ function ShopsWithSubcription() {
   const [rows, setRows] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const route = useRouter();
+  //   console.log(shops);
+  //   const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  //   const firstDate = new Date(2008, 1, 12);
+  //   const secondDate = new Date(2008, 1, 22);
+
+  //   function days_between(date1, date2) {
+
+  //     // The number of milliseconds in one day
+  //     const ONE_DAY = 1000 * 60 * 60 * 24;
+
+  //     // Calculate the difference in milliseconds
+  //     const differenceMs = Math.abs(date1 - date2);
+
+  //     // Convert back to days and return
+  //     return Math.round(differenceMs / ONE_DAY);
+
+  // }
+  const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -129,7 +147,18 @@ function ShopsWithSubcription() {
                         key={row.id}
                       >
                         <TableCell>{row?.name}</TableCell>
-                        <TableCell>{row?.description}</TableCell>
+                        <TableCell>
+                          <div className="flex-col flex-1">
+                            <div>
+                              <b>Allowed Items: </b>
+                              {row?.subcriptions?.productlimit} products
+                            </div>
+                            <div>
+                              <b>Time Allowed: </b>
+                              {row?.subcriptions?.timeframe} days
+                            </div>
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <div className=" capitalize">
                             {row?.users?.first_name} {row?.users?.last_name}

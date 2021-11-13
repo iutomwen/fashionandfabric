@@ -157,7 +157,6 @@ export default function UserProducts({ storeID }) {
                       )}
                     </TableCell>
                     <TableCell>
-                      {" "}
                       <div className="flex items-center justify-center">
                         <Button
                           variant="text"

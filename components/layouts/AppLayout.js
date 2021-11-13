@@ -93,11 +93,12 @@ function AppLayout(props) {
       let { data: users, error } = await supabase
         .from("users")
         .select(
-          ` *
+          ` *,
           user_settings(*) `
         )
         .eq("roles", userType)
         .order("id", { ascending: false });
+
       if (error) throw error;
       if (users) {
         if (userType == "personal") {
@@ -135,10 +136,10 @@ function AppLayout(props) {
   async function getStores() {
     try {
       let { data: store, error } = await supabase.from("store").select(`
-      id,address, businessreg, city, country, created_at, description, name, postcode, state,isactive,
+      id,address, businessreg, city, country, created_at, description, name, postcode, state,isactive,subcription_date,updated_at,
       users(id,username, first_name, last_name),
-      subcriptions(id, package, price),
-      products(id)
+      subcriptions(*),
+      products(*)
       `);
       if (error) throw error;
       dispatch({ type: "LOAD_ALL_SHOPS", payload: store });

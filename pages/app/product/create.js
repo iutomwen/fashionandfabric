@@ -52,6 +52,7 @@ function CreateProduct() {
   } = useForm();
   const { categories, shops } = state;
   const [show, setShow] = useState(false);
+  const [uploadForm, setUploadForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
   const [subCat, setSubCat] = useState(null);

@@ -88,6 +88,19 @@ export default function Register() {
           if (data) {
             dispatch({ type: "ADD_NEW_NOTIFICATION", payload: data });
           }
+
+          const { data: userStettings, settingerror } = await supabase
+            .from("user_settings")
+            .upsert([
+              {
+                user_id: user.id,
+                created_at: new Date(),
+                updated_at: new Date(),
+                newsletter: false,
+                twofactor: false,
+                login_notify: false,
+              },
+            ]);
         } catch (error) {
           toast.error(error.message);
         }

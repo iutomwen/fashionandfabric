@@ -233,7 +233,6 @@ id
                   aria-label="basic tabs example"
                 >
                   <Tab label="User Details" {...a11yProps(0)} />
-
                   <Tab label="Account Settings" {...a11yProps(1)} />
                 </Tabs>
               </Box>
@@ -241,7 +240,10 @@ id
                 <ContactDetails user={user} />
               </TabPanel>
               <TabPanel value={value} index={1}>
-                <UserSettings />
+                <UserSettings
+                  settings={user?.user_settings}
+                  userID={user?.id}
+                />
               </TabPanel>
             </Box>
           </Container>
