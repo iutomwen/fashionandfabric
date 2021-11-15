@@ -56,6 +56,7 @@ function ShopsWithSubcription() {
   //   const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
   //   const firstDate = new Date(2008, 1, 12);
   //   const secondDate = new Date(2008, 1, 22);
+  //   const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
 
   //   function days_between(date1, date2) {
 
@@ -69,7 +70,6 @@ function ShopsWithSubcription() {
   //     return Math.round(differenceMs / ONE_DAY);
 
   // }
-  const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
