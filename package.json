@@ -17,7 +17,7 @@
     "@supabase/supabase-js": "^1.24.0",
     "js-cookie": "^3.0.1",
     "moment": "^2.29.1",
-    "next": "latest",
+    "next": "12",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-feather": "^2.0.9",
