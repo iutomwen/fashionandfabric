@@ -146,16 +146,25 @@ export default function Register() {
   };
   useEffect(() => {
     setLoading(true);
-    if (accountDetails && accountSession) {
-      console.log("allow");
-      router.push("/app/dashboard");
+    let isCancelled = false;
+    if (!isCancelled) {
+      if (
+        Object.keys(accountDetails).length !== 0 &&
+        Object.keys(accountSession).length !== 0
+      ) {
+        setLoading(false);
+        toast.loading("Please wait while we load up the app", {
+          duration: 1000,
+        });
+        router.push("/app/dashboard");
+        return;
+      }
     }
     setLoading(false);
     return () => {
-      !accountDetails;
-      !accountSession;
+      isCancelled = true;
     };
-  }, [accountDetails, accountSession]);
+  }, [accountSession, accountDetails]);
 
   return (
     <>

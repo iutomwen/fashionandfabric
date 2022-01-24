@@ -64,7 +64,7 @@ function Index() {
       <ToastNotify />
       <Box
         // className={layout ? layout : `mt-5 ml-0 md:ml-5 xl:ml-5`}
-        className="mt-2 ml-0 md:ml-5 xl:ml-10 relative"
+        className="mt-2 ml-0 md:ml-5 xl:ml-10 relative h-screen"
         sx={{
           backgroundColor: "background.default",
           minHeight: "100%",

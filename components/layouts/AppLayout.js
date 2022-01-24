@@ -88,6 +88,7 @@ function AppLayout(props) {
       console.log(error);
     }
   }
+
   async function getUsers(userType) {
     try {
       let { data: users, error } = await supabase

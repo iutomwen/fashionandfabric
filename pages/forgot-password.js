@@ -34,16 +34,25 @@ export default function Auth() {
 
   useEffect(() => {
     setLoading(true);
-    if (accountDetails && accountSession) {
-      router.push("/app/dashboard");
-      return;
+    let isCancelled = false;
+    if (!isCancelled) {
+      if (
+        Object.keys(accountDetails).length !== 0 &&
+        Object.keys(accountSession).length !== 0
+      ) {
+        setLoading(false);
+        toast.loading("Please wait while we load up the app", {
+          duration: 1000,
+        });
+        router.push("/app/dashboard");
+        return;
+      }
     }
     setLoading(false);
     return () => {
-      !accountDetails;
-      !accountSession;
+      isCancelled = true;
     };
-  }, []);
+  }, [accountSession, accountDetails]);
   const handleRestPassword = async ({ email }) => {
     setPending(true);
     try {
@@ -52,7 +61,7 @@ export default function Auth() {
       );
       if (error) throw error;
       if (data) {
-        toast.success("A reset mail has been sent");
+        toast.success("A password reset mail has been sent");
       }
     } catch (error) {
       toast.error(error.message || error.error_description);

@@ -10,8 +10,16 @@ import {
 import { green } from "@material-ui/core/colors";
 import PeopleIcon from "@material-ui/icons/PeopleOutlined";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
+import { Store } from "../../utils/Store";
 
 function TotalValidProducts(props) {
+  const { state } = React.useContext(Store);
+  const { products } = state;
+  const [total, setTotal] = React.useState(0);
+
+  React.useEffect(() => {
+    setTotal(products.length);
+  }, [products]);
   return (
     <Card {...props}>
       <CardContent>
@@ -26,7 +34,7 @@ function TotalValidProducts(props) {
               TOTAL PRODUCTS
             </Typography>
             <Typography color="textPrimary" variant="h6">
-              1,600
+              {total}
             </Typography>
           </Grid>
           <Grid item>

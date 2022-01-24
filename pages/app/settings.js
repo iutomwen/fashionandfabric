@@ -10,6 +10,7 @@ import NextLink from "next/link";
 import Category from "../../components/settings/Category";
 import { APPNAME } from "../../libs/constant";
 import Head from "next/head";
+import GeneralInfo from "../../components/settings/GeneralInfo";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -84,7 +85,7 @@ export default function Settings() {
             <Tab label="Application" {...a11yProps(3)} />
           </Tabs>
           <TabPanel value={value} index={0}>
-            General
+            <GeneralInfo />
           </TabPanel>
           <TabPanel value={value} index={1}>
             <Category />
