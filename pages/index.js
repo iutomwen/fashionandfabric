@@ -1,42 +1,49 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
+import { LoginPage } from "@/components/Auth/LoginPage";
 import Head from "next/head";
-import { APPNAME } from "../libs/constant";
-import Auth from "../components/Auth";
+import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/router";
-import { supabase } from "../libs/supabaseClient";
-import { Store } from "../utils/Store";
-
-export default function Home() {
-  const { state, dispatch } = useContext(Store);
-  const { accountDetails, accountSession } = state;
+import { useDispatch, useSelector } from "react-redux";
+import { checkAccountSession, signOutUser } from "@/utils/services";
+import { showNotification } from "@mantine/notifications";
+import {
+  fetchAccountDetails,
+  logoutUserAccount,
+} from "@/utils/slices/accountSlice";
+import { LoadingOverlay } from "@mantine/core";
+import withGuest from "@/components/Auth/withGuest";
+function Home() {
   const router = useRouter();
-  useEffect(() => {
+  const { account } = useSelector((state) => state.account);
+  const dispatch = useDispatch();
+  const [visible, setVisible] = React.useState(true);
+  React.useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         handleAuthChange(event, session);
         if (event === "SIGNED_IN") {
-          dispatch({ type: "USER_LOGIN" });
-          if (accountSession && accountDetails) {
-            router.push("/app/dashboard");
-            console.log("allow to pass");
+          if (Object.keys(account).length > 0) {
+            router.push("/dashboard");
           }
         }
         if (event === "SIGNED_OUT") {
-          dispatch({ type: "USER_LOGOUT" });
+          dispatch(logoutUserAccount());
+          setVisible(false);
+          router.push("/");
         }
       }
     );
-    checkUser();
     return () => {
       authListener.unsubscribe();
     };
-  }, []);
-  async function checkUser() {
-    const user = await supabase.auth.user();
-    if (user) {
-      dispatch({ type: "USER_LOGIN" });
+  }, [account, dispatch, router]);
+
+  React.useEffect(() => {
+    if (Object.keys(account).length === 0) {
+      setVisible(false);
     }
-  }
+  }, [account]);
+
   async function handleAuthChange(event, session) {
     await fetch("/api/auth", {
       method: "POST",
@@ -45,20 +52,20 @@ export default function Home() {
       body: JSON.stringify({ event, session }),
     });
   }
-
-  React.useEffect(() => {
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
-  }, []);
   return (
-    <div className="container">
+    <div className="flex flex-col items-center justify-center my-20 relative">
+      <LoadingOverlay visible={visible} />
       <Head>
-        <title>{APPNAME}</title>
+        <title>Fashion and Fabrics</title>
+        <meta
+          name="description"
+          content="Admin access for fashion and fabrics"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Auth className="mt-24 ml-0 md:ml-5 xl:ml-52" />
+      <LoginPage />
     </div>
   );
 }
+
+export default withGuest(Home);
