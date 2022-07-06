@@ -5,11 +5,11 @@ import { MantineProvider, ColorSchemeProvider } from "@mantine/core";
 import { Provider } from "react-redux";
 import { NotificationsProvider } from "@mantine/notifications";
 import { PersistGate } from "redux-persist/integration/react";
-import { persistStore } from "redux-persist";
-import { store } from "@/utils/store";
+// import { persistStore } from "redux-persist";
+import { store, persistor } from "@/utils/store";
 export default function App(props) {
   const { Component, pageProps } = props;
-  let persistor = persistStore(store);
+  // let persistor = persistStore(store);
   const [colorScheme, setColorScheme] = React.useState("light");
   const toggleColorScheme = (value) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
