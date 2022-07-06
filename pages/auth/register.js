@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, useToggle, upperFirst } from "@mantine/hooks";
+import { useForm, upperFirst } from "@mantine/hooks";
 import {
   TextInput,
   PasswordInput,
@@ -16,8 +16,6 @@ import {
 import { GoogleButton, TwitterButton } from "@/components/Global/SocialButtons";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { checkAccountSession } from "@/utils/services";
-import { fetchAccountDetails } from "@/utils/slices/accountSlice";
 import withGuest from "@/components/Auth/withGuest";
 function RegisterPage(props) {
   const { account } = useSelector((state) => state.account);

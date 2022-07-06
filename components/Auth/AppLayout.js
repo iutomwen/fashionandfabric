@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import {
   AppShell,
-  Navbar,
   Header,
   Footer,
-  Aside,
-  Text,
   MediaQuery,
   Burger,
   useMantineTheme,
   Group,
   ActionIcon,
   useMantineColorScheme,
-  Box,
 } from "@mantine/core";
 import AppNavBar from "./AppNavBar";
 import ApplicationLogo from "../Global/ApplicationLogo";

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonProps, Group } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { TwitterIcon } from "./TwitterIcon";
 import { GoogleIcon } from "./GoogleIcon";
 // import { MarkGithubIcon } from '@primer/octicons-react';

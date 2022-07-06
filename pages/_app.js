@@ -1,11 +1,7 @@
 import "../styles/globals.css";
 import React from "react";
 import Head from "next/head";
-import {
-  MantineProvider,
-  ColorSchemeProvider,
-  ColorScheme,
-} from "@mantine/core";
+import { MantineProvider, ColorSchemeProvider } from "@mantine/core";
 import { Provider } from "react-redux";
 import { NotificationsProvider } from "@mantine/notifications";
 import { PersistGate } from "redux-persist/integration/react";

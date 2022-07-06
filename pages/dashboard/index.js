@@ -1,9 +1,7 @@
 import AppLayout from "@/components/Auth/AppLayout";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUserAccount } from "@/utils/slices/accountSlice";
 import {
-  checkAccountSession,
   countTotalMessages,
   countTotalPaidSubcriptions,
   countTotalProducts,

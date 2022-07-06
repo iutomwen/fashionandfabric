@@ -4,12 +4,7 @@ import Head from "next/head";
 import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { checkAccountSession, signOutUser } from "@/utils/services";
-import { showNotification } from "@mantine/notifications";
-import {
-  fetchAccountDetails,
-  logoutUserAccount,
-} from "@/utils/slices/accountSlice";
+import { logoutUserAccount } from "@/utils/slices/accountSlice";
 import { LoadingOverlay } from "@mantine/core";
 import withGuest from "@/components/Auth/withGuest";
 function Home() {

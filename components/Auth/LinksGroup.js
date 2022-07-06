@@ -9,8 +9,7 @@ import {
   createStyles,
 } from "@mantine/core";
 import {
-  Icon as TablerIcon,
-  CalendarStats,
+  Icon as CalendarStats,
   ChevronLeft,
   ChevronRight,
 } from "tabler-icons-react";

@@ -1,15 +1,12 @@
 import React from "react";
-import { useForm, useToggle, upperFirst } from "@mantine/hooks";
+import { useForm } from "@mantine/hooks";
 import {
   TextInput,
-  PasswordInput,
   Text,
   Paper,
   Group,
-  PaperProps,
   Button,
   Divider,
-  Checkbox,
   Anchor,
 } from "@mantine/core";
 import { useRouter } from "next/router";

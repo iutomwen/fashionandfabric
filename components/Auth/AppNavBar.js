@@ -56,12 +56,10 @@ const useStyles = createStyles((theme) => ({
 }));
 import UserButton from "./UserButton";
 import { LinksGroup } from "./LinksGroup";
-import { signOutUser } from "@/utils/services";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUserAccount } from "@/utils/slices/accountSlice";
 import { fullName } from "@/utils/helper";
-import { persistor } from "@/utils/store";
 import { clearUsers } from "@/utils/slices/usersSlice";
 const mockdata = [
   { label: "Dashboard", icon: LayoutDashboard, link: "/dashboard" },
