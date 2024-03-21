@@ -14,9 +14,12 @@ export default async function page() {
       <h1 className="text-3xl font-bold">Countries</h1>
       <div className="flex gap-2">
         <SearchState />
-        <CreateState countries={countries} />
+        <CreateState countries={countries as any[]} />
       </div>
-      <StateTable data={data as StateTableProps[]} countries={countries} />
+      <StateTable
+        data={data as unknown as StateTableProps[]}
+        countries={countries as any[]}
+      />
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default async function page() {
         <CreateSubCategory data={categories} />
       </div>
       <SubCategoryTable
-        data={data as SubCategoryTableProps[]}
+        data={data as unknown as SubCategoryTableProps[]}
         categories={categories}
       />
     </div>

@@ -14,7 +14,7 @@ export default async function page() {
         <SearchCountry />
         <CreateCountry />
       </div>
-      <CountryTable data={data as CountryTableProps[]} />
+      <CountryTable data={data as unknown as CountryTableProps[]} />
     </div>
   );
 }

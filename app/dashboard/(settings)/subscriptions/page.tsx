@@ -39,57 +39,48 @@ export default async function page() {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
-          {subcriptions.map(
-            (
-              subcription: Tables<"subcriptions"> & {
-                meta_data: {
-                  has_promotion: boolean;
-                  allowed_promotions: number;
-                };
-              }
-            ) => (
-              <Card key={subcription.id} className=" col-span-1">
-                <CardHeader>
-                  <CardTitle>{subcription.name}</CardTitle>
-                  <CardDescription>{subcription.description}</CardDescription>
-                </CardHeader>
-                <CardContent className=" space-y-3">
-                  <div className="flex  space-x-3 items-center justify-between">
-                    <div>
-                      <Label>Duration</Label>
-                      <p>{subcription.duration} days</p>
-                    </div>
-                    <div>
-                      <Label>Price</Label>
-                      <p>{currencyFormat(subcription.amount)}</p>
-                    </div>
-                    <div>
-                      <Label>Allowed products</Label>
-                      <p>{subcription.allowed_products}</p>
-                    </div>
+          {subcriptions.map((subcription: any) => (
+            <Card key={subcription.id} className=" col-span-1">
+              <CardHeader>
+                <CardTitle>{subcription.name}</CardTitle>
+                <CardDescription>{subcription.description}</CardDescription>
+              </CardHeader>
+              <CardContent className=" space-y-3">
+                <div className="flex  space-x-3 items-center justify-between">
+                  <div>
+                    <Label>Duration</Label>
+                    <p>{subcription.duration} days</p>
                   </div>
-                  <h3 className="text-xl font-bold">Options</h3>
-                  <div className="flex flex-col items-start justify-between gap-3">
-                    {subcription.meta_data?.has_promotion ? (
-                      <Label className="text-green-400">Has promotion</Label>
-                    ) : (
-                      <Label className="text-red-400">No promotion</Label>
-                    )}
-                    <div className="flex space-x-3 items-center ">
-                      <Label>Allowed promotions</Label>
-                      <p className="text-sm">
-                        {subcription.meta_data?.allowed_promotions}
-                      </p>
-                    </div>
+                  <div>
+                    <Label>Price</Label>
+                    <p>{currencyFormat(subcription.amount)}</p>
                   </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <DeleteSubscription subscriptionId={subcription.id} />
-                  <EditSubscription subscription={subcription} />
-                </CardFooter>
-              </Card>
-            )
-          )}
+                  <div>
+                    <Label>Allowed products</Label>
+                    <p>{subcription.allowed_products}</p>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold">Options</h3>
+                <div className="flex flex-col items-start justify-between gap-3">
+                  {subcription.meta_data?.has_promotion ? (
+                    <Label className="text-green-400">Has promotion</Label>
+                  ) : (
+                    <Label className="text-red-400">No promotion</Label>
+                  )}
+                  <div className="flex space-x-3 items-center ">
+                    <Label>Allowed promotions</Label>
+                    <p className="text-sm">
+                      {subcription.meta_data?.allowed_promotions}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <DeleteSubscription subscriptionId={subcription.id} />
+                <EditSubscription subscription={subcription} />
+              </CardFooter>
+            </Card>
+          ))}
         </div>
         {subcriptions.length === 0 && (
           <div className="flex flex-col items-center justify-center pt-32 space-y-2">
