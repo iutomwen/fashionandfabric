@@ -24,15 +24,13 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { cn } from "@/lib/utils";
 import { useTransition } from "react";
-import { createState, updateStateById } from "../actions";
-import { stat } from "fs";
+import { updateStateById } from "../actions";
 const FormSchema = z.object({
   name: z.string().min(2, {
     message: "Country name must be at least 2 characters.",
@@ -122,11 +120,8 @@ export default function EditForm({
                 </FormControl>
                 <SelectContent className=" overflow-scroll">
                   {countries.map((country) => (
-                    <SelectGroup>
-                      <SelectItem
-                        key={country.name}
-                        value={country.id.toString()}
-                      >
+                    <SelectGroup key={country.id}>
+                      <SelectItem value={country.id.toString()}>
                         {country.flag} {country.name}
                       </SelectItem>
                     </SelectGroup>

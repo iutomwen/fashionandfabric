@@ -129,7 +129,7 @@ export default function CreateForm({ triggerId }: { triggerId: string }) {
                 </FormControl>
                 <SelectContent className=" overflow-scroll">
                   {iconList.map((icon) => (
-                    <SelectGroup>
+                    <SelectGroup key={icon.name}>
                       <SelectLabel> {icon.name}</SelectLabel>
                       <SelectItem key={icon.name} value={icon.icon}>
                         <div className="flex items-center gap-5 overflow-scroll overflow-y-scroll">

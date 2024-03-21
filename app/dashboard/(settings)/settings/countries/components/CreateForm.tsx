@@ -154,9 +154,9 @@ export default function CreateForm({ triggerId }: { triggerId: string }) {
                 </FormControl>
                 <SelectContent className=" overflow-scroll">
                   {worldFlags.map((icon) => (
-                    <SelectGroup>
+                    <SelectGroup key={icon.name}>
                       <SelectLabel> {icon.name}</SelectLabel>
-                      <SelectItem key={icon.name} value={icon.value}>
+                      <SelectItem value={icon.value}>
                         {icon.value} {icon.name}
                       </SelectItem>
                     </SelectGroup>

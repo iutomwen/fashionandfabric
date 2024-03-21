@@ -30,7 +30,7 @@ import {
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { cn } from "@/lib/utils";
 import { useTransition } from "react";
-import { createCity, updateCityById } from "../actions";
+import { updateCityById } from "../actions";
 const FormSchema = z.object({
   name: z.string().min(2, {
     message: "City name must be at least 2 characters.",
@@ -120,8 +120,8 @@ export default function EditForm({
                 </FormControl>
                 <SelectContent className=" overflow-scroll">
                   {States.map((state) => (
-                    <SelectGroup>
-                      <SelectItem key={state.name} value={state.id.toString()}>
+                    <SelectGroup key={state.id}>
+                      <SelectItem value={state.id.toString()}>
                         {state.name}
                       </SelectItem>
                     </SelectGroup>

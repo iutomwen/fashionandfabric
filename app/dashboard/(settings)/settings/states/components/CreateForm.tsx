@@ -23,7 +23,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -118,11 +117,8 @@ export default function CreateForm({
                 </FormControl>
                 <SelectContent className=" overflow-scroll">
                   {countries.map((country) => (
-                    <SelectGroup>
-                      <SelectItem
-                        key={country.name}
-                        value={country.id.toString()}
-                      >
+                    <SelectGroup key={country.id}>
+                      <SelectItem value={country.id.toString()}>
                         {country.flag} {country.name}
                       </SelectItem>
                     </SelectGroup>

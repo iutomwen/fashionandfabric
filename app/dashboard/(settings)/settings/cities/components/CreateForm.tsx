@@ -120,8 +120,8 @@ export default function CreateForm({
                 </FormControl>
                 <SelectContent className=" overflow-scroll">
                   {states.map((state) => (
-                    <SelectGroup>
-                      <SelectItem key={state.name} value={state.id.toString()}>
+                    <SelectGroup key={state.id}>
+                      <SelectItem value={state.id.toString()}>
                         {state.name}
                       </SelectItem>
                     </SelectGroup>
