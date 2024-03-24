@@ -13,7 +13,7 @@ const jost = Jost({
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://daily-todo-task.vercel.app/"),
+  metadataBase: new URL("https://fashionandfabric.vercel.app/"),
   title: {
     template: "%s | Fashion & Fabric Store",
     default: "Fashion & Fabric Store",
@@ -24,14 +24,14 @@ export const metadata: Metadata = {
   description:
     "Build dashboard with role managemanet using next.js and supabase.",
   openGraph: {
-    title: "Daily Todo",
+    title: "Fashion and Fabric Store",
     description: "Build dashboard with next.js and supabase ",
-    url: "https://daily-todo-task.vercel.app/",
-    siteName: "Daily Todo",
+    url: "https://fashionandfabric.vercel.app/",
+    siteName: "Fashion and Fabric Store",
     images: "/og.png",
     type: "website",
   },
-  keywords: ["daily web coding", "chensokheng", "dailywebcoding"],
+  keywords: ["next.js", "supabase", "tailwindcss", "typescript"],
 };
 
 export default function RootLayout({
