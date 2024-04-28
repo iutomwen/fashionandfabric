@@ -23,7 +23,7 @@ export default async function page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{122}</div>
+              <div className="text-2xl font-bold">{products.length}</div>
             </CardContent>
           </Card>
           <Card>
@@ -33,7 +33,12 @@ export default async function page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{1122}</div>
+              <div className="text-2xl font-bold">
+                {
+                  products.filter((product) => product.status === "awaiting")
+                    .length
+                }
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -43,7 +48,12 @@ export default async function page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{322}</div>
+              <div className="text-2xl font-bold">
+                {
+                  products.filter((product) => product.status === "active")
+                    .length
+                }
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -53,7 +63,12 @@ export default async function page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{342}</div>
+              <div className="text-2xl font-bold">
+                {
+                  products.filter((product) => product.status === "expired")
+                    .length
+                }
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -80,7 +95,7 @@ export default async function page() {
                 <PendingProducts
                   data={
                     products.filter(
-                      (product) => product.status === "pending"
+                      (product) => product.status === "awaiting"
                     ) as unknown as ProductTableProps[]
                   }
                 />
